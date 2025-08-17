@@ -1,11 +1,52 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const tools = [
+  {title: "Grain Bin Capacity (Bushels & Weight)", status: "Coming soon"},
+  {title: "Fence Planner (Perimeter, Posts, Wire)", status: "Coming soon"},
+  {title: "Hay Bale Weight & Load Planner", status: "Coming soon"},
+];
 ---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AgCalculator — Do the farm math.</title>
+    <meta name="description" content="Fast, no-nonsense calculators for farm & homestead: grain bin capacity, hay bale weight, fence planner, and more." />
+    <style>
+      :root{--green:#2F855A;--slate:#334155;--bg:#F8FAFC}
+      *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Inter,Arial,sans-serif;background:var(--bg);color:var(--slate)}
+      header{padding:2rem 1rem;border-bottom:1px solid #e5e7eb;background:white}
+      .wrap{max-width:960px;margin:0 auto}
+      h1{margin:0;font-size:clamp(1.6rem,2.6vw,2.2rem);color:var(--green)}
+      p{margin:.5rem 0 0}
+      .grid{display:grid;gap:1rem;padding:1.25rem 1rem}
+      @media(min-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
+      .card{padding:1rem;border:1px solid #e5e7eb;border-radius:14px;background:white}
+      .status{display:inline-block;margin-top:.4rem;padding:.15rem .5rem;border-radius:999px;background:#94a3b8;color:white;font-size:.8rem}
+      footer{padding:2rem 1rem;color:#64748b}
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <h1>AgCalculator</h1>
+        <p>Do the farm math. Fast, offline-friendly tools for common farm & homestead jobs.</p>
+      </div>
+    </header>
 
-<Layout>
-	<Welcome />
-</Layout>
+    <main class="wrap">
+      <section class="grid">
+        {tools.map(t => (
+          <div class="card">
+            <strong>{t.title}</strong>
+            <div class="status">{t.status}</div>
+          </div>
+        ))}
+      </section>
+    </main>
+
+    <footer class="wrap">
+      <small>Estimates only. Verify before purchasing materials or operating equipment.</small>
+    </footer>
+  </body>
+</html>
+4
