@@ -1,10 +1,11 @@
 ---
 const tools = [
-  {title: "Grain Bin Capacity (Bushels & Weight)", status: "Coming soon"},
+  {title: "Grain Bin Capacity (Bushels & Weight)", href: "/calculators/grain-bin-capacity/", status: "Live"},
   {title: "Fence Planner (Perimeter, Posts, Wire)", status: "Coming soon"},
   {title: "Hay Bale Weight & Load Planner", status: "Coming soon"},
 ];
 ---
+
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -35,13 +36,19 @@ const tools = [
 
     <main class="wrap">
       <section class="grid">
-        {tools.map(t => (
-          <div class="card">
-            <strong>{t.title}</strong>
-            <div class="status">{t.status}</div>
-          </div>
-        ))}
-      </section>
+  {tools.map(t => (
+    t.href
+      ? <a class="card" href={t.href} style="text-decoration:none;color:inherit;display:block">
+          <strong>{t.title}</strong>
+          <div class="status">{t.status}</div>
+        </a>
+      : <div class="card">
+          <strong>{t.title}</strong>
+          <div class="status">{t.status}</div>
+        </div>
+  ))}
+</section>
+
     </main>
 
     <footer class="wrap">
