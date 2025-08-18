@@ -1,8 +1,9 @@
 ---
+const siteUrl = 'https://agcalculator.com';  // <-- add this
 const tools = [
-  {title: "Grain Bin Capacity (Bushels & Weight)", href: "/calculators/grain-bin-capacity/", status: "Live"},
-  {title: "Fence Planner (Perimeter, Posts, Wire)", status: "Coming soon"},
-  {title: "Hay Bale Weight & Load Planner", status: "Coming soon"},
+  { title: "Grain Bin Capacity (Bushels & Weight)", href: "/calculators/grain-bin-capacity/", status: "Live" },
+  { title: "Fence Planner (Perimeter, Posts, Wire)", status: "Coming soon" },
+  { title: "Hay Bale Weight & Load Planner", status: "Coming soon" },
 ];
 ---
 
@@ -10,11 +11,25 @@ const tools = [
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>AgCalculator — Do the farm math.</title>
-    <meta name="description" content="Fast, no-nonsense calculators for farm & homestead: grain bin capacity, hay bale weight, fence planner, and more." />
+
+    <title>AgCalculator — Fast, offline-friendly farm & homestead calculators</title>
+    <meta name="description"
+      content="Do the farm math. Fast, offline-friendly tools for common farm & homestead jobs — including a grain bin capacity calculator." />
+
+    <!-- Canonical -->
+    <link rel="canonical" href={siteUrl} />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="AgCalculator — Fast, offline-friendly farm & homestead calculators" />
+    <meta property="og:description" content="Do the farm math. Fast, offline-friendly tools for common farm & homestead jobs." />
+    <meta property="og:url" content={siteUrl} />
+    <meta name="twitter:card" content="summary" />
+
     <style>
       :root{--green:#2F855A;--slate:#334155;--bg:#F8FAFC}
-      *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Inter,Arial,sans-serif;background:var(--bg);color:var(--slate)}
+      *{box-sizing:border-box}
+      body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Inter,Arial,sans-serif;background:var(--bg);color:var(--slate)}
       header{padding:2rem 1rem;border-bottom:1px solid #e5e7eb;background:white}
       .wrap{max-width:960px;margin:0 auto}
       h1{margin:0;font-size:clamp(1.6rem,2.6vw,2.2rem);color:var(--green)}
@@ -25,9 +40,6 @@ const tools = [
       .status{display:inline-block;margin-top:.4rem;padding:.15rem .5rem;border-radius:999px;background:#94a3b8;color:white;font-size:.8rem}
       footer{padding:2rem 1rem;color:#64748b}
     </style>
-	<title>AgCalculator — Farm & homestead math tools</title>
-	<meta name="description" content="Do the farm math. Fast, offline-friendly tools for common farm & homestead jobs — including a grain bin capacity calculator.">
-	<link rel="canonical" href="https://agcalculator.com/">
   </head>
   <body>
     <header>
