@@ -1,73 +1,74 @@
 ---
-const siteUrl = 'https://agcalculator.com';  // <-- add this
+import Layout from '../layouts/Layout.astro';
+
+const siteUrl = 'https://agcalculator.com';
+
 const tools = [
-  { title: "Grain Bin Capacity (Bushels & Weight)", href: "/calculators/grain-bin-capacity/", status: "Live" },
-  { title: "Fence Planner (Perimeter, Posts, Wire)", status: "Coming soon" },
-  { title: "Hay Bale Weight & Load Planner", status: "Coming soon" },
+  { title: 'Grain Bin Capacity (Bushels & Weight)', href: '/calculators/grain-bin-capacity/', status: 'Live' },
+  { title: 'Fence Planner (Perimeter, Posts, Wire)', status: 'Coming soon' },
+  { title: 'Hay Bale Weight & Load Planner', status: 'Coming soon' },
 ];
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-
-    <title>AgCalculator — Fast, offline-friendly farm & homestead calculators</title>
-    <meta name="description"
-      content="Do the farm math. Fast, offline-friendly tools for common farm & homestead jobs — including a grain bin capacity calculator." />
-
-    <!-- Canonical -->
+<Layout>
+  <!-- Page-specific head tags -->
+  <Fragment slot="head">
+    <title>AgCalculator — Do the farm math.</title>
+    <meta
+      name="description"
+      content="Fast, offline-friendly calculators for farm & homestead: grain bin capacity, hay bale weight & load planning, fence planning, and more."
+    />
     <link rel="canonical" href={siteUrl} />
 
     <!-- Open Graph / Twitter -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="AgCalculator — Fast, offline-friendly farm & homestead calculators" />
-    <meta property="og:description" content="Do the farm math. Fast, offline-friendly tools for common farm & homestead jobs." />
+    <meta property="og:title" content="AgCalculator — Do the farm math." />
+    <meta property="og:description" content="Fast, offline-friendly tools for common farm & homestead jobs." />
     <meta property="og:url" content={siteUrl} />
     <meta name="twitter:card" content="summary" />
+  </Fragment>
 
-    <style>
-      :root{--green:#2F855A;--slate:#334155;--bg:#F8FAFC}
-      *{box-sizing:border-box}
-      body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Inter,Arial,sans-serif;background:var(--bg);color:var(--slate)}
-      header{padding:2rem 1rem;border-bottom:1px solid #e5e7eb;background:white}
-      .wrap{max-width:960px;margin:0 auto}
-      h1{margin:0;font-size:clamp(1.6rem,2.6vw,2.2rem);color:var(--green)}
-      p{margin:.5rem 0 0}
-      .grid{display:grid;gap:1rem;padding:1.25rem 1rem}
-      @media(min-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
-      .card{padding:1rem;border:1px solid #e5e7eb;border-radius:14px;background:white}
-      .status{display:inline-block;margin-top:.4rem;padding:.15rem .5rem;border-radius:999px;background:#94a3b8;color:white;font-size:.8rem}
-      footer{padding:2rem 1rem;color:#64748b}
-    </style>
-  </head>
-  <body>
-    <header>
-      <div class="wrap">
-        <h1>AgCalculator</h1>
-        <p>Do the farm math. Fast, offline-friendly tools for common farm & homestead jobs.</p>
-      </div>
-    </header>
+  <header class="hero">
+    <div class="wrap">
+      <h1>AgCalculator</h1>
+      <p>Do the farm math. Fast, offline-friendly tools for common farm &amp; homestead jobs.</p>
+    </div>
+  </header>
 
-    <main class="wrap">
-      <section class="grid">
-  {tools.map(t => (
-    t.href
-      ? <a class="card" href={t.href} style="text-decoration:none;color:inherit;display:block">
-          <strong>{t.title}</strong>
-          <div class="status">{t.status}</div>
-        </a>
-      : <div class="card">
-          <strong>{t.title}</strong>
-          <div class="status">{t.status}</div>
-        </div>
-  ))}
-</section>
+  <main class="wrap">
+    <section class="grid">
+      {tools.map((t) =>
+        t.href ? (
+          <a class="card" href={t.href}>
+            <strong>{t.title}</strong>
+            <span class="status">{t.status}</span>
+          </a>
+        ) : (
+          <div class="card">
+            <strong>{t.title}</strong>
+            <span class="status">{t.status}</span>
+          </div>
+        )
+      )}
+    </section>
+  </main>
 
-    </main>
+  <footer class="wrap">
+    <small>Estimates only. Verify before purchasing materials or operating equipment.</small>
+  </footer>
 
-    <footer class="wrap">
-      <small>Estimates only. Verify before purchasing materials or operating equipment.</small>
-    </footer>
-  </body>
-</html>
+  <style>
+    :root { --green:#2F855A; --slate:#334155; --bg:#F8FAFC; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--slate); font-family:system-ui,-apple-system,Segoe UI,Inter,Arial,sans-serif; }
+    .wrap { max-width:960px; margin:0 auto; padding:0 1rem; }
+    .hero { padding:2rem 0; border-bottom:1px solid #e5e7eb; background:#fff; }
+    h1 { margin:0; color:var(--green); font-size:clamp(1.6rem,2.6vw,2.2rem); }
+    p { margin:.5rem 0 0; }
+    .grid { display:grid; gap:1rem; padding:1.25rem 0; }
+    @media (min-width:720px) { .grid { grid-template-columns:repeat(2,1fr); } }
+    .card { display:block; text-decoration:none; color:inherit; background:#fff; border:1px solid #e5e7eb; border-radius:14px; padding:1rem; }
+    .status { display:inline-block; margin-top:.4rem; padding:.15rem .5rem; border-radius:999px; background:#94a3b8; color:#fff; font-size:.8rem; }
+    footer { padding:2rem 0; color:#64748b; }
+  </style>
+</Layout>
