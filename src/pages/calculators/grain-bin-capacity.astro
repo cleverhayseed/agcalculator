@@ -1,4 +1,9 @@
 ---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout>
+  <!-- keep all your existing calculator markup here, unchanged -->
+---
 const GRAINS = [
   { key: "corn", name: "Corn", tw: 56 },
   { key: "wheat", name: "Wheat", tw: 60 },
@@ -223,3 +228,21 @@ const GRAINS = [
 
   </body>
 </html>
+<script is:inline>
+  // Fire once per visit when the user interacts with the calculator
+  (function () {
+    let fired = false;
+    document.addEventListener(
+      "input",
+      (e) => {
+        if (fired) return;
+        if (e.target && (e.target.matches("input, select, textarea"))) {
+          fired = true;
+          window.plausible && window.plausible("Used Grain Bin Calculator");
+        }
+      },
+      { passive: true }
+    );
+  })();
+</script>
+</Layout>
