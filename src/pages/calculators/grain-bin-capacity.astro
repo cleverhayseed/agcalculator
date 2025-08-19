@@ -215,5 +215,11 @@ const GRAINS = [
 
       compute();
     </script>
+    
+    <script is:inline>
+    // Fire the custom goal as soon as this page loads
+    window.plausible && window.plausible('trackEvent', 'Grain bin calculator view');
+    </script>
+
   </body>
 </html>
