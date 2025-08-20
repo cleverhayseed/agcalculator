@@ -1,29 +1,29 @@
+---
+/* No frontmatter needed */
+---
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="generator" content={Astro.generator} />
-    <title>AgCalculator</title>
-	<!-- Plausible queue stub (must be before the external script) -->
-	<script is:inline>
-  	window.plausible = window.plausible || function () {
-    (window.plausible.q = window.plausible.q || []).push(arguments);
-  	};
-	</script>
 
-    <!-- Plausible analytics, site-wide -->
+    <!-- Plausible queue (in case the external script is slow to load) -->
+    <script is:inline>
+      window.plausible = window.plausible || function () {
+        (window.plausible.q = window.plausible.q || []).push(arguments);
+      };
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4050846968323757"
+     crossorigin="anonymous"></script>
+    <!-- Plausible main script (loaded once, for the whole site) -->
     <script is:inline defer data-domain="agcalculator.com" src="https://plausible.io/js/script.js"></script>
 
-    <!-- Allow pages to inject their own head tags -->
+    <!-- Pages can inject title/canonicals/JSON-LD here -->
     <slot name="head" />
   </head>
   <body>
     <slot />
   </body>
 </html>
-
-<style>
-  html, body { margin:0; width:100%; height:100%; }
-</style>
