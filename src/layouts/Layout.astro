@@ -25,5 +25,16 @@
   </head>
   <body>
     <slot />
+        <!-- Site-wide footer -->
+    <footer style="padding:2rem 1rem;color:#64748b">
+      <div class="wrap" style="max-width:960px;margin:0 auto;">
+        <small>
+          © {new Date().getFullYear()} AgCalculator ·
+          <a href="/privacy/" style="color:#2F855A;text-decoration:none;">Privacy</a>
+          ·
+          <a href="mailto:hello@agcalculator.com" style="color:#2F855A;text-decoration:none;">Contact</a>
+        </small>
+      </div>
+    </footer>
   </body>
 </html>
