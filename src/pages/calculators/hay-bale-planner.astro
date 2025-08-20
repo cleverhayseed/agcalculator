@@ -1,0 +1,224 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+const CROPS = [
+  { key:"grass",  name:"Grass hay", density: 10 },
+  { key:"alfalfa",name:"Alfalfa",   density: 12 },
+  { key:"straw",  name:"Straw",     density: 8  },
+  { key:"custom", name:"Custom",    density: 10 }
+];
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>Hay Bale Weight & Load Planner | AgCalculator</title>
+    <meta name="description" content="Estimate hay bale weight from size and density, then see how many bales you can haul by weight." />
+    <link rel="canonical" href="https://agcalculator.com/calculators/hay-bale-planner/" />
+
+    <!-- OG -->
+    <meta property="og:site_name" content="AgCalculator" />
+    <meta property="og:title" content="Hay Bale Weight & Load Planner" />
+    <meta property="og:description" content="Calculate bale weight and how many you can haul by weight capacity." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://agcalculator.com/calculators/hay-bale-planner/" />
+    <meta property="og:image" content="https://agcalculator.com/og-hay-bale.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="AgCalculator — Hay Bale Planner" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Hay Bale Weight & Load Planner" />
+    <meta name="twitter:description" content="Estimate bale weight & haul capacity." />
+    <meta name="twitter:image" content="https://agcalculator.com/og-hay-bale.png" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"WebApplication",
+      "name":"Hay Bale Weight & Load Planner",
+      "applicationCategory":"Calculator",
+      "operatingSystem":"Web",
+      "url":"https://agcalculator.com/calculators/hay-bale-planner/",
+      "description":"Estimate hay bale weight from size and density, then see how many bales you can haul by weight.",
+      "publisher":{"@type":"Organization","name":"AgCalculator","url":"https://agcalculator.com"},
+      "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
+    }
+    </script>
+
+    <!-- Breadcrumbs -->
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"BreadcrumbList",
+      "itemListElement":[
+        {"@type":"ListItem","position":1,"name":"Home","item":"https://agcalculator.com/"},
+        {"@type":"ListItem","position":2,"name":"Hay Bale Planner","item":"https://agcalculator.com/calculators/hay-bale-planner/"}
+      ]
+    }
+    </script>
+
+    <style>
+      :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
+      *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Inter,Arial,sans-serif;background:var(--bg);color:var(--slate)}
+      a{color:var(--green);text-decoration:none}
+      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:white}
+      .wrap{max-width:960px;margin:0 auto;padding:1rem}
+      fieldset{background:white;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
+      legend{padding:0 .4rem;color:var(--muted)}
+      label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
+      input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
+      .row{display:grid;gap:.8rem}
+      @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
+      .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+      .note{color:var(--muted);font-size:.9rem}
+    </style>
+  </Fragment>
+
+  <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
+  <main class="wrap">
+    <h1 style="margin:.5rem 0 1rem">Hay Bale Weight & Load Planner</h1>
+
+    <fieldset>
+      <legend>Bale & material</legend>
+      <div class="row">
+        <div>
+          <label for="bType">Bale type</label>
+          <select id="bType">
+            <option value="round">Round</option>
+            <option value="square">Square/rectangular</option>
+          </select>
+        </div>
+        <div>
+          <label for="crop">Crop</label>
+          <select id="crop">
+            {CROPS.map(c => <option value={c.key} data-den={c.density}>{c.name}</option>)}
+          </select>
+        </div>
+        <div>
+          <label for="density">Density (lb/ft³)</label>
+          <input id="density" type="number" step="0.1" value="10" />
+        </div>
+      </div>
+
+      <div class="row" id="roundRow">
+        <div>
+          <label for="dia">Round bale diameter (in)</label>
+          <input id="dia" type="number" step="0.1" value="60" />
+        </div>
+        <div>
+          <label for="width">Round bale width (in)</label>
+          <input id="width" type="number" step="0.1" value="60" />
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <div class="note">Volume = π·(D/2)²·W</div>
+        </div>
+      </div>
+
+      <div class="row" id="squareRow" style="display:none">
+        <div>
+          <label for="sL">Square length (in)</label>
+          <input id="sL" type="number" step="0.1" value="36" />
+        </div>
+        <div>
+          <label for="sW">Square width (in)</label>
+          <input id="sW" type="number" step="0.1" value="18" />
+        </div>
+        <div>
+          <label for="sH">Square height (in)</label>
+          <input id="sH" type="number" step="0.1" value="14" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="moist">Moisture adjustment (%)</label>
+          <input id="moist" type="number" step="0.1" value="0" />
+        </div>
+        <div>
+          <label for="payload">Haul capacity (lb)</label>
+          <input id="payload" type="number" step="1" placeholder="e.g. 10000" />
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <div class="note">Bales by weight only (not volume/space)</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <section class="result" id="out">
+      <div class="note">Results</div>
+      <div style="display:grid;gap:.5rem;margin-top:.4rem">
+        <div><strong>Volume:</strong> <span id="vol">—</span> ft³</div>
+        <div><strong>Bale weight:</strong> <span id="wt">—</span> lb (<span id="tons">—</span> tons)</div>
+        <div><strong>Max bales by weight:</strong> <span id="maxBales">—</span></div>
+      </div>
+      <p class="note" style="margin-top:.6rem">Estimates only. Verify before purchasing materials or operating equipment.</p>
+    </section>
+  </main>
+
+  <script is:inline>
+  const $ = (id) => document.getElementById(id);
+  const fields = ["bType","crop","density","dia","width","sL","sW","sH","moist","payload"];
+  fields.forEach(id => $(id).addEventListener("input", compute));
+
+  $("bType").addEventListener("change", () => {
+    const round = $("bType").value === "round";
+    $("roundRow").style.display  = round ? "" : "none";
+    $("squareRow").style.display = round ? "none" : "";
+    compute();
+  });
+  $("crop").addEventListener("change", () => {
+    const den = parseFloat($("crop").selectedOptions[0].dataset.den || "10");
+    $("density").value = den;
+    compute();
+  });
+
+  function num(id){ return parseFloat($(id).value || ""); }
+  function fmt(n, d=0){ return Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d}) : "—"; }
+
+  function compute(){
+    const round = $("bType").value === "round";
+    const dens = Math.max(0, num("density") || 0);
+
+    // inches -> feet
+    let vol = NaN;
+    if (round){
+      const D = num("dia")/12, W = num("width")/12;
+      if (D>0 && W>0) vol = Math.PI * Math.pow(D/2,2) * W;
+    } else {
+      const L = num("sL")/12, W = num("sW")/12, H = num("sH")/12;
+      if (L>0 && W>0 && H>0) vol = L*W*H;
+    }
+    if (!Number.isFinite(vol)) return show();
+
+    let wt = vol * dens;
+    const moist = num("moist") || 0;
+    if (moist !== 0) wt *= (1 + moist/100); // simple moisture bump
+
+    const tons = wt/2000;
+    const payload = num("payload");
+    const maxBales = (payload>0 && wt>0) ? Math.floor(payload / wt) : NaN;
+
+    show({ vol, wt, tons, maxBales });
+
+    if (!window.__pl_hay_used){
+      window.__pl_hay_used = true;
+      window.plausible && window.plausible("Used Hay Bale Planner");
+    }
+  }
+
+  function show(o={}){
+    $("vol").textContent  = fmt(o.vol,1);
+    $("wt").textContent   = fmt(o.wt,0);
+    $("tons").textContent = fmt(o.tons,2);
+    $("maxBales").textContent = fmt(o.maxBales,0);
+  }
+
+  // init
+  $("bType").dispatchEvent(new Event("change"));
+  $("crop").dispatchEvent(new Event("change"));
+  </script>
+</Layout>
