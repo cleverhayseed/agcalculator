@@ -6,8 +6,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="generator" content={Astro.generator} />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <!-- Google AdSense -->
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4050846968323757"
+      crossorigin="anonymous">
+    </script>
 
     <!-- Plausible queue (in case the external script is slow to load) -->
     <script is:inline>
@@ -15,17 +24,15 @@
         (window.plausible.q = window.plausible.q || []).push(arguments);
       };
     </script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4050846968323757"
-     crossorigin="anonymous"></script>
-    <!-- Plausible main script (loaded once, for the whole site) -->
-    <script is:inline defer data-domain="agcalculator.com" src="https://plausible.io/js/script.js"></script>
+    <!-- Plausible main script (site-wide) -->
+    <script defer data-domain="agcalculator.com" src="https://plausible.io/js/script.js"></script>
 
     <!-- PWA / icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
     <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png" />
 
-    <!-- Manifest + colors -->
+    <!-- PWA manifest + theme color -->
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#2F855A" />
 
@@ -37,9 +44,11 @@
     <!-- Pages can inject title/canonicals/JSON-LD here -->
     <slot name="head" />
   </head>
+
   <body>
     <slot />
-        <!-- Site-wide footer -->
+
+    <!-- Site-wide footer -->
     <footer style="padding:2rem 1rem;color:#64748b">
       <div class="wrap" style="max-width:960px;margin:0 auto;">
         <small>
@@ -47,8 +56,57 @@
           <a href="/privacy/" style="color:#2F855A;text-decoration:none;">Privacy</a>
           ·
           <a href="mailto:hello@agcalculator.com" style="color:#2F855A;text-decoration:none;">Contact</a>
+          ·
+          <a id="install-app" href="#" style="color:#2F855A;text-decoration:none;">Install app</a>
         </small>
       </div>
     </footer>
+
+    <!-- Install-app logic (footer link) -->
+    <script is:inline>
+      (function () {
+        const installLink = document.getElementById('install-app');
+        if (!installLink) return;
+
+        let deferredPrompt = null;
+
+        // Detect iOS (no beforeinstallprompt)
+        const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+          // Prevent the mini-infobar on mobile
+          e.preventDefault();
+          deferredPrompt = e;
+        });
+
+        installLink.addEventListener('click', async (evt) => {
+          evt.preventDefault();
+
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            try { window.plausible && window.plausible('A2HS installed'); } catch {}
+            deferredPrompt = null;
+            return;
+          }
+
+          // Fallback guidance (works on iOS and any browser without a prompt)
+          if (isIOS()) {
+            alert('On iPhone/iPad: tap the Share button → “Add to Home Screen”.');
+          } else {
+            alert('Use your browser menu → “Install app” or “Add to Home screen”.');
+          }
+        });
+      })();
+    </script>
+
+    <!-- Register service worker -->
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(console.error);
+        });
+      }
+    </script>
   </body>
 </html>
