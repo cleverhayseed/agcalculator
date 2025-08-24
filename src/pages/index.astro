@@ -62,6 +62,37 @@ const tools = [
         )
       )}
     </section>
+    <script is:inline>
+  let deferredPrompt;
+  const btn = document.getElementById('install-btn');
+
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+  // Show button for Android/desktop when installable
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (!isStandalone) btn.style.display = 'inline-block';
+  });
+
+  // Show button on iOS (no prompt API) if not installed
+  if (isIOS && !isStandalone) btn.style.display = 'inline-block';
+
+  btn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      btn.textContent = outcome === 'accepted' ? 'Installed' : 'Add to Home Screen';
+    } else if (isIOS) {
+      alert('On iPhone/iPad: tap the Share icon → “Add to Home Screen”.');
+    }
+  });
+</script>
+
   </main>
 
   <footer class="wrap">
