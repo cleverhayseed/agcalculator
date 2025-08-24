@@ -20,6 +20,20 @@
     <!-- Plausible main script (loaded once, for the whole site) -->
     <script is:inline defer data-domain="agcalculator.com" src="https://plausible.io/js/script.js"></script>
 
+    <!-- PWA / icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png" />
+
+    <!-- Manifest + colors -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2F855A" />
+
+    <!-- iOS Add to Home Screen helpers -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="AgCalculator" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
     <!-- Pages can inject title/canonicals/JSON-LD here -->
     <slot name="head" />
   </head>
