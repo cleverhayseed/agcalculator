@@ -1,0 +1,45 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>Terms & Disclaimers | AgCalculator</title>
+    <meta name="description" content="Terms of use, disclaimers, and acceptable use for AgCalculator." />
+    <link rel="canonical" href="https://agcalculator.com/terms/" />
+  </Fragment>
+
+  <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
+
+  <main class="wrap" style="max-width:760px">
+    <h1>Terms & Disclaimers</h1>
+    <p>AgCalculator provides lightweight calculators for common farm and homestead tasks. By using this site, you agree to these terms.</p>
+
+    <h2>Estimates only</h2>
+    <p>Results are for estimation and planning. Always verify measurements, local requirements, and manufacturer specs before purchasing materials or operating equipment.</p>
+
+    <h2>No professional advice</h2>
+    <p>Content on this site is informational and is not professional, engineering, or legal advice.</p>
+
+    <h2>Acceptable use</h2>
+    <ul>
+      <li>Do not attempt to misuse, overload, or scrape the site.</li>
+      <li>Do not exploit security issues; report them to <a href="mailto:info@cleverhayseed.com">info@cleverhayseed.com</a>.</li>
+    </ul>
+
+    <h2>Accuracy</h2>
+    <p>We aim to keep formulas and defaults accurate. However, errors can occur and assumptions vary. Please double-check critical calculations.</p>
+
+    <h2>Contact</h2>
+    <p>Questions or feedback? <a href="mailto:info@cleverhayseed.com">info@cleverhayseed.com</a></p>
+
+    <p style="color:#64748b"><small>Last updated {new Date().toISOString().slice(0,10)}</small></p>
+  </main>
+
+  <style>
+    .wrap{max-width:960px;margin:0 auto;padding:1rem}
+    h1{margin:.5rem 0 1rem}
+    h2{margin:1.25rem 0 .5rem}
+    ul{margin:.25rem 0 0 1.2rem}
+  </style>
+</Layout>
