@@ -57,6 +57,38 @@ const WIRE_TYPES = [
       ]
     }
     </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Do I subtract gate openings from post counts?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Line posts are spaced along the effective run with gate openings removed. Gate posts are added separately (two per gate)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How are strands handled for different fence types?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Barbed and high-tensile use the strands multiplier. Mesh/field fence is treated as a single run (no strands multiplier)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this include bracing or H-frames?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Brace assemblies vary by standard and soil conditions; add them separately according to your fencing plan."
+      }
+    }
+  ]
+}
+</script>
 
     <style>
       :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
@@ -189,104 +221,138 @@ const WIRE_TYPES = [
       </div>
       <p class="note" style="margin-top:.6rem">Estimates only. Verify before purchasing materials or operating equipment.</p>
     </section>
+        <!-- Publisher content: how it works + example + mini FAQ -->
+    <section class="content">
+      <h2>How this calculator works</h2>
+      <p>This tool estimates fence materials from your layout, post spacing, and wire type. It supports either a known total length or a rectangle (perimeter), optional gates, and strand-based fences.</p>
+
+      <h3>Formulas</h3>
+      <ul>
+        <li><strong>Perimeter (rect)</strong> = 2 × (L + W)</li>
+        <li><strong>Effective wire run</strong> = total length − (gates × gate width)</li>
+        <li><strong>Line posts</strong> = ceil(effective run ÷ post spacing)</li>
+        <li><strong>Gate posts</strong> = gates × 2</li>
+        <li><strong>Total posts</strong> = line posts + corner posts + gate posts</li>
+        <li><strong>Wire feet</strong> = effective run × (strands if barbed/HT else 1)</li>
+        <li><strong>Wire rolls</strong> = ceil(wire feet ÷ roll length)</li>
+        <li><strong>Materials cost (optional)</strong> = (total posts × post cost) + (rolls × roll cost)</li>
+      </ul>
+
+      <h3>Assumptions & notes</h3>
+      <ul>
+        <li>Post spacing is uniform along straight runs; corners/gates get their own posts.</li>
+        <li>Mesh/field fence is treated as a single “strand” (no strands multiplier).</li>
+        <li>Roll lengths are typical defaults; replace with what your supplier carries.</li>
+      </ul>
+
+      <h3>Example</h3>
+      <p>Rectangle 660&nbsp;ft × 330&nbsp;ft, 4 corners, post spacing 8&nbsp;ft, barbed 4 strands, two 16&nbsp;ft gates, 1320&nbsp;ft rolls:</p>
+      <ol>
+        <li>Perimeter = 2×(660+330) = <strong>1,980 ft</strong></li>
+        <li>Gate openings = 2×16 = <strong>32 ft</strong> → Effective run = 1,980 − 32 = <strong>1,948 ft</strong></li>
+        <li>Line posts = ceil(1,948 ÷ 8) = <strong>244</strong></li>
+        <li>Gate posts = 2×2 = <strong>4</strong>; Total posts = 244 + 4 corners + 4 = <strong>252</strong></li>
+        <li>Wire feet = 1,948 × 4 = <strong>7,792 ft</strong> → Rolls = ceil(7,792 ÷ 1,320) = <strong>6 rolls</strong></li>
+      </ol>
+
   </main>
 
-  <script is:inline>
-  const $ = (id) => document.getElementById(id);
+  <!-- Single shared-utils script at the bottom -->
+  <script type="module">
+    import { $, num, fmt, ceil, onInputs } from "../../lib/utils.js";
 
-  const fields = ["mode","corners","postSpacing","len","wid","totalLength","wireType","strands","rollLen","gates","gateWidth","postCost","rollCost"];
-  fields.forEach(id => $(id).addEventListener("input", compute));
-  $("wireType").addEventListener("change", onWireType);
-  $("mode").addEventListener("change", onModeChange);
+    const fields = [
+      "mode","corners","postSpacing","len","wid","totalLength",
+      "wireType","strands","rollLen","gates","gateWidth","postCost","rollCost"
+    ];
+    onInputs(fields, compute);
+    $("wireType").addEventListener("change", onWireType);
+    $("mode").addEventListener("change", onModeChange);
 
-  function onModeChange(){
-    const m = $("mode").value;
-    $("rectRow").style.display  = m === "rect"  ? "" : "none";
-    $("totalRow").style.display = m === "total" ? "" : "none";
-    compute();
-  }
-  function onWireType(){
-    const opt = $("wireType").selectedOptions[0];
-    const uses = opt.dataset.uses === "1";
-    $("strands").disabled = !uses;
-    $("strands").value = uses ? (opt.dataset.defstrands || "4") : "1";
-    $("strandNote").style.opacity = uses ? "1" : ".6";
-    $("rollLen").value = opt.dataset.roll || "1320";
-    compute();
-  }
-
-  function num(id){ return parseFloat($(id).value || ""); }
-  function fmt(n, d=0){ return Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d}) : "—"; }
-  function ceil(n){ return Math.ceil(n); }
-
-  function compute(){
-    const mode = $("mode").value;
-    let per = 0;
-    if (mode === "rect"){
-      const L = num("len"), W = num("wid");
-      if(!(L>0 && W>0)) return show();
-      per = 2*(L+W);
-    } else {
-      per = num("totalLength");
-      if(!(per>0)) return show();
+    function onModeChange(){
+      const m = $("mode").value;
+      $("rectRow").style.display  = m === "rect"  ? "" : "none";
+      $("totalRow").style.display = m === "total" ? "" : "none";
+      compute();
     }
 
-    const corners = Math.max(0, Math.floor(num("corners") || 0));
-    const postSpacing = Math.max(0.1, num("postSpacing") || 8);
-    const gates = Math.max(0, Math.floor(num("gates") || 0));
-    const gateWidth = Math.max(0, num("gateWidth") || 0);
-    const gateOpen = gates * gateWidth;
-
-    // Effective wire run removes gate openings
-    const effWireRun = Math.max(0, per - gateOpen);
-
-    // Line posts are spaced along the entire run excluding gates
-    const linePosts = ceil(effWireRun / postSpacing);
-    const gatePosts = gates * 2;
-    const totalPosts = linePosts + corners + gatePosts;
-
-    const strands = Math.max(1, Math.floor(num("strands") || 1));
-    const rollLen  = Math.max(1, num("rollLen") || 1320);
-    const usesStrands = !$("strands").disabled;
-
-    const wireFeet = effWireRun * (usesStrands ? strands : 1);
-    const rolls = ceil(wireFeet / rollLen);
-
-    const postCost = num("postCost");
-    const rollCost = num("rollCost");
-    let matCost = NaN;
-    if (postCost>0 || rollCost>0){
-      const pc = (postCost>0 ? totalPosts*postCost : 0);
-      const rc = (rollCost>0 ? rolls*rollCost : 0);
-      matCost = pc + rc;
+    function onWireType(){
+      const opt = $("wireType").selectedOptions[0];
+      const uses = opt.dataset.uses === "1";
+      $("strands").disabled = !uses;
+      $("strands").value = uses ? (opt.dataset.defstrands || "4") : "1";
+      $("strandNote").style.opacity = uses ? "1" : ".6";
+      $("rollLen").value = opt.dataset.roll || "1320";
+      compute();
     }
 
-    show({
-      per, gateOpen, effWireRun,
-      linePosts, corners, gatePosts, totalPosts,
-      rolls, wireFeet, matCost
-    });
+    function compute(){
+      const mode = $("mode").value;
+      let per = 0;
+      if (mode === "rect"){
+        const L = num("len"), W = num("wid");
+        if(!(L>0 && W>0)) return show();
+        per = 2*(L+W);
+      } else {
+        per = num("totalLength");
+        if(!(per>0)) return show();
+      }
 
-    // one-time goal
-    if (!window.__pl_fence_used) {
-      window.__pl_fence_used = true;
-      window.plausible && window.plausible("Used Fence Planner");
+      const corners = Math.max(0, Math.floor(num("corners") || 0));
+      const postSpacing = Math.max(0.1, num("postSpacing") || 8);
+      const gates = Math.max(0, Math.floor(num("gates") || 0));
+      const gateWidth = Math.max(0, num("gateWidth") || 0);
+      const gateOpen = gates * gateWidth;
+
+      // Effective wire run removes gate openings
+      const effWireRun = Math.max(0, per - gateOpen);
+
+      // Line posts are spaced along the entire run excluding gates
+      const linePosts = ceil(effWireRun / postSpacing);
+      const gatePosts = gates * 2;
+      const totalPosts = linePosts + corners + gatePosts;
+
+      const strands = Math.max(1, Math.floor(num("strands") || 1));
+      const rollLen  = Math.max(1, num("rollLen") || 1320);
+      const usesStrands = !$("strands").disabled;
+
+      const wireFeet = effWireRun * (usesStrands ? strands : 1);
+      const rolls = ceil(wireFeet / rollLen);
+
+      const postCost = num("postCost");
+      const rollCost = num("rollCost");
+      let matCost = NaN;
+      if (postCost>0 || rollCost>0){
+        const pc = (postCost>0 ? totalPosts*postCost : 0);
+        const rc = (rollCost>0 ? rolls*rollCost : 0);
+        matCost = pc + rc;
+      }
+
+      show({
+        per, gateOpen, effWireRun,
+        linePosts, corners, gatePosts, totalPosts,
+        rolls, wireFeet, matCost
+      });
+
+      if (!window.__pl_fence_used) {
+        window.__pl_fence_used = true;
+        window.plausible && window.plausible("Used Fence Planner");
+      }
     }
-  }
 
-  function show(o={}){
-    $("fLen").textContent       = fmt(o.per,0);
-    $("gOpen").textContent      = fmt(o.gateOpen,0);
-    $("wireLen").textContent    = fmt(o.effWireRun,0);
-    $("linePosts").textContent  = fmt(o.linePosts,0);
-    $("cornerPosts").textContent= fmt(o.corners,0);
-    $("gatePosts").textContent  = fmt(o.gatePosts,0);
-    $("totalPosts").textContent = fmt(o.totalPosts,0);
-    $("rolls").textContent      = fmt(o.rolls,0);
-    $("matCost").textContent    = Number.isFinite(o.matCost) ? "$" + fmt(o.matCost,2) : "—";
-  }
+    function show(o={}){
+      $("fLen").textContent       = fmt(o.per,0);
+      $("gOpen").textContent      = fmt(o.gateOpen,0);
+      $("wireLen").textContent    = fmt(o.effWireRun,0);
+      $("linePosts").textContent  = fmt(o.linePosts,0);
+      $("cornerPosts").textContent= fmt(o.corners,0);
+      $("gatePosts").textContent  = fmt(o.gatePosts,0);
+      $("totalPosts").textContent = fmt(o.totalPosts,0);
+      $("rolls").textContent      = fmt(o.rolls,0);
+      $("matCost").textContent    = Number.isFinite(o.matCost) ? "$" + fmt(o.matCost,2) : "—";
+    }
 
-  onModeChange();   // initialize UI
-  onWireType();     // initialize strands/roll defaults
+    onModeChange();   // initialize UI
+    onWireType();     // initialize strands/roll defaults
   </script>
 </Layout>

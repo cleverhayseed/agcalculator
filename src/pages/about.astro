@@ -1,0 +1,44 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>About AgCalculator</title>
+    <meta name="description" content="What AgCalculator is, who it's for, and how we keep it fast, accurate, and privacy-friendly." />
+    <link rel="canonical" href="https://agcalculator.com/about/" />
+  </Fragment>
+
+  <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
+
+  <main class="wrap" style="max-width:760px">
+    <h1>About AgCalculator</h1>
+    <p>AgCalculator is a collection of lightweight, offline-friendly calculators for farmers, ranchers, and rural landowners. Each tool focuses on a single job and loads fast on slow or spotty connections.</p>
+
+    <h2>What we publish</h2>
+    <ul>
+      <li>Practical calculators (fencing, grain storage, hay bales, and more)</li>
+      <li>Plain-language explanations of formulas and assumptions</li>
+      <li>Examples so you can sanity-check results in the field</li>
+    </ul>
+
+    <h2>Accuracy & assumptions</h2>
+    <p>Formulas and default values come from common industry practices and manufacturer specs when available. Results are estimates only—always verify measurements and local requirements before purchasing materials or operating equipment.</p>
+
+    <h2>Privacy</h2>
+    <p>We don’t collect personal data inside calculators. Basic, privacy-respecting analytics (via Plausible) help us understand which tools are useful. See our <a href="/privacy/">Privacy</a> page for details.</p>
+
+    <h2>Contact</h2>
+    <p>Questions or suggestions for a new calculator? Email <a href="mailto:info@cleverhayseed.com">info@cleverhayseed.com</a>.</p>
+
+    <p style="color:#64748b"><small>Last updated {new Date().toISOString().slice(0,10)}</small></p>
+  </main>
+
+  <style>
+    :root{--green:#2F855A;--slate:#334155}
+    .wrap{max-width:960px;margin:0 auto;padding:1rem}
+    h1{margin:.5rem 0 1rem;color:var(--green)}
+    h2{margin:1.25rem 0 .5rem}
+    ul{margin:.25rem 0 0 1.2rem}
+  </style>
+</Layout>

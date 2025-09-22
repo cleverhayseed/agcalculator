@@ -2,14 +2,14 @@
 import Layout from "../../layouts/Layout.astro";
 
 const GRAINS = [
-  { key: "corn", name: "Corn", tw: 56 },
-  { key: "wheat", name: "Wheat", tw: 60 },
-  { key: "soy", name: "Soybeans", tw: 60 },
-  { key: "oats", name: "Oats", tw: 32 },
-  { key: "barley", name: "Barley", tw: 48 },
-  { key: "sorghum", name: "Grain Sorghum / Milo", tw: 56 },
-  { key: "canola", name: "Canola", tw: 50 },
-  { key: "other", name: "Other (set test weight)", tw: 56 },
+  { key: "corn",   name: "Corn",                  tw: 56 },
+  { key: "wheat",  name: "Wheat",                 tw: 60 },
+  { key: "soy",    name: "Soybeans",              tw: 60 },
+  { key: "oats",   name: "Oats",                  tw: 32 },
+  { key: "barley", name: "Barley",                tw: 48 },
+  { key: "sorghum",name: "Grain Sorghum / Milo",  tw: 56 },
+  { key: "canola", name: "Canola",                tw: 50 },
+  { key: "other",  name: "Other (set test weight)", tw: 56 },
 ];
 ---
 
@@ -26,7 +26,6 @@ const GRAINS = [
     <meta property="og:url" content="https://agcalculator.com/calculators/grain-bin-capacity/" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-
     <meta property="og:image" content="https://agcalculator.com/og-grain-bin.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -56,6 +55,39 @@ const GRAINS = [
         ]
       }
     </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What if my roof is flat?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Leave roof height at 0 so only the cylindrical volume is used."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use metric?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Convert metric to feet before entering values (1 m = 3.28084 ft). A metric toggle is planned."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why don’t my numbers match label capacity?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Manufacturer ratings can include safety factors or different fill levels. This calculator uses geometric volume with your inputs."
+      }
+    }
+  ]
+}
+</script>
+
   </Fragment>
 
   <header>
@@ -135,6 +167,57 @@ const GRAINS = [
       </div>
       <p class="note" style="margin-top:.6rem">Estimates only. Verify before purchasing materials or operating equipment.</p>
     </section>
+        
+    </section> <!-- end Results -->
+
+    <!-- Publisher content: how it works + example + mini FAQ -->
+    <section class="content">
+      <h2>How this calculator works</h2>
+      <p>This tool estimates the grain volume in a cylindrical bin and converts that volume to bushels and weight.</p>
+      <h3>Formulas</h3>
+      <ul>
+        <li><strong>Cylinder volume (ft³)</strong> = π × (D/2)² × H</li>
+        <li><strong>Conical roof / hopper (ft³)</strong> = π × (D/2)² × height ÷ 3</li>
+        <li><strong>Bushels</strong> = total ft³ ÷ <code>1.2445</code> (ft³ per U.S. bushel)</li>
+        <li><strong>Weight (lb)</strong> = bushels × test weight (lb/bu)</li>
+        <li><strong>Tons</strong> = pounds ÷ 2000</li>
+      </ul>
+
+      <h3>Assumptions & notes</h3>
+      <ul>
+        <li>Bin is approximated as a perfect cylinder plus optional cone sections.</li>
+        <li><em>Moisture shrink</em> reduces bushels by the chosen percent.</li>
+        <li>Test weight defaults come from common industry values; always use your measured weight when available.</li>
+      </ul>
+
+      <h3>Example</h3>
+      <p>36&nbsp;ft diameter, 24&nbsp;ft straight wall, conical roof 4&nbsp;ft, corn at 56&nbsp;lb/bu, no shrink:</p>
+      <ol>
+        <li>Cylinder: π×18²×24 ≈ <strong>24,429 ft³</strong></li>
+        <li>Roof cone: π×18²×4 ÷ 3 ≈ <strong>1,357 ft³</strong></li>
+        <li>Total ft³ ≈ <strong>25,786 ft³</strong></li>
+        <li>Bushels: 25,786 ÷ 1.2445 ≈ <strong>20,713 bu</strong></li>
+        <li>Weight: 20,713 × 56 ≈ <strong>1,160,000 lb</strong> (~<strong>580 tons</strong>)</li>
+      </ol>
+
+      <h3>FAQ</h3>
+      <p><strong>What if my roof is flat?</strong> Leave roof height at 0.</p>
+      <p><strong>Can I use metric?</strong> Enter metric values converted to feet (1&nbsp;m = 3.28084&nbsp;ft). A metric toggle is planned.</p>
+      <p><strong>Why don’t my numbers match label capacity?</strong> Manufacturer ratings can include safety factors or different fill levels; this tool uses pure geometry.</p>
+
+      <p class="disclaimer">Estimates only. Verify before purchasing materials or operating equipment.</p>
+    </section>
+
+    <style>
+      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content h2{margin:.2rem 0 .6rem}
+      .content h3{margin:.8rem 0 .3rem}
+      .content ul, .content ol{margin:.2rem 0 .2rem .9rem}
+      .content .disclaimer{color:#64748b;margin-top:.6rem}
+    </style>
+  </main>
+
+
   </main>
 
   <style>
@@ -155,22 +238,22 @@ const GRAINS = [
     .bar{height:100%;background:var(--green);width:0%}
   </style>
 
+  <!-- Single shared-utils script at the bottom -->
   <script type="module">
-    const $ = (id) => document.getElementById(id);
+    import { $, num, fmt, onInputs } from "../../lib/utils.js";
+
     const fields = ["grain","tw","shrink","diam","wall","roofType","roofH","hopH","have"];
-    fields.forEach((id) => $(id).addEventListener("input", compute));
+    onInputs(fields, compute);
+
     $("grain").addEventListener("change", (e) => {
       const opt = e.target.selectedOptions[0];
       $("tw").value = opt.dataset.tw || "56";
       compute();
     });
 
-    function num(id){ return parseFloat($(id).value || ""); }
-    function fmt(n, d=0){ return Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d}) : "—"; }
-
     function compute(){
       const d = num("diam"), wall = num("wall"), roofH = num("roofH") || 0, hopH = num("hopH") || 0;
-      if(!(d>0 && wall>=0)) { show(NaN,NaN,NaN,NaN); return; }
+      if(!(d>0 && wall>=0)) { return show(NaN,NaN,NaN,NaN); }
 
       const r = d/2;
       const cyl = Math.PI * r * r * wall;                   // ft³

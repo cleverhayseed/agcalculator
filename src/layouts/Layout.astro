@@ -41,6 +41,14 @@
     <meta name="apple-mobile-web-app-title" content="AgCalculator" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
+    <style>
+  :root{ --green:#2F855A; --slate:#334155; --bg:#F8FAFC }
+  *{ box-sizing:border-box }
+  body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,Inter,Arial,sans-serif; background:var(--bg); color:var(--slate) }
+  a{ color:var(--green); text-decoration:none }
+</style>
+
+
     <!-- Pages can inject title/canonicals/JSON-LD here -->
     <slot name="head" />
   </head>
@@ -51,12 +59,15 @@
     <!-- Site-wide footer -->
    <footer style="padding:2rem 1rem;color:#64748b">
   <div class="wrap" style="max-width:960px;margin:0 auto;">
-    <small>
-      © {new Date().getFullYear()} AgCalculator ·
-      <a href="/privacy/" style="color:#2F855A;text-decoration:none;">Privacy</a>
-      ·
-      <a href="mailto:hello@agcalculator.com" style="color:#2F855A;text-decoration:none;">Contact</a>
-    </small>
+ <small>
+  © {new Date().getFullYear()} AgCalculator ·
+  <a href="/about/" style="color:#2F855A;text-decoration:none;">About</a>
+  ·
+  <a href="/privacy/" style="color:#2F855A;text-decoration:none;">Privacy</a>
+  ·
+  <a href="mailto:hello@agcalculator.com" style="color:#2F855A;text-decoration:none;">Contact</a>
+</small>
+
   </div>
 </footer>
 

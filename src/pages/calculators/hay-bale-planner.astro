@@ -58,6 +58,31 @@ const CROPS = [
       ]
     }
     </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why do my weights differ from scale readings?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Density and moisture vary by crop, baler, and settings. Use the Custom density option for best results."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I plan by space instead of weight?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "This tool limits by payload weight only; trailer dimensions are not considered."
+      }
+    }
+  ]
+}
+</script>
+
 
     <style>
       :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
@@ -157,68 +182,113 @@ const CROPS = [
       </div>
       <p class="note" style="margin-top:.6rem">Estimates only. Verify before purchasing materials or operating equipment.</p>
     </section>
+        <!-- Publisher content: how it works + example + mini FAQ -->
+    <section class="content">
+      <h2>How this calculator works</h2>
+      <p>This tool estimates bale <em>volume</em> from size, multiplies by material <em>density</em>, then adjusts for moisture to estimate <em>weight</em>. It also divides your haul payload by the bale weight to estimate how many bales you can carry by weight.</p>
+
+      <h3>Formulas</h3>
+      <ul>
+        <li><strong>Round bale volume (ft³)</strong> = π × (D/2)² × W (all in feet)</li>
+        <li><strong>Square bale volume (ft³)</strong> = L × W × H (in feet)</li>
+        <li><strong>Weight (lb)</strong> = volume × density (lb/ft³)</li>
+        <li><strong>Moisture adjustment</strong>: weight × (1 + moisture%/100)</li>
+        <li><strong>Tons</strong> = pounds ÷ 2000</li>
+        <li><strong>Max bales by weight</strong> = floor(payload ÷ bale weight)</li>
+      </ul>
+
+      <h3>Assumptions & notes</h3>
+      <ul>
+        <li>Densities are typical: grass ~10, alfalfa ~12, straw ~8 lb/ft³. Choose “Custom” to set your own.</li>
+        <li>Dimensions should be the <em>actual</em> bale size. Inches are converted to feet internally.</li>
+        <li>Results are estimates; moisture, leaf loss, and bale tightness vary in the field.</li>
+      </ul>
+
+      <h3>Example</h3>
+      <p>Round bale 5&nbsp;ft diameter × 5&nbsp;ft width, grass at 10&nbsp;lb/ft³, moisture +5%:</p>
+      <ol>
+        <li>Volume = π×(2.5)²×5 ≈ <strong>98.2 ft³</strong></li>
+        <li>Dry weight = 98.2×10 ≈ <strong>982 lb</strong></li>
+        <li>Moisture adjusted = 982×1.05 ≈ <strong>1,031 lb</strong> (~<strong>0.52 tons</strong>)</li>
+      </ol>
+
+      <h3>FAQ</h3>
+      <p><strong>Why do my weights differ from scale readings?</strong> Density and moisture vary by crop, baler, and settings—use Custom density for best results.</p>
+      <p><strong>Can I plan by space instead of weight?</strong> This tool limits by payload weight only; trailer dimensions aren’t considered.</p>
+
+      <p class="disclaimer">Estimates only. Verify before purchasing materials or operating equipment.</p>
+    </section>
+
+    <style>
+      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content h2{margin:.2rem 0 .6rem}
+      .content h3{margin:.8rem 0 .3rem}
+      .content ul, .content ol{margin:.2rem 0 .2rem .9rem}
+      .content .disclaimer{color:#64748b;margin-top:.6rem}
+    </style>
+
   </main>
 
-  <script is:inline>
-  const $ = (id) => document.getElementById(id);
-  const fields = ["bType","crop","density","dia","width","sL","sW","sH","moist","payload"];
-  fields.forEach(id => $(id).addEventListener("input", compute));
+  <!-- Single shared-utils script at the bottom -->
+  <script type="module">
+    import { $, num, fmt, onInputs } from "../../lib/utils.js";
 
-  $("bType").addEventListener("change", () => {
-    const round = $("bType").value === "round";
-    $("roundRow").style.display  = round ? "" : "none";
-    $("squareRow").style.display = round ? "none" : "";
-    compute();
-  });
-  $("crop").addEventListener("change", () => {
-    const den = parseFloat($("crop").selectedOptions[0].dataset.den || "10");
-    $("density").value = den;
-    compute();
-  });
+    const fields = ["bType","crop","density","dia","width","sL","sW","sH","moist","payload"];
+    onInputs(fields, compute);
 
-  function num(id){ return parseFloat($(id).value || ""); }
-  function fmt(n, d=0){ return Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d}) : "—"; }
+    $("bType").addEventListener("change", () => {
+      const round = $("bType").value === "round";
+      $("roundRow").style.display  = round ? "" : "none";
+      $("squareRow").style.display = round ? "none" : "";
+      compute();
+    });
 
-  function compute(){
-    const round = $("bType").value === "round";
-    const dens = Math.max(0, num("density") || 0);
+    $("crop").addEventListener("change", () => {
+      const den = parseFloat($("crop").selectedOptions[0].dataset.den || "10");
+      $("density").value = den;
+      compute();
+    });
 
-    // inches -> feet
-    let vol = NaN;
-    if (round){
-      const D = num("dia")/12, W = num("width")/12;
-      if (D>0 && W>0) vol = Math.PI * Math.pow(D/2,2) * W;
-    } else {
-      const L = num("sL")/12, W = num("sW")/12, H = num("sH")/12;
-      if (L>0 && W>0 && H>0) vol = L*W*H;
+    function compute(){
+      const round = $("bType").value === "round";
+      const dens = Math.max(0, num("density") || 0);
+
+      // inches -> feet
+      let vol = NaN;
+      if (round){
+        const D = num("dia")/12, W = num("width")/12;
+        if (D>0 && W>0) vol = Math.PI * Math.pow(D/2,2) * W;
+      } else {
+        const L = num("sL")/12, W = num("sW")/12, H = num("sH")/12;
+        if (L>0 && W>0 && H>0) vol = L*W*H;
+      }
+      if (!Number.isFinite(vol)) return show();
+
+      let wt = vol * dens;
+      const moist = num("moist") || 0;
+      if (moist !== 0) wt *= (1 + moist/100); // simple moisture bump
+
+      const tons = wt/2000;
+      const payload = num("payload");
+      const maxBales = (payload>0 && wt>0) ? Math.floor(payload / wt) : NaN;
+
+      show({ vol, wt, tons, maxBales });
+
+      if (!window.__pl_hay_used){
+        window.__pl_hay_used = true;
+        window.plausible && window.plausible("Used Hay Bale Planner");
+      }
     }
-    if (!Number.isFinite(vol)) return show();
 
-    let wt = vol * dens;
-    const moist = num("moist") || 0;
-    if (moist !== 0) wt *= (1 + moist/100); // simple moisture bump
-
-    const tons = wt/2000;
-    const payload = num("payload");
-    const maxBales = (payload>0 && wt>0) ? Math.floor(payload / wt) : NaN;
-
-    show({ vol, wt, tons, maxBales });
-
-    if (!window.__pl_hay_used){
-      window.__pl_hay_used = true;
-      window.plausible && window.plausible("Used Hay Bale Planner");
+    function show(o={}){
+      $("vol").textContent  = fmt(o.vol,1);
+      $("wt").textContent   = fmt(o.wt,0);
+      $("tons").textContent = fmt(o.tons,2);
+      $("maxBales").textContent = fmt(o.maxBales,0);
     }
-  }
 
-  function show(o={}){
-    $("vol").textContent  = fmt(o.vol,1);
-    $("wt").textContent   = fmt(o.wt,0);
-    $("tons").textContent = fmt(o.tons,2);
-    $("maxBales").textContent = fmt(o.maxBales,0);
-  }
-
-  // init
-  $("bType").dispatchEvent(new Event("change"));
-  $("crop").dispatchEvent(new Event("change"));
+    // init
+    $("bType").dispatchEvent(new Event("change"));
+    $("crop").dispatchEvent(new Event("change"));
   </script>
 </Layout>
