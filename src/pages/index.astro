@@ -62,6 +62,32 @@ const tools = [
         )
       )}
     </section>
+    
+        <!-- Publisher content: how it works + mini FAQ -->
+    <section class="content">
+      <h2>How AgCalculator helps</h2>
+      <p>AgCalculator provides lightweight, offline-friendly tools for common farm and homestead math. Each calculator shows the formulas used so you can verify the numbers before you buy materials or operate equipment.</p>
+
+      <h3>What’s inside</h3>
+      <ul>
+        <li><a href="/calculators/grain-bin-capacity/">Grain Bin Capacity</a> — cylinder + cone math to estimate bushels, weight, and fill %.</li>
+        <li><a href="/calculators/fence-planner/">Fence Planner</a> — perimeter, posts, gate openings, wire length, and rolls.</li>
+        <li><a href="/calculators/hay-bale-planner/">Hay Bale Planner</a> — bale volume, weight by density, and max bales by payload.</li>
+      </ul>
+
+      <h3>FAQ</h3>
+      <p><strong>Are these results exact?</strong> They’re estimates based on geometry and typical defaults. Always verify before purchasing materials or operating equipment.</p>
+      <p><strong>Do the tools work offline?</strong> Yes—this site is a small PWA. Add it to your home screen and it’ll work with no connection.</p>
+    </section>
+
+    <style>
+      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin:1rem 1rem 0}
+      .content h2{margin:.2rem 0 .6rem}
+      .content h3{margin:.8rem 0 .3rem}
+      .content ul{margin:.2rem 0 .2rem 1.1rem}
+      @media(min-width:720px){ .content{margin:1rem auto 0; max-width:960px} }
+    </style>
+
     <script is:inline>
   let deferredPrompt;
   const btn = document.getElementById('install-btn');
