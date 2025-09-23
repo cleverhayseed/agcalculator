@@ -157,16 +157,60 @@ const CROPS = [
       </div>
       <p class="note" style="margin-top:.6rem">Estimates only. Verify before purchasing materials or operating equipment.</p>
     </section>
+        <!-- Publisher content: how it works + example + mini FAQ -->
+    <section class="content">
+      <h2>How this calculator works</h2>
+      <p>This tool estimates bale <em>volume</em> from size, multiplies by material <em>density</em>, then adjusts for moisture to estimate <em>weight</em>. It also divides your haul payload by the bale weight to estimate how many bales you can carry by weight.</p>
+
+      <h3>Formulas</h3>
+      <ul>
+        <li><strong>Round bale volume (ft³)</strong> = π × (D/2)² × W (all in feet)</li>
+        <li><strong>Square bale volume (ft³)</strong> = L × W × H (in feet)</li>
+        <li><strong>Weight (lb)</strong> = volume × density (lb/ft³)</li>
+        <li><strong>Moisture adjustment</strong>: weight × (1 + moisture%/100)</li>
+        <li><strong>Tons</strong> = pounds ÷ 2000</li>
+        <li><strong>Max bales by weight</strong> = floor(payload ÷ bale weight)</li>
+      </ul>
+
+      <h3>Assumptions & notes</h3>
+      <ul>
+        <li>Densities are typical: grass ~10, alfalfa ~12, straw ~8 lb/ft³. Choose “Custom” to set your own.</li>
+        <li>Dimensions should be the <em>actual</em> bale size. Inches are converted to feet internally.</li>
+        <li>Results are estimates; moisture, leaf loss, and bale tightness vary in the field.</li>
+      </ul>
+
+      <h3>Example</h3>
+      <p>Round bale 5&nbsp;ft diameter × 5&nbsp;ft width, grass at 10&nbsp;lb/ft³, moisture +5%:</p>
+      <ol>
+        <li>Volume = π×(2.5)²×5 ≈ <strong>98.2 ft³</strong></li>
+        <li>Dry weight = 98.2×10 ≈ <strong>982 lb</strong></li>
+        <li>Moisture adjusted = 982×1.05 ≈ <strong>1,031 lb</strong> (~<strong>0.52 tons</strong>)</li>
+      </ol>
+
+      <h3>FAQ</h3>
+      <p><strong>Why do my weights differ from scale readings?</strong> Density and moisture vary by crop, baler, and settings—use Custom density for best results.</p>
+      <p><strong>Can I plan by space instead of weight?</strong> This tool limits by payload weight only; trailer dimensions aren’t considered.</p>
+
+      <p class="disclaimer">Estimates only. Verify before purchasing materials or operating equipment.</p>
+    </section>
+
+    <style>
+      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content h2{margin:.2rem 0 .6rem}
+      .content h3{margin:.8rem 0 .3rem}
+      .content ul, .content ol{margin:.2rem 0 .2rem .9rem}
+      .content .disclaimer{color:#64748b;margin-top:.6rem}
+    </style>
+
   </main>
 
-  <!-- Single script using shared utils -->
+  <!-- Single shared-utils script at the bottom -->
   <script type="module">
     import { $, num, fmt, onInputs } from "../../lib/utils.js";
 
     const fields = ["bType","crop","density","dia","width","sL","sW","sH","moist","payload"];
     onInputs(fields, compute);
 
-    // Toggle round vs square inputs
     $("bType").addEventListener("change", () => {
       const round = $("bType").value === "round";
       $("roundRow").style.display  = round ? "" : "none";
@@ -174,7 +218,6 @@ const CROPS = [
       compute();
     });
 
-    // Crop -> density shortcut
     $("crop").addEventListener("change", () => {
       const den = parseFloat($("crop").selectedOptions[0].dataset.den || "10");
       $("density").value = den;
@@ -208,7 +251,7 @@ const CROPS = [
 
       if (!window.__pl_hay_used){
         window.__pl_hay_used = true;
-        try { window.plausible && window.plausible("Used Hay Bale Planner"); } catch {}
+        window.plausible && window.plausible("Used Hay Bale Planner");
       }
     }
 
@@ -219,7 +262,7 @@ const CROPS = [
       $("maxBales").textContent = fmt(o.maxBales,0);
     }
 
-    // init defaults
+    // init
     $("bType").dispatchEvent(new Event("change"));
     $("crop").dispatchEvent(new Event("change"));
   </script>
