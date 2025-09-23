@@ -2,8 +2,8 @@
 import Layout from "../../layouts/Layout.astro";
 
 const WIRE_TYPES = [
-  { key: "barbed", name: "Barbed wire (1320 ft/roll)", roll: 1320, usesStrands: true, defaultStrands: 4 },
-  { key: "ht",     name: "High-tensile smooth (4000 ft/roll)", roll: 4000, usesStrands: true, defaultStrands: 5 },
+  { key: "barbed", name: "Barbed wire (1320 ft/roll)", roll: 1320, usesStrands: true,  defaultStrands: 4 },
+  { key: "ht",     name: "High-tensile smooth (4000 ft/roll)", roll: 4000, usesStrands: true,  defaultStrands: 5 },
   { key: "mesh",   name: "Field/mesh fence (330 ft/roll)", roll: 330, usesStrands: false, defaultStrands: 1 },
 ];
 ---
@@ -31,21 +31,6 @@ const WIRE_TYPES = [
     <meta name="twitter:description" content="Plan fence length, posts, wire length & rolls." />
     <meta name="twitter:image" content="https://agcalculator.com/og-fence-planner.png" />
 
-    <!-- Structured data -->
-    <script type="application/ld+json">
-    {
-      "@context":"https://schema.org",
-      "@type":"WebApplication",
-      "name":"Fence Planner",
-      "applicationCategory":"Calculator",
-      "operatingSystem":"Web",
-      "url":"https://agcalculator.com/calculators/fence-planner/",
-      "description":"Plan farm & homestead fence: total length, posts, wire length and rolls.",
-      "publisher":{"@type":"Organization","name":"AgCalculator","url":"https://agcalculator.com"},
-      "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
-    }
-    </script>
-
     <!-- Breadcrumbs -->
     <script type="application/ld+json">
     {
@@ -57,38 +42,6 @@ const WIRE_TYPES = [
       ]
     }
     </script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Do I subtract gate openings from post counts?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Line posts are spaced along the effective run with gate openings removed. Gate posts are added separately (two per gate)."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How are strands handled for different fence types?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Barbed and high-tensile use the strands multiplier. Mesh/field fence is treated as a single run (no strands multiplier)."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Does this include bracing or H-frames?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "No. Brace assemblies vary by standard and soil conditions; add them separately according to your fencing plan."
-      }
-    }
-  ]
-}
-</script>
 
     <style>
       :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
@@ -103,7 +56,11 @@ const WIRE_TYPES = [
       .row{display:grid;gap:.8rem}
       @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
       .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
-      .note{color:var(--muted);font-size:.9rem}
+      .note{color:#64748b;font-size:.9rem}
+      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content h2{margin:.2rem 0 .6rem}
+      .content h3{margin:.8rem 0 .3rem}
+      .content ul, .content ol{margin:.2rem 0 .2rem 1rem}
     </style>
   </Fragment>
 
@@ -221,50 +178,28 @@ const WIRE_TYPES = [
       </div>
       <p class="note" style="margin-top:.6rem">Estimates only. Verify before purchasing materials or operating equipment.</p>
     </section>
-        <!-- Publisher content: how it works + example + mini FAQ -->
+
     <section class="content">
       <h2>How this calculator works</h2>
-      <p>This tool estimates fence materials from your layout, post spacing, and wire type. It supports either a known total length or a rectangle (perimeter), optional gates, and strand-based fences.</p>
-
-      <h3>Formulas</h3>
       <ul>
-        <li><strong>Perimeter (rect)</strong> = 2 × (L + W)</li>
-        <li><strong>Effective wire run</strong> = total length − (gates × gate width)</li>
-        <li><strong>Line posts</strong> = ceil(effective run ÷ post spacing)</li>
-        <li><strong>Gate posts</strong> = gates × 2</li>
-        <li><strong>Total posts</strong> = line posts + corner posts + gate posts</li>
-        <li><strong>Wire feet</strong> = effective run × (strands if barbed/HT else 1)</li>
-        <li><strong>Wire rolls</strong> = ceil(wire feet ÷ roll length)</li>
-        <li><strong>Materials cost (optional)</strong> = (total posts × post cost) + (rolls × roll cost)</li>
+        <li><strong>Perimeter</strong> = total run entered, or 2×(L+W) for a rectangle</li>
+        <li><strong>Effective wire run</strong> = perimeter − (gate count × gate width)</li>
+        <li><strong>Line posts</strong> = ceil(effective run ÷ spacing)</li>
+        <li><strong>Wire length</strong> = effective run × strands (for barbed/HT) or ×1 (mesh)</li>
+        <li><strong>Rolls</strong> = ceil(wire length ÷ roll length)</li>
       </ul>
-
-      <h3>Assumptions & notes</h3>
-      <ul>
-        <li>Post spacing is uniform along straight runs; corners/gates get their own posts.</li>
-        <li>Mesh/field fence is treated as a single “strand” (no strands multiplier).</li>
-        <li>Roll lengths are typical defaults; replace with what your supplier carries.</li>
-      </ul>
-
-      <h3>Example</h3>
-      <p>Rectangle 660&nbsp;ft × 330&nbsp;ft, 4 corners, post spacing 8&nbsp;ft, barbed 4 strands, two 16&nbsp;ft gates, 1320&nbsp;ft rolls:</p>
-      <ol>
-        <li>Perimeter = 2×(660+330) = <strong>1,980 ft</strong></li>
-        <li>Gate openings = 2×16 = <strong>32 ft</strong> → Effective run = 1,980 − 32 = <strong>1,948 ft</strong></li>
-        <li>Line posts = ceil(1,948 ÷ 8) = <strong>244</strong></li>
-        <li>Gate posts = 2×2 = <strong>4</strong>; Total posts = 244 + 4 corners + 4 = <strong>252</strong></li>
-        <li>Wire feet = 1,948 × 4 = <strong>7,792 ft</strong> → Rolls = ceil(7,792 ÷ 1,320) = <strong>6 rolls</strong></li>
-      </ol>
-
+    </section>
   </main>
 
-  <!-- Single shared-utils script at the bottom -->
+  <!-- Single script with inlined helpers (no imports) -->
   <script type="module">
-    import { $, num, fmt, ceil, onInputs } from "../../lib/utils.js";
+    const $ = (id) => document.getElementById(id);
+    const num = (id) => parseFloat(($(id)?.value ?? "").trim());
+    const fmt = (n, d=0) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d}) : "—";
+    const ceil = (n) => Math.ceil(n);
+    const onInputs = (ids, handler) => ids.forEach((id)=> $(id).addEventListener("input", handler));
 
-    const fields = [
-      "mode","corners","postSpacing","len","wid","totalLength",
-      "wireType","strands","rollLen","gates","gateWidth","postCost","rollCost"
-    ];
+    const fields = ["mode","corners","postSpacing","len","wid","totalLength","wireType","strands","rollLen","gates","gateWidth","postCost","rollCost"];
     onInputs(fields, compute);
     $("wireType").addEventListener("change", onWireType);
     $("mode").addEventListener("change", onModeChange);
@@ -304,10 +239,8 @@ const WIRE_TYPES = [
       const gateWidth = Math.max(0, num("gateWidth") || 0);
       const gateOpen = gates * gateWidth;
 
-      // Effective wire run removes gate openings
       const effWireRun = Math.max(0, per - gateOpen);
 
-      // Line posts are spaced along the entire run excluding gates
       const linePosts = ceil(effWireRun / postSpacing);
       const gatePosts = gates * 2;
       const totalPosts = linePosts + corners + gatePosts;
@@ -336,23 +269,23 @@ const WIRE_TYPES = [
 
       if (!window.__pl_fence_used) {
         window.__pl_fence_used = true;
-        window.plausible && window.plausible("Used Fence Planner");
+        try { window.plausible && window.plausible("Used Fence Planner"); } catch {}
       }
     }
 
     function show(o={}){
-      $("fLen").textContent       = fmt(o.per,0);
-      $("gOpen").textContent      = fmt(o.gateOpen,0);
-      $("wireLen").textContent    = fmt(o.effWireRun,0);
-      $("linePosts").textContent  = fmt(o.linePosts,0);
-      $("cornerPosts").textContent= fmt(o.corners,0);
-      $("gatePosts").textContent  = fmt(o.gatePosts,0);
-      $("totalPosts").textContent = fmt(o.totalPosts,0);
-      $("rolls").textContent      = fmt(o.rolls,0);
-      $("matCost").textContent    = Number.isFinite(o.matCost) ? "$" + fmt(o.matCost,2) : "—";
+      $("fLen").textContent        = fmt(o.per,0);
+      $("gOpen").textContent       = fmt(o.gateOpen,0);
+      $("wireLen").textContent     = fmt(o.effWireRun,0);
+      $("linePosts").textContent   = fmt(o.linePosts,0);
+      $("cornerPosts").textContent = fmt(o.corners,0);
+      $("gatePosts").textContent   = fmt(o.gatePosts,0);
+      $("totalPosts").textContent  = fmt(o.totalPosts,0);
+      $("rolls").textContent       = fmt(o.rolls,0);
+      $("matCost").textContent     = Number.isFinite(o.matCost) ? "$" + fmt(o.matCost,2) : "—";
     }
 
-    onModeChange();   // initialize UI
-    onWireType();     // initialize strands/roll defaults
+    onModeChange();   // init layout
+    onWireType();     // init strands/roll defaults
   </script>
 </Layout>
