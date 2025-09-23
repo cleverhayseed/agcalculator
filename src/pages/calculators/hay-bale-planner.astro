@@ -44,18 +44,18 @@ const CROPS = [
     }
     </script>
 
-    <!-- FAQ (adds helpful context for review + SEO) -->
+    <!-- FAQ -->
     <script type="application/ld+json">
     {
       "@context":"https://schema.org",
       "@type":"FAQPage",
       "mainEntity":[
-        {"@type":"Question","name":"How do you estimate bale weight?",
-         "acceptedAnswer":{"@type":"Answer","text":"We compute volume (round: π·(D/2)²·W; square: L·W·H in feet) and multiply by material density (lb/ft³), then optionally adjust for moisture."}},
-        {"@type":"Question","name":"Why is my density different?",
-         "acceptedAnswer":{"@type":"Answer","text":"Field densities vary by crop, moisture, and baler. Use the crop preset as a starting point then enter your measured density if available."}},
-        {"@type":"Question","name":"Why bales by weight only?",
-         "acceptedAnswer":{"@type":"Answer","text":"This tool checks payload by weight. Trailer space, stacking, and tie-down rules aren’t considered—verify fit and compliance separately."}}
+        {"@type":"Question","name":"How is bale weight estimated?",
+         "acceptedAnswer":{"@type":"Answer","text":"We compute volume (round: π·(D/2)²·W; square: L·W·H — in feet) times density (lb/ft³), then optionally adjust for moisture."}},
+        {"@type":"Question","name":"Why does the density vary?",
+         "acceptedAnswer":{"@type":"Answer","text":"Field densities vary by crop, moisture, baler, and storage. Use the crop preset as a starting point, or enter a measured value if you have it."}},
+        {"@type":"Question","name":"Why are bales by weight only?",
+         "acceptedAnswer":{"@type":"Answer","text":"This tool checks payload by weight only. Space, stacking, and tie-down rules aren’t considered—verify those separately."}}
       ]
     }
     </script>
@@ -179,9 +179,13 @@ const CROPS = [
     </section>
   </main>
 
-  <!-- Single script; NOTE absolute import from /src -->
+  <!-- Single script; helpers inlined to avoid any import path issues -->
   <script type="module">
-    import { $, num, fmt, onInputs } from "/src/lib/utils.js";
+    // helpers (inlined)
+    const $ = (id) => document.getElementById(id);
+    const num = (id) => parseFloat(($(id)?.value ?? "").trim());
+    const fmt = (n, d=0) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d}) : "—";
+    const onInputs = (ids, handler) => ids.forEach((id) => $(id).addEventListener("input", handler));
 
     const fields = ["bType","crop","density","dia","width","sL","sW","sH","moist","payload"];
     onInputs(fields, compute);
@@ -240,5 +244,6 @@ const CROPS = [
     // initialize defaults
     $("bType").dispatchEvent(new Event("change"));
     $("crop").dispatchEvent(new Event("change"));
+    compute();
   </script>
 </Layout>
