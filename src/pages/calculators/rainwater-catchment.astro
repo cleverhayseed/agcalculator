@@ -1,0 +1,233 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>Rainwater Catchment & Tank Sizing Calculator | AgCalculator</title>
+    <meta name="description" content="Estimate harvestable rainwater from a roof and size a storage tank for days of supply. Simple, fast, offline-friendly." />
+    <link rel="canonical" href="https://agcalculator.com/calculators/rainwater-catchment/" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="AgCalculator" />
+    <meta property="og:title" content="Rainwater Catchment & Tank Sizing Calculator" />
+    <meta property="og:description" content="Estimate gallons captured and recommended tank size from roof area, rainfall, runoff coefficient, and daily demand." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://agcalculator.com/calculators/rainwater-catchment/" />
+    <meta property="og:image" content="https://agcalculator.com/og-hay-bale.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"WebApplication",
+      "name":"Rainwater Catchment & Tank Sizing Calculator",
+      "applicationCategory":"Calculator",
+      "operatingSystem":"Web",
+      "url":"https://agcalculator.com/calculators/rainwater-catchment/",
+      "description":"Estimate harvestable rainwater from a roof and size a storage tank for days of supply.",
+      "publisher":{"@type":"Organization","name":"AgCalculator","url":"https://agcalculator.com"},
+      "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"BreadcrumbList",
+      "itemListElement":[
+        {"@type":"ListItem","position":1,"name":"Home","item":"https://agcalculator.com/"},
+        {"@type":"ListItem","position":2,"name":"Rainwater Catchment & Tank Sizing","item":"https://agcalculator.com/calculators/rainwater-catchment/"}
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"FAQPage",
+      "mainEntity":[
+        {
+          "@type":"Question",
+          "name":"What runoff coefficient should I use?",
+          "acceptedAnswer":{"@type":"Answer","text":"Metal or sealed roofs often use 0.9; asphalt shingle around 0.8; concrete ~0.85–0.9; gravel/dirt surfaces 0.5–0.7. Start conservative; local debris and first-flush diverters reduce yield."}
+        },
+        {
+          "@type":"Question",
+          "name":"Is rainfall 'per storm' or 'per month'?",
+          "acceptedAnswer":{"@type":"Answer","text":"Enter rain depth for the period you care about (single event, month, or year). The calculator converts inches over the roof area to gallons, then applies the runoff coefficient."}
+        },
+        {
+          "@type":"Question",
+          "name":"How big should my tank be?",
+          "acceptedAnswer":{"@type":"Answer","text":"A quick rule is tank size = daily demand × desired days of supply. You may also compare that to typical harvest from a design storm or season so you don't greatly oversize storage."}
+        }
+      ]
+    }
+    </script>
+
+    <style>
+      :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
+      *{box-sizing:border-box}
+      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:white}
+      .wrap{max-width:960px;margin:0 auto;padding:1rem}
+      a{color:var(--green);text-decoration:none}
+      fieldset{background:white;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
+      legend{padding:0 .4rem;color:var(--muted)}
+      label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
+      input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
+      .row{display:grid;gap:.8rem}
+      @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
+      .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+      .note{color:var(--muted);font-size:.9rem}
+      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content h2{margin:.2rem 0 .6rem}
+      .content h3{margin:.8rem 0 .3rem}
+      .content ul,.content ol{margin:.2rem 0 .2rem 1rem}
+      .content .disclaimer{color:#64748b;margin-top:.6rem}
+    </style>
+  </Fragment>
+
+  <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
+
+  <main class="wrap">
+    <h1 style="margin:.5rem 0 1rem">Rainwater Catchment &amp; Tank Sizing</h1>
+
+    <fieldset>
+      <legend>Inputs</legend>
+
+      <div class="row">
+        <div>
+          <label for="roof">Roof catchment area (ft²)</label>
+          <input id="roof" type="number" step="1" placeholder="e.g. 1800" />
+        </div>
+        <div>
+          <label for="rain">Rainfall for period (in)</label>
+          <input id="rain" type="number" step="0.01" placeholder="e.g. 1.2" />
+        </div>
+        <div>
+          <label for="coeff">Runoff coefficient</label>
+          <select id="coeff">
+            <option value="0.90">Metal / sealed (0.90)</option>
+            <option value="0.85">Concrete (0.85)</option>
+            <option value="0.80">Asphalt shingle (0.80)</option>
+            <option value="0.70">Gravel/dirt (0.70)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="demand">Daily demand (gal/day)</label>
+          <input id="demand" type="number" step="1" placeholder="e.g. 200" />
+        </div>
+        <div>
+          <label for="days">Desired days of supply</label>
+          <input id="days" type="number" step="1" placeholder="e.g. 7" />
+        </div>
+        <div>
+          <label for="tank">Existing tank size (gal, optional)</label>
+          <input id="tank" type="number" step="1" placeholder="e.g. 2500" />
+        </div>
+      </div>
+
+      <p class="note">Tip: Enter rainfall for the time window you care about (storm, month, or season). We’ll compute harvest for that period.</p>
+    </fieldset>
+
+    <section class="result">
+      <div class="note">Results</div>
+      <div style="display:grid;gap:.5rem;margin-top:.4rem">
+        <div><strong>Harvestable water (this period):</strong> <span id="harv">—</span> gal</div>
+        <div><strong>Suggested tank size:</strong> <span id="tankSuggest">—</span> gal</div>
+        <div><strong>Days of supply from harvest:</strong> <span id="daysFromHarv">—</span> days</div>
+        <div><strong>Days of supply from existing tank:</strong> <span id="daysFromTank">—</span> days</div>
+      </div>
+      <p class="note" style="margin-top:.6rem">Estimates only. First-flush, debris, and losses reduce real capture; use conservative numbers.</p>
+    </section>
+
+    <section class="content" id="explain">
+      <h2>How we got these numbers</h2>
+      <div id="steps" class="note">Enter roof, rainfall, and demand to see the step-by-step.</div>
+
+      <h3>Formulas</h3>
+      <ul>
+        <li><strong>Gross volume (gal)</strong> = area(ft²) × rain(in) × 0.623</li>
+        <li><strong>Harvestable (gal)</strong> = gross × runoff coefficient</li>
+        <li><strong>Suggested tank size</strong> = daily demand × desired days</li>
+        <li><strong>Days from harvest</strong> = harvestable ÷ daily demand</li>
+        <li><strong>Days from existing tank</strong> = tank ÷ daily demand</li>
+      </ul>
+
+      <h3>Example</h3>
+      <p>1,800 ft² metal roof, 1.2 in rain, coeff 0.9; demand 200 gal/day, 7 days target, 2,500 gal tank:</p>
+      <ol>
+        <li>Gross = 1,800 × 1.2 × 0.623 ≈ <strong>1,346 gal</strong></li>
+        <li>Harvestable = 1,346 × 0.9 ≈ <strong>1,211 gal</strong></li>
+        <li>Tank suggestion = 200 × 7 = <strong>1,400 gal</strong></li>
+        <li>Days from harvest = 1,211 ÷ 200 ≈ <strong>6.1 days</strong></li>
+        <li>Days from existing tank = 2,500 ÷ 200 = <strong>12.5 days</strong></li>
+      </ol>
+
+      <h3>Notes</h3>
+      <ul>
+        <li>First-flush diverters and debris reduce yield—coefficient helps account for this, but actual results vary.</li>
+        <li>For annual planning, use typical monthly rainfall and sum across months, or plan against a design storm.</li>
+        <li>Consider roof contamination risks (lead paint, bird droppings) if using for livestock or household uses.</li>
+      </ul>
+
+      <p class="disclaimer">Estimates only. Verify with local code and water quality guidance for potable uses.</p>
+    </section>
+
+    <script is:inline>
+      const $ = (id) => document.getElementById(id);
+      const num = (id) => parseFloat(($(id)?.value ?? "").trim());
+      const fmt0 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
+      const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
+
+      const inputs = ["roof","rain","coeff","demand","days","tank"];
+      inputs.forEach(id => $(id).addEventListener("input", compute));
+
+      function compute(){
+        const roof = num("roof");
+        const rain = num("rain");
+        const coeff = parseFloat($("coeff").value);
+        const demand = num("demand");
+        const days = num("days");
+        const tank = num("tank");
+
+        if(!(roof>0) || !(rain>=0) || !(coeff>0)){
+          show();
+          $("steps").innerHTML = `<span class="note">Enter roof, rainfall, and demand to see the step-by-step.</span>`;
+          return;
+        }
+
+        const gross = roof * rain * 0.623;      // gallons
+        const harv = gross * coeff;
+
+        const tankSuggest = (demand>0 && days>0) ? demand * days : NaN;
+        const daysFromHarv = (demand>0) ? (harv / demand) : NaN;
+        const daysFromTank = (demand>0 && tank>0) ? (tank / demand) : NaN;
+
+        const lines = [];
+        lines.push(`<div>Gross = ${fmt0(roof)} × ${rain ?? "—"} × 0.623 = <strong>${fmt0(gross)}</strong> gal</div>`);
+        lines.push(`<div>Harvestable = ${fmt0(gross)} × ${coeff} = <strong>${fmt0(harv)}</strong> gal</div>`);
+        if (Number.isFinite(tankSuggest)) lines.push(`<div>Tank suggestion = ${fmt0(demand)} × ${fmt0(days)} = <strong>${fmt0(tankSuggest)}</strong> gal</div>`);
+        if (Number.isFinite(daysFromHarv)) lines.push(`<div>Days from harvest = ${fmt0(harv)} ÷ ${fmt0(demand)} = <strong>${fmt1(daysFromHarv)}</strong> days</div>`);
+        if (Number.isFinite(daysFromTank)) lines.push(`<div>Days from existing tank = ${fmt0(tank)} ÷ ${fmt0(demand)} = <strong>${fmt1(daysFromTank)}</strong> days</div>`);
+
+        $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
+
+        show({harv, tankSuggest, daysFromHarv, daysFromTank});
+      }
+
+      function show(o={}){
+        $("harv").textContent = fmt0(o.harv);
+        $("tankSuggest").textContent = fmt0(o.tankSuggest);
+        $("daysFromHarv").textContent = fmt1(o.daysFromHarv);
+        $("daysFromTank").textContent = fmt1(o.daysFromTank);
+      }
+
+      compute();
+    </script>
+  </main>
+</Layout>

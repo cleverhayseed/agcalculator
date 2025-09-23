@@ -1,0 +1,347 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>Bale Count from Field Yield (Round & Square) | AgCalculator</title>
+    <meta name="description" content="Estimate total bales and tonnage from acres and field yield. Supports round or square bales, density or known bale weight, and payload-based load counts." />
+    <link rel="canonical" href="https://agcalculator.com/calculators/bale-yield-planner/" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="AgCalculator" />
+    <meta property="og:title" content="Bale Count from Field Yield" />
+    <meta property="og:description" content="Calculate bale count and tonnage from acres and yield. Round or square bales, density or known bale weight." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://agcalculator.com/calculators/bale-yield-planner/" />
+    <meta property="og:image" content="https://agcalculator.com/og-hay-bale.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"WebApplication",
+      "name":"Bale Count from Field Yield",
+      "applicationCategory":"Calculator",
+      "operatingSystem":"Web",
+      "url":"https://agcalculator.com/calculators/bale-yield-planner/",
+      "description":"Estimate total bales and tonnage from acres and field yield. Supports round or square bales, density or known bale weight, and payload-based load counts.",
+      "publisher":{"@type":"Organization","name":"AgCalculator","url":"https://agcalculator.com"},
+      "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"BreadcrumbList",
+      "itemListElement":[
+        {"@type":"ListItem","position":1,"name":"Home","item":"https://agcalculator.com/"},
+        {"@type":"ListItem","position":2,"name":"Bale Count from Field Yield","item":"https://agcalculator.com/calculators/bale-yield-planner/"}
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"FAQPage",
+      "mainEntity":[
+        {
+          "@type":"Question",
+          "name":"Should I use density or a known bale weight?",
+          "acceptedAnswer":{"@type":"Answer","text":"Use a scale-based bale weight whenever possible. Density × volume is a good estimate when you don’t have a weight ticket."}
+        },
+        {
+          "@type":"Question",
+          "name":"What density should I use?",
+          "acceptedAnswer":{"@type":"Answer","text":"Typical dry grass hay ~10 lb/ft³, alfalfa ~12 lb/ft³, straw ~8 lb/ft³. Actual values vary with moisture and baler settings."}
+        },
+        {
+          "@type":"Question",
+          "name":"How accurate are the load estimates?",
+          "acceptedAnswer":{"@type":"Answer","text":"Load counts assume weight-limited hauling (payload in pounds). They don’t consider deck space or legal axle/group limits—confirm before transport."}
+        }
+      ]
+    }
+    </script>
+
+    <style>
+      :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
+      *{box-sizing:border-box}
+      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:white}
+      .wrap{max-width:960px;margin:0 auto;padding:1rem}
+      a{color:var(--green);text-decoration:none}
+      fieldset{background:white;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
+      legend{padding:0 .4rem;color:var(--muted)}
+      label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
+      input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
+      .row{display:grid;gap:.8rem}
+      @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
+      .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+      .note{color:var(--muted);font-size:.9rem}
+      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content h2{margin:.2rem 0 .6rem}
+      .content h3{margin:.8rem 0 .3rem}
+      .content ul,.content ol{margin:.2rem 0 .2rem 1rem}
+      .content .disclaimer{color:#64748b;margin-top:.6rem}
+    </style>
+  </Fragment>
+
+  <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
+
+  <main class="wrap">
+    <h1 style="margin:.5rem 0 1rem">Bale Count from Field Yield</h1>
+
+    <fieldset>
+      <legend>Field & yield</legend>
+      <div class="row">
+        <div>
+          <label for="acres">Acres</label>
+          <input id="acres" type="number" step="0.01" placeholder="e.g. 42" />
+        </div>
+        <div>
+          <label for="yMode">Yield input</label>
+          <select id="yMode">
+            <option value="tons">Tons per acre</option>
+            <option value="bales">Bales per acre</option>
+          </select>
+        </div>
+        <div id="tonsCol">
+          <label for="tonsA">Yield (tons/acre)</label>
+          <input id="tonsA" type="number" step="0.01" placeholder="e.g. 2.4" />
+        </div>
+        <div id="balesCol" style="display:none">
+          <label for="balesA">Yield (bales/acre)</label>
+          <input id="balesA" type="number" step="0.01" placeholder="e.g. 4.2" />
+        </div>
+        <div>
+          <label for="payload">Truck/trailer payload (lb, optional)</label>
+          <input id="payload" type="number" step="1" placeholder="e.g. 10000" />
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Bale details</legend>
+      <div class="row">
+        <div>
+          <label for="bType">Bale type</label>
+          <select id="bType">
+            <option value="round">Round</option>
+            <option value="square">Square/rectangular</option>
+          </select>
+        </div>
+        <div>
+          <label for="baleWt">Known bale weight (lb, optional)</label>
+          <input id="baleWt" type="number" step="1" placeholder="e.g. 850" />
+        </div>
+        <div>
+          <label for="density">Density (lb/ft³)</label>
+          <input id="density" type="number" step="0.1" value="10" />
+        </div>
+      </div>
+
+      <div class="row" id="roundRow">
+        <div>
+          <label for="dia">Round bale diameter (in)</label>
+          <input id="dia" type="number" step="0.1" value="60" />
+        </div>
+        <div>
+          <label for="width">Round bale width (in)</label>
+          <input id="width" type="number" step="0.1" value="60" />
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <div class="note">Volume = π·(D/2)²·W</div>
+        </div>
+      </div>
+
+      <div class="row" id="squareRow" style="display:none">
+        <div>
+          <label for="sL">Square length (in)</label>
+          <input id="sL" type="number" step="0.1" value="36" />
+        </div>
+        <div>
+          <label for="sW">Square width (in)</label>
+          <input id="sW" type="number" step="0.1" value="18" />
+        </div>
+        <div>
+          <label for="sH">Square height (in)</label>
+          <input id="sH" type="number" step="0.1" value="14" />
+        </div>
+      </div>
+      <p class="note">If you enter a known bale weight, density and size are ignored for weight calculation.</p>
+    </fieldset>
+
+    <section class="result">
+      <div class="note">Results</div>
+      <div style="display:grid;gap:.5rem;margin-top:.4rem">
+        <div><strong>Estimated bale weight:</strong> <span id="wt">—</span> lb (<span id="tonsPerBale">—</span> tons)</div>
+        <div><strong>Total bales:</strong> <span id="totalBales">—</span></div>
+        <div><strong>Total tonnage:</strong> <span id="totalTons">—</span> tons</div>
+        <div><strong>Loads by payload (est):</strong> <span id="loads">—</span></div>
+      </div>
+      <p class="note" style="margin-top:.6rem">Bales-by-weight only (space/axle limits not considered).</p>
+    </section>
+
+    <section class="content" id="explain">
+      <h2>How we got these numbers</h2>
+      <div id="steps" class="note">Enter field yield and bale details to see the step-by-step.</div>
+
+      <h3>Formulas</h3>
+      <ul>
+        <li><strong>Round bale volume (ft³)</strong> = π × (D/2)² × W (inches → feet)</li>
+        <li><strong>Square bale volume (ft³)</strong> = L × W × H (inches → feet)</li>
+        <li><strong>Bale weight (lb)</strong> = volume × density (if no known weight)</li>
+        <li><strong>Total bales</strong> = 
+          <ul>
+            <li>acres × bales/acre (if yield is bales/acre)</li>
+            <li>(acres × tons/acre × 2000) ÷ bale weight (if yield is tons/acre)</li>
+          </ul>
+        </li>
+        <li><strong>Total tons</strong> =
+          <ul>
+            <li>acres × tons/acre (if yield is tons/acre)</li>
+            <li>(total bales × bale weight) ÷ 2000 (if yield is bales/acre)</li>
+          </ul>
+        </li>
+        <li><strong>Loads</strong> (if payload given) = ceil( total weight ÷ payload )</li>
+      </ul>
+
+      <h3>Example</h3>
+      <p>42 ac at 2.4 tons/ac, 5×5 round (60×60 in), density 10 lb/ft³, payload 10,000 lb:</p>
+      <ol>
+        <li>Round volume = π×(5/2)²×5 ≈ <strong>98.2 ft³</strong></li>
+        <li>Bale weight = 98.2 × 10 ≈ <strong>982 lb</strong></li>
+        <li>Total tons = 42 × 2.4 = <strong>100.8 tons</strong></li>
+        <li>Total bales ≈ (100.8 × 2000) ÷ 982 ≈ <strong>205 bales</strong></li>
+        <li>Loads ≈ (100.8 × 2000) ÷ 10,000 ≈ <strong>21 loads</strong></li>
+      </ol>
+
+      <h3>Notes</h3>
+      <ul>
+        <li>Moisture, baler tension, and crop type change density—use a known bale weight when possible.</li>
+        <li>Yield may vary across the field; consider using a conservative number.</li>
+        <li>For transport, check deck space, tie-down, and legal axle limits in addition to payload.</li>
+      </ul>
+
+      <p class="disclaimer">Estimates only. Verify before purchasing materials or operating equipment.</p>
+    </section>
+
+    <script is:inline>
+      // Helpers (inline)
+      const $ = (id) => document.getElementById(id);
+      const val = (id) => parseFloat(($(id)?.value ?? "").trim());
+      const fmt0 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
+      const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
+      const ceil = (n) => Math.ceil(n);
+
+      // Mode toggles
+      $("yMode").addEventListener("change", () => {
+        const m = $("yMode").value;
+        $("tonsCol").style.display  = m==="tons"  ? "" : "none";
+        $("balesCol").style.display = m==="bales" ? "" : "none";
+        compute();
+      });
+      $("bType").addEventListener("change", () => {
+        const r = $("bType").value === "round";
+        $("roundRow").style.display  = r ? "" : "none";
+        $("squareRow").style.display = r ? "none" : "";
+        compute();
+      });
+
+      const fields = ["acres","yMode","tonsA","balesA","payload","bType","baleWt","density","dia","width","sL","sW","sH"];
+      fields.forEach(id => $(id).addEventListener("input", compute));
+
+      function baleVolumeFt3(){
+        const known = val("baleWt");
+        if (Number.isFinite(known) && known>0) return { wt: known, vol: NaN, usedKnown: true };
+
+        const dens = val("density");
+        if (!(dens>0)) return { wt: NaN, vol: NaN, usedKnown: false };
+
+        if ($("bType").value === "round"){
+          const D = val("dia")/12, W = val("width")/12;
+          if (D>0 && W>0){
+            const vol = Math.PI * Math.pow(D/2,2) * W;
+            return { wt: vol * dens, vol, usedKnown: false };
+          }
+        } else {
+          const L = val("sL")/12, W = val("sW")/12, H = val("sH")/12;
+          if (L>0 && W>0 && H>0){
+            const vol = L*W*H;
+            return { wt: vol * dens, vol, usedKnown: false };
+          }
+        }
+        return { wt: NaN, vol: NaN, usedKnown: false };
+      }
+
+      function compute(){
+        const acres = val("acres");
+        const mode  = $("yMode").value;
+        const tonsA = val("tonsA");
+        const balesA= val("balesA");
+        const payload = val("payload");
+
+        const { wt: baleWt, vol, usedKnown } = baleVolumeFt3();
+
+        let totalBales = NaN, totalTons = NaN, loads = NaN, lines = [];
+        let tonsPerBale = Number.isFinite(baleWt) ? (baleWt / 2000) : NaN;
+
+        if (!(acres>0)){
+          show(); $("steps").innerHTML = `<span class="note">Enter acres, yield, and bale details to see the step-by-step.</span>`; return;
+        }
+
+        if (mode === "tons"){
+          if (!(tonsA>0)){
+            show(); $("steps").innerHTML = `<span class="note">Enter a tons/acre value.</span>`; return;
+          }
+          totalTons = acres * tonsA;
+          if (Number.isFinite(baleWt) && baleWt>0){
+            totalBales = (totalTons * 2000) / baleWt;
+          }
+          lines.push(`<div>Total tons = ${fmt1(acres)} × ${fmt1(tonsA)} = <strong>${fmt1(totalTons)}</strong> tons</div>`);
+          if (Number.isFinite(baleWt)){
+            lines.push(`<div>Est. bale wt = ${fmt0(baleWt)} lb${usedKnown ? " (known)" : ""}${Number.isFinite(vol) ? ` (from ${fmt1(vol)} ft³ × ${fmt1(val("density"))} lb/ft³)` : ""}</div>`);
+            lines.push(`<div>Total bales = (${fmt1(totalTons)} × 2000) ÷ ${fmt0(baleWt)} = <strong>${fmt0(totalBales)}</strong></div>`);
+          }
+        } else { // bales per acre
+          if (!(balesA>0)){
+            show(); $("steps").innerHTML = `<span class="note">Enter a bales/acre value.</span>`; return;
+          }
+          totalBales = acres * balesA;
+          if (Number.isFinite(baleWt) && baleWt>0){
+            totalTons = (totalBales * baleWt) / 2000;
+          }
+          lines.push(`<div>Total bales = ${fmt1(acres)} × ${fmt1(balesA)} = <strong>${fmt0(totalBales)}</strong></div>`);
+          if (Number.isFinite(baleWt)){
+            lines.push(`<div>Est. bale wt = ${fmt0(baleWt)} lb${usedKnown ? " (known)" : ""}${Number.isFinite(vol) ? ` (from ${fmt1(vol)} ft³ × ${fmt1(val("density"))} lb/ft³)` : ""}</div>`);
+            lines.push(`<div>Total tons = ${fmt0(totalBales)} × ${fmt0(baleWt)} ÷ 2000 = <strong>${fmt1(totalTons)}</strong> tons</div>`);
+          }
+        }
+
+        if (Number.isFinite(totalTons) && payload>0){
+          const totalLb = totalTons * 2000;
+          loads = ceil(totalLb / payload);
+          lines.push(`<div>Loads ≈ (${fmt1(totalTons)} × 2000) ÷ ${fmt0(payload)} = <strong>${fmt0(loads)}</strong> loads</div>`);
+        }
+
+        $("steps").innerHTML = lines.length ? `<div style="display:grid;gap:.35rem">${lines.join("")}</div>` : `<span class="note">Enter acres, yield, and bale details to see the step-by-step.</span>`;
+
+        show({baleWt, tonsPerBale, totalBales, totalTons, loads});
+      }
+
+      function show(o={}){
+        $("wt").textContent          = fmt0(o.baleWt);
+        $("tonsPerBale").textContent = fmt1(o.tonsPerBale);
+        $("totalBales").textContent  = fmt0(o.totalBales);
+        $("totalTons").textContent   = fmt1(o.totalTons);
+        $("loads").textContent       = fmt0(o.loads);
+      }
+
+      // init
+      compute();
+    </script>
+  </main>
+</Layout>

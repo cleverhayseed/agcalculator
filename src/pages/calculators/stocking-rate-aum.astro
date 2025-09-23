@@ -1,0 +1,319 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>Stocking Rate & Animal Unit Months (AUM) | AgCalculator</title>
+    <meta name="description" content="Estimate pasture AUM capacity from forage production, utilization, and acres — or solve for head supported or months for your herd." />
+    <link rel="canonical" href="https://agcalculator.com/calculators/stocking-rate-aum/" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="AgCalculator" />
+    <meta property="og:title" content="Stocking Rate & Animal Unit Months (AUM)" />
+    <meta property="og:description" content="Compute AUM capacity, head supported, or months supported using simple range management rules of thumb." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://agcalculator.com/calculators/stocking-rate-aum/" />
+    <meta property="og:image" content="https://agcalculator.com/og-hay-bale.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"WebApplication",
+      "name":"Stocking Rate & Animal Unit Months (AUM)",
+      "applicationCategory":"Calculator",
+      "operatingSystem":"Web",
+      "url":"https://agcalculator.com/calculators/stocking-rate-aum/",
+      "description":"Estimate pasture AUM capacity from forage production, utilization, and acres — or solve for head supported or months for your herd.",
+      "publisher":{"@type":"Organization","name":"AgCalculator","url":"https://agcalculator.com"},
+      "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"BreadcrumbList",
+      "itemListElement":[
+        {"@type":"ListItem","position":1,"name":"Home","item":"https://agcalculator.com/"},
+        {"@type":"ListItem","position":2,"name":"Stocking Rate & AUM","item":"https://agcalculator.com/calculators/stocking-rate-aum/"}
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"FAQPage",
+      "mainEntity":[
+        {
+          "@type":"Question",
+          "name":"What is an AUM?",
+          "acceptedAnswer":{"@type":"Answer","text":"One Animal Unit Month (AUM) is the amount of forage dry matter needed by one 1,000-lb cow with calf for one month. This tool uses 780 lb of dry matter per AUM (≈26 lb/day × 30 days)."}
+        },
+        {
+          "@type":"Question",
+          "name":"What utilization should I use?",
+          "acceptedAnswer":{"@type":"Answer","text":"Typical planning values range 25–50% depending on pasture condition and rotation. Utilization accounts for trampling, wildlife, and residue left for plant health."}
+        },
+        {
+          "@type":"Question",
+          "name":"What if my herd isn’t all cow/calf pairs?",
+          "acceptedAnswer":{"@type":"Answer","text":"Use Animal Unit Equivalents (AUE). For example: yearling ~0.6–0.75 AU, bull ~1.3 AU, sheep ~0.2 AU, goat ~0.17 AU, horse ~1.25 AU. This tool multiplies head × AUE to convert to AU."}
+        }
+      ]
+    }
+    </script>
+
+    <style>
+      :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
+      *{box-sizing:border-box}
+      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:white}
+      .wrap{max-width:960px;margin:0 auto;padding:1rem}
+      a{color:var(--green);text-decoration:none}
+      fieldset{background:white;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
+      legend{padding:0 .4rem;color:var(--muted)}
+      label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
+      input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
+      .row{display:grid;gap:.8rem}
+      @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
+      .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+      .note{color:var(--muted);font-size:.9rem}
+      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content h2{margin:.2rem 0 .6rem}
+      .content h3{margin:.8rem 0 .3rem}
+      .content ul,.content ol{margin:.2rem 0 .2rem 1rem}
+      .content .disclaimer{color:#64748b;margin-top:.6rem}
+      code{background:#f1f5f9;padding:0 .25rem;border-radius:4px}
+    </style>
+  </Fragment>
+
+  <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
+
+  <main class="wrap">
+    <h1 style="margin:.5rem 0 1rem">Stocking Rate &amp; AUM</h1>
+
+    <fieldset>
+      <legend>Forage & area</legend>
+      <div class="row">
+        <div>
+          <label for="mode">Forage input</label>
+          <select id="mode">
+            <option value="monthly">lb DM/acre/month</option>
+            <option value="seasonal">lb DM/acre for the season</option>
+          </select>
+        </div>
+        <div id="rowMonthly">
+          <label for="dmPerAcreMo">Forage (lb/ac/mo)</label>
+          <input id="dmPerAcreMo" type="number" step="1" placeholder="e.g. 200" />
+        </div>
+        <div id="rowSeason" style="display:none">
+          <label for="dmPerAcreSeason">Forage (lb/ac/season)</label>
+          <input id="dmPerAcreSeason" type="number" step="1" placeholder="e.g. 800" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="months">Grazing months (season length)</label>
+          <input id="months" type="number" step="0.1" value="4" />
+        </div>
+        <div>
+          <label for="util">Utilization (%)</label>
+          <input id="util" type="number" step="1" value="35" />
+          <div class="note">25–50% typical</div>
+        </div>
+        <div>
+          <label for="acres">Pasture acres</label>
+          <input id="acres" type="number" step="0.01" placeholder="e.g. 40" />
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Solve for…</legend>
+      <div class="row">
+        <div>
+          <label for="solve">Goal</label>
+          <select id="solve">
+            <option value="aum">AUM capacity</option>
+            <option value="head">Head supported (for given months)</option>
+            <option value="months">Months supported (for given head)</option>
+          </select>
+        </div>
+        <div>
+          <label for="animal">Animal type (AUE)</label>
+          <select id="animal">
+            <option value="1.00">Cow-calf pair (1.00 AU)</option>
+            <option value="1.00">Dry cow, 1000 lb (1.00 AU)</option>
+            <option value="1.30">Bull (1.30 AU)</option>
+            <option value="0.70">Yearling (0.70 AU)</option>
+            <option value="1.25">Horse (1.25 AU)</option>
+            <option value="0.20">Sheep (0.20 AU)</option>
+            <option value="0.17">Goat (0.17 AU)</option>
+          </select>
+        </div>
+        <div id="rowHead">
+          <label for="head">Head count</label>
+          <input id="head" type="number" step="1" placeholder="e.g. 20" />
+        </div>
+      </div>
+    </fieldset>
+
+    <section class="result">
+      <div class="note">Results</div>
+      <div style="display:grid;gap:.5rem;margin-top:.4rem">
+        <div><strong>Available forage (DM):</strong> <span id="availDM">—</span> lb</div>
+        <div><strong>AUM capacity:</strong> <span id="aum">—</span> AUM</div>
+        <div id="outHead"><strong>Head supported (given months):</strong> <span id="headsSupp">—</span> head</div>
+        <div id="outMonths" style="display:none"><strong>Months supported (given head):</strong> <span id="monthsSupp">—</span> mo</div>
+      </div>
+      <p class="note" style="margin-top:.6rem">Planning estimates using 780 lb DM per AUM.</p>
+    </section>
+
+    <section class="content" id="explain">
+      <h2>How we got these numbers</h2>
+      <div id="steps" class="note">Enter forage, utilization, acres, and season length to see step-by-step.</div>
+
+      <h3>Formulas</h3>
+      <ul>
+        <li><strong>Available DM (lb)</strong> =
+          <code>acres × (lb/ac/mo × months)</code> or
+          <code>acres × (lb/ac/season)</code>, then × <code>utilization%</code>
+        </li>
+        <li><strong>AUM</strong> = <code>Available DM ÷ 780</code></li>
+        <li><strong>Head supported</strong> (for given months) =
+          <code>AUM ÷ (AUE × months)</code>
+        </li>
+        <li><strong>Months supported</strong> (for given head) =
+          <code>AUM ÷ (AUE × head)</code>
+        </li>
+      </ul>
+
+      <h3>Example</h3>
+      <p>200 lb/ac/mo, 4 months, 35% utilization, 40 acres:</p>
+      <ol>
+        <li>Raw DM = 200 × 4 × 40 = <strong>32,000 lb</strong></li>
+        <li>Available DM = 32,000 × 0.35 = <strong>11,200 lb</strong></li>
+        <li>AUM = 11,200 ÷ 780 ≈ <strong>14.4 AUM</strong></li>
+        <li>Head supported (cow-calf) for 4 mo = 14.4 ÷ (1.0 × 4) ≈ <strong>3.6 head</strong></li>
+      </ol>
+
+      <h3>Notes</h3>
+      <ul>
+        <li>780 lb DM/AUM is a common planning value (~26 lb/day × 30 days). Some references use ~760–915; adjust if needed.</li>
+        <li>Utilization accounts for trampling, wildlife, and residue for plant recovery; keep conservative for dry years.</li>
+        <li>Rotate and rest pastures to maintain stand vigor and long-term carrying capacity.</li>
+      </ul>
+
+      <p class="disclaimer">Estimates only. Verify with local range guidelines and adjust for species, weather, and soil.</p>
+    </section>
+
+    <script is:inline>
+      // Helpers
+      const $ = (id) => document.getElementById(id);
+      const val = (id) => parseFloat(($(id)?.value ?? "").trim());
+      const fmt0 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
+      const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
+
+      // Wire up UI
+      ["mode","solve"].forEach(id => $(id).addEventListener("change", onMode));
+      const fields = ["dmPerAcreMo","dmPerAcreSeason","months","util","acres","animal","head"];
+      fields.forEach(id => $(id).addEventListener("input", compute));
+      onMode(); compute();
+
+      function onMode(){
+        const mode = $("mode").value;
+        $("rowMonthly").style.display = mode==="monthly" ? "" : "none";
+        $("rowSeason").style.display  = mode==="seasonal" ? "" : "none";
+
+        const solve = $("solve").value;
+        $("outHead").style.display   = solve==="head" ? "" : "none";
+        $("outMonths").style.display = solve==="months" ? "" : "none";
+        $("rowHead").style.display   = solve==="months" ? "" : ""; // still show head input for months, optional for head?
+        compute();
+      }
+
+      function availableDM(){
+        const acres = val("acres");
+        const util  = Math.max(0, Math.min(100, val("util") || 0))/100;
+        if (!(acres>0) || !(util>0)) return NaN;
+
+        const mode = $("mode").value;
+        let raw = NaN;
+        if (mode==="monthly"){
+          const dm = val("dmPerAcreMo");
+          const m  = val("months");
+          if (!(dm>0) || !(m>0)) return NaN;
+          raw = dm * m * acres;
+        } else {
+          const dmS = val("dmPerAcreSeason");
+          if (!(dmS>0)) return NaN;
+          raw = dmS * acres;
+        }
+        return raw * util;
+      }
+
+      function compute(){
+        const DM = availableDM();
+        if (!(DM>0)){
+          show();
+          $("steps").innerHTML = `<span class="note">Enter forage, utilization, acres, and months (if monthly) to see step-by-step.</span>`;
+          return;
+        }
+
+        const AUM = DM / 780;
+        const AUE = parseFloat($("animal").value);
+        const months = Math.max(0, val("months") || 0);
+        const head   = Math.max(0, val("head") || 0);
+        const solve  = $("solve").value;
+
+        let headsSupp = NaN, monthsSupp = NaN;
+
+        if (solve === "head"){
+          // Need months to compute head supported for that period
+          if (months>0 && AUE>0){
+            headsSupp = AUM / (AUE * months);
+          }
+        } else if (solve === "months"){
+          if (head>0 && AUE>0){
+            monthsSupp = AUM / (AUE * head);
+          }
+        }
+
+        // Steps text
+        const mode = $("mode").value;
+        let lines = [];
+        if (mode==="monthly"){
+          const dm = val("dmPerAcreMo"), m = val("months"), ac = val("acres"), u = (Math.max(0, Math.min(100, val("util")||0))/100);
+          const raw = dm>0 && m>0 && ac>0 ? dm*m*ac : NaN;
+          lines.push(`<div>Raw DM = ${fmt0(dm)} × ${fmt1(m)} × ${fmt1(ac)} = <strong>${fmt0(raw)}</strong> lb</div>`);
+          lines.push(`<div>Available DM = raw × utilization = ${fmt0(raw)} × ${u.toFixed(2)} = <strong>${fmt0(DM)}</strong> lb</div>`);
+        } else {
+          const dmS = val("dmPerAcreSeason"), ac = val("acres"), u = (Math.max(0, Math.min(100, val("util")||0))/100);
+          const raw = dmS>0 && ac>0 ? dmS*ac : NaN;
+          lines.push(`<div>Raw DM = ${fmt0(dmS)} × ${fmt1(ac)} = <strong>${fmt0(raw)}</strong> lb</div>`);
+          lines.push(`<div>Available DM = raw × utilization = ${fmt0(raw)} × ${u.toFixed(2)} = <strong>${fmt0(DM)}</strong> lb</div>`);
+        }
+        lines.push(`<div>AUM = Available DM ÷ 780 = ${fmt0(DM)} ÷ 780 = <strong>${fmt1(AUM)}</strong> AUM</div>`);
+        if (solve==="head" && Number.isFinite(headsSupp)){
+          lines.push(`<div>Head supported = AUM ÷ (AUE × months) = ${fmt1(AUM)} ÷ (${AUE.toFixed(2)} × ${fmt1(months)}) = <strong>${fmt1(headsSupp)}</strong></div>`);
+        }
+        if (solve==="months" && Number.isFinite(monthsSupp)){
+          lines.push(`<div>Months supported = AUM ÷ (AUE × head) = ${fmt1(AUM)} ÷ (${AUE.toFixed(2)} × ${fmt1(head)}) = <strong>${fmt1(monthsSupp)}</strong></div>`);
+        }
+        $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
+
+        show({DM, AUM, headsSupp, monthsSupp});
+      }
+
+      function show(o={}){
+        $("availDM").textContent  = fmt0(o.DM);
+        $("aum").textContent      = fmt1(o.AUM);
+        $("headsSupp").textContent= fmt1(o.headsSupp);
+        $("monthsSupp").textContent= fmt1(o.monthsSupp);
+      }
+    </script>
+  </main>
+</Layout>

@@ -1,0 +1,390 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>Irrigation Flow & Run-Time Calculator (Sprinkler / Drip) | AgCalculator</title>
+    <meta name="description" content="Figure out how long to run your irrigation to apply a target depth, or how much water you applied in a given run. Works for sprinklers and drip." />
+    <link rel="canonical" href="https://agcalculator.com/calculators/irrigation-runtime/" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="AgCalculator" />
+    <meta property="og:title" content="Irrigation Flow & Run-Time Calculator" />
+    <meta property="og:description" content="Compute precipitation rate, run time, applied depth, and gallons for sprinklers or drip." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://agcalculator.com/calculators/irrigation-runtime/" />
+    <meta property="og:image" content="https://agcalculator.com/og-hay-bale.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"WebApplication",
+      "name":"Irrigation Flow & Run-Time Calculator",
+      "applicationCategory":"Calculator",
+      "operatingSystem":"Web",
+      "url":"https://agcalculator.com/calculators/irrigation-runtime/",
+      "description":"Figure out how long to run your irrigation to apply a target depth, or how much water you applied in a given run. Works for sprinklers and drip.",
+      "publisher":{"@type":"Organization","name":"AgCalculator","url":"https://agcalculator.com"},
+      "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"BreadcrumbList",
+      "itemListElement":[
+        {"@type":"ListItem","position":1,"name":"Home","item":"https://agcalculator.com/"},
+        {"@type":"ListItem","position":2,"name":"Irrigation Flow & Run-Time","item":"https://agcalculator.com/calculators/irrigation-runtime/"}
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"FAQPage",
+      "mainEntity":[
+        {
+          "@type":"Question",
+          "name":"What is DU (distribution uniformity)?",
+          "acceptedAnswer":{"@type":"Answer","text":"DU accounts for uneven application across the irrigated area. A DU of 0.75 means the low quarter gets ~75% of the average rate, so you need more runtime to adequately water the dry spots."}
+        },
+        {
+          "@type":"Question",
+          "name":"What precipitation rate formula does this use?",
+          "acceptedAnswer":{"@type":"Answer","text":"Inches/hour = (Total GPM × 96.3) ÷ Area(ft²). For drip, we convert GPH to GPM first (GPM = GPH ÷ 60)."}
+        },
+        {
+          "@type":"Question",
+          "name":"How are total gallons computed?",
+          "acceptedAnswer":{"@type":"Answer","text":"1 inch of water over 1 square foot is ~0.623 gallons. Gallons = Area(ft²) × Depth(in) × 0.623."}
+        }
+      ]
+    }
+    </script>
+
+    <style>
+      :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
+      *{box-sizing:border-box}
+      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:white}
+      .wrap{max-width:960px;margin:0 auto;padding:1rem}
+      a{color:var(--green);text-decoration:none}
+      fieldset{background:white;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
+      legend{padding:0 .4rem;color:var(--muted)}
+      label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
+      input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
+      .row{display:grid;gap:.8rem}
+      @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
+      .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+      .note{color:var(--muted);font-size:.9rem}
+      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content h2{margin:.2rem 0 .6rem}
+      .content h3{margin:.8rem 0 .3rem}
+      .content ul,.content ol{margin:.2rem 0 .2rem 1rem}
+      .content .disclaimer{color:#64748b;margin-top:.6rem}
+    </style>
+  </Fragment>
+
+  <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
+
+  <main class="wrap">
+    <h1 style="margin:.5rem 0 1rem">Irrigation Flow &amp; Run-Time</h1>
+
+    <fieldset>
+      <legend>System type & goal</legend>
+      <div class="row">
+        <div>
+          <label for="sys">System</label>
+          <select id="sys">
+            <option value="sprinkler">Sprinkler</option>
+            <option value="drip">Drip</option>
+          </select>
+        </div>
+        <div>
+          <label for="solve">Solve for</label>
+          <select id="solve">
+            <option value="time">Run-time (given target depth)</option>
+            <option value="depth">Applied depth (given run-time)</option>
+          </select>
+        </div>
+        <div>
+          <label for="du">Distribution uniformity (DU)</label>
+          <input id="du" type="number" step="0.01" value="0.75" />
+          <div class="note">0.6–0.8 typical; higher = more uniform</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Area</legend>
+      <div class="row">
+        <div>
+          <label for="areaMode">Area input</label>
+          <select id="areaMode">
+            <option value="sqft">Square feet</option>
+            <option value="ac">Acres</option>
+          </select>
+        </div>
+        <div id="rowSqft">
+          <label for="areaSqft">Area (ft²)</label>
+          <input id="areaSqft" type="number" step="1" placeholder="e.g. 43560" />
+        </div>
+        <div id="rowAc" style="display:none">
+          <label for="areaAc">Area (acres)</label>
+          <input id="areaAc" type="number" step="0.01" placeholder="e.g. 1.0" />
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset id="sprinklerBox">
+      <legend>Sprinkler flow</legend>
+      <div class="row">
+        <div>
+          <label for="sprMode">Flow input</label>
+          <select id="sprMode">
+            <option value="total">Total system flow (GPM)</option>
+            <option value="multi"># sprinklers × each GPM</option>
+          </select>
+        </div>
+        <div id="sprTotal">
+          <label for="sprGpm">Total flow (GPM)</label>
+          <input id="sprGpm" type="number" step="0.1" placeholder="e.g. 25" />
+        </div>
+        <div id="sprMulti" style="display:none">
+          <label># heads × GPM/head</label>
+          <div style="display:flex; gap:.5rem">
+            <input id="sprHeads" type="number" step="1" placeholder="# heads" style="flex:1" />
+            <input id="sprHeadGpm" type="number" step="0.1" placeholder="GPM/head" style="flex:1" />
+          </div>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <div class="note">PR(in/hr)= (GPM×96.3)/Area(ft²)</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset id="dripBox" style="display:none">
+      <legend>Drip flow</legend>
+      <div class="row">
+        <div>
+          <label for="dripMode">Flow input</label>
+          <select id="dripMode">
+            <option value="total">Total system flow (GPH)</option>
+            <option value="multi"># emitters × GPH/emitter</option>
+          </select>
+        </div>
+        <div id="dripTotal">
+          <label for="dripGph">Total flow (GPH)</label>
+          <input id="dripGph" type="number" step="0.1" placeholder="e.g. 600" />
+        </div>
+        <div id="dripMulti" style="display:none">
+          <label># emitters × GPH/emitter</label>
+          <div style="display:flex; gap:.5rem">
+            <input id="emitters" type="number" step="1" placeholder="# emitters" style="flex:1" />
+            <input id="gphEm" type="number" step="0.1" placeholder="GPH/emitter" style="flex:1" />
+          </div>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <div class="note">Convert to GPM: GPH ÷ 60</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Target / Known</legend>
+      <div class="row">
+        <div id="rowTargetDepth">
+          <label for="targetIn">Target depth (in)</label>
+          <input id="targetIn" type="number" step="0.01" placeholder="e.g. 0.5" />
+        </div>
+        <div id="rowKnownTime" style="display:none">
+          <label for="runHrs">Known run-time (hours)</label>
+          <input id="runHrs" type="number" step="0.01" placeholder="e.g. 1.5" />
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <div class="note">We’ll compute the other value.</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <section class="result">
+      <div class="note">Results</div>
+      <div style="display:grid;gap:.5rem;margin-top:.4rem">
+        <div><strong>Precipitation rate (avg):</strong> <span id="pr">—</span> in/hr</div>
+        <div id="outTime"><strong>Required run-time:</strong> <span id="needHrs">—</span> hr (<span id="needMin">—</span> min)</div>
+        <div id="outDepth" style="display:none"><strong>Applied depth:</strong> <span id="gotIn">—</span> in</div>
+        <div><strong>Total gallons (period):</strong> <span id="gals">—</span> gal</div>
+      </div>
+      <p class="note" style="margin-top:.6rem">Estimates assume average rate × DU; soils/infiltration may require cycling.</p>
+    </section>
+
+    <section class="content" id="explain">
+      <h2>How we got these numbers</h2>
+      <div id="steps" class="note">Enter area and flow to see the step-by-step.</div>
+
+      <h3>Formulas</h3>
+      <ul>
+        <li><strong>PR (in/hr)</strong> = (Total GPM × 96.3) ÷ Area(ft²)</li>
+        <li><strong>Effective PR</strong> = PR × DU</li>
+        <li><strong>Run-time (hr)</strong> = Target depth ÷ Effective PR</li>
+        <li><strong>Depth (in)</strong> = Run-time × Effective PR</li>
+        <li><strong>Gallons</strong> = Area(ft²) × Depth(in) × 0.623</li>
+      </ul>
+
+      <h3>Example</h3>
+      <p>Sprinklers: 25 GPM over 43,560 ft² (1 acre), DU 0.75, target 0.5 in:</p>
+      <ol>
+        <li>PR = (25 × 96.3) ÷ 43,560 ≈ <strong>0.055 in/hr</strong></li>
+        <li>Eff PR = 0.055 × 0.75 ≈ <strong>0.041 in/hr</strong></li>
+        <li>Run-time = 0.5 ÷ 0.041 ≈ <strong>12.1 hr</strong></li>
+        <li>Gallons = 43,560 × 0.5 × 0.623 ≈ <strong>13,575 gal</strong></li>
+      </ol>
+
+      <h3>Notes</h3>
+      <ul>
+        <li>Drip: use total GPH, convert to GPM (÷60). Same formulas apply.</li>
+        <li>If run-time is long, split into cycles to reduce runoff.</li>
+        <li>Adjust DU based on your catch-can test for better accuracy.</li>
+      </ul>
+
+      <p class="disclaimer">Estimates only. Verify with local irrigation guidance for your soils and slopes.</p>
+    </section>
+
+    <script is:inline>
+      // Helpers
+      const $ = (id) => document.getElementById(id);
+      const val = (id) => parseFloat(($(id)?.value ?? "").trim());
+      const fmt2 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:2}) : "—";
+      const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
+
+      // UI wiring
+      ["sys","solve","areaMode","sprMode","dripMode"].forEach(id => $(id).addEventListener("change", onMode));
+      const inputs = ["du","areaSqft","areaAc","sprGpm","sprHeads","sprHeadGpm","dripGph","emitters","gphEm","targetIn","runHrs"];
+      inputs.forEach(id => $(id).addEventListener("input", compute));
+      onMode(); compute();
+
+      function areaSqft(){
+        if ($("areaMode").value === "ac") {
+          const ac = val("areaAc");
+          return (ac>0) ? ac*43560 : NaN;
+        }
+        const ft2 = val("areaSqft");
+        return (ft2>0) ? ft2 : NaN;
+      }
+
+      function totalGPM(){
+        if ($("sys").value === "sprinkler"){
+          if ($("sprMode").value === "total"){
+            const gpm = val("sprGpm");
+            return (gpm>0) ? gpm : NaN;
+          } else {
+            const n = val("sprHeads"), g = val("sprHeadGpm");
+            return (n>0 && g>0) ? n*g : NaN;
+          }
+        } else {
+          // drip -> GPH -> GPM
+          let gph = NaN;
+          if ($("dripMode").value === "total"){
+            gph = val("dripGph");
+          } else {
+            const n = val("emitters"), e = val("gphEm");
+            gph = (n>0 && e>0) ? n*e : NaN;
+          }
+          return Number.isFinite(gph) ? gph/60 : NaN;
+        }
+      }
+
+      function onMode(){
+        const sys = $("sys").value;
+        $("sprinklerBox").style.display = sys==="sprinkler" ? "" : "none";
+        $("dripBox").style.display       = sys==="drip"       ? "" : "none";
+
+        const a = $("areaMode").value;
+        $("rowSqft").style.display = a==="sqft" ? "" : "none";
+        $("rowAc").style.display   = a==="ac"   ? "" : "none";
+
+        const sprM = $("sprMode").value;
+        $("sprTotal").style.display = sprM==="total" ? "" : "none";
+        $("sprMulti").style.display = sprM==="multi" ? "" : "none";
+
+        const drM = $("dripMode").value;
+        $("dripTotal").style.display = drM==="total" ? "" : "none";
+        $("dripMulti").style.display = drM==="multi" ? "" : "none";
+
+        const solve = $("solve").value;
+        $("rowTargetDepth").style.display = solve==="time" ? "" : "none";
+        $("rowKnownTime").style.display   = solve==="depth" ? "" : "none";
+        $("outTime").style.display        = solve==="time" ? "" : "none";
+        $("outDepth").style.display       = solve==="depth" ? "" : "none";
+
+        compute();
+      }
+
+      function compute(){
+        const A = areaSqft();
+        const GPM = totalGPM();
+        const DU = val("du");
+
+        if (!(A>0) || !(GPM>0) || !(DU>0 && DU<=1)){
+          show();
+          $("steps").innerHTML = `<span class="note">Enter area, flow, and DU to see the step-by-step.</span>`;
+          return;
+        }
+
+        // Precipitation rate (in/hr)
+        const PR = (GPM * 96.3) / A;
+        const effPR = PR * DU;
+
+        let needHrs = NaN, needMin = NaN, gotIn = NaN, gals = NaN;
+        const solve = $("solve").value;
+
+        if (solve === "time"){
+          const target = val("targetIn");
+          if (target>0 && effPR>0){
+            needHrs = target / effPR;
+            needMin = needHrs * 60;
+            gals = A * target * 0.623;
+          }
+        } else {
+          const hrs = val("runHrs");
+          if (hrs>0){
+            gotIn = hrs * effPR;
+            gals = A * gotIn * 0.623;
+          }
+        }
+
+        // Steps
+        const lines = [];
+        lines.push(`<div>PR = (${fmt2(GPM)} × 96.3) ÷ ${A.toLocaleString()} = <strong>${fmt2(PR)}</strong> in/hr</div>`);
+        lines.push(`<div>Effective PR = ${fmt2(PR)} × ${fmt2(DU)} = <strong>${fmt2(effPR)}</strong> in/hr</div>`);
+        if (solve==="time" && Number.isFinite(needHrs)){
+          lines.push(`<div>Run-time = target ÷ eff PR = ${fmt2(val("targetIn"))} ÷ ${fmt2(effPR)} = <strong>${fmt2(needHrs)}</strong> hr</div>`);
+        }
+        if (solve==="depth" && Number.isFinite(gotIn)){
+          lines.push(`<div>Depth = run-time × eff PR = ${fmt2(val("runHrs"))} × ${fmt2(effPR)} = <strong>${fmt2(gotIn)}</strong> in</div>`);
+        }
+        if (Number.isFinite(gals)){
+          const depth = (solve==="time") ? val("targetIn") : gotIn;
+          lines.push(`<div>Gallons = Area × Depth × 0.623 = ${A.toLocaleString()} × ${fmt2(depth)} × 0.623 = <strong>${(A*depth*0.623).toLocaleString(undefined,{maximumFractionDigits:0})}</strong> gal</div>`);
+        }
+        $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
+
+        show({PR, needHrs, needMin, gotIn, gals});
+      }
+
+      function show(o={}){
+        $("pr").textContent      = fmt2(o.PR);
+        $("needHrs").textContent = fmt2(o.needHrs);
+        $("needMin").textContent = fmt1(o.needMin);
+        $("gotIn").textContent   = fmt2(o.gotIn);
+        $("gals").textContent    = Number.isFinite(o.gals) ? o.gals.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
+      }
+    </script>
+  </main>
+</Layout>

@@ -1,0 +1,306 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>Fence Energizer Sizing (Joules & “Miles” Rating) | AgCalculator</title>
+    <meta name="description" content="Estimate the output joules and marketed 'miles' rating you need for electric fence, based on length, strands, fence type, and vegetation load." />
+    <link rel="canonical" href="https://agcalculator.com/calculators/fence-energizer-sizing/" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="AgCalculator" />
+    <meta property="og:title" content="Fence Energizer Sizing (Joules & “Miles” Rating)" />
+    <meta property="og:description" content="Quickly size an energizer for electric fence with simple, conservative rules of thumb." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://agcalculator.com/calculators/fence-energizer-sizing/" />
+    <meta property="og:image" content="https://agcalculator.com/og-fence-planner.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"WebApplication",
+      "name":"Fence Energizer Sizing",
+      "applicationCategory":"Calculator",
+      "operatingSystem":"Web",
+      "url":"https://agcalculator.com/calculators/fence-energizer-sizing/",
+      "description":"Estimate the output joules and marketed 'miles' rating you need for electric fence, based on length, strands, fence type, and vegetation load.",
+      "publisher":{"@type":"Organization","name":"AgCalculator","url":"https://agcalculator.com"},
+      "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"BreadcrumbList",
+      "itemListElement":[
+        {"@type":"ListItem","position":1,"name":"Home","item":"https://agcalculator.com/"},
+        {"@type":"ListItem","position":2,"name":"Fence Energizer Sizing","item":"https://agcalculator.com/calculators/fence-energizer-sizing/"}
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"FAQPage",
+      "mainEntity":[
+        {
+          "@type":"Question",
+          "name":"What’s the difference between stored and output joules?",
+          "acceptedAnswer":{"@type":"Answer","text":"Stored joules are inside the unit; output joules are delivered to the fence. Manufacturers advertise both; this tool recommends output joules for clarity."}
+        },
+        {
+          "@type":"Question",
+          "name":"Are ‘miles of fence’ ratings accurate?",
+          "acceptedAnswer":{"@type":"Answer","text":"They’re optimistic lab ratings on clean single-wire fences. Real-world vegetation, multiple strands, and poor grounding reduce performance. Size with margin."}
+        },
+        {
+          "@type":"Question",
+          "name":"How important is grounding?",
+          "acceptedAnswer":{"@type":"Answer","text":"Very. A strong energizer underperforms with poor grounding. Use multiple long ground rods in moist soil, spaced out and tied with good clamps/wire."}
+        }
+      ]
+    }
+    </script>
+
+    <style>
+      :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
+      *{box-sizing:border-box}
+      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:white}
+      .wrap{max-width:960px;margin:0 auto;padding:1rem}
+      a{color:var(--green);text-decoration:none}
+      fieldset{background:white;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
+      legend{padding:0 .4rem;color:var(--muted)}
+      label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
+      input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
+      .row{display:grid;gap:.8rem}
+      @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
+      .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+      .note{color:var(--muted);font-size:.9rem}
+      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content h2{margin:.2rem 0 .6rem}
+      .content h3{margin:.8rem 0 .3rem}
+      .content ul,.content ol{margin:.2rem 0 .2rem 1rem}
+      .content .disclaimer{color:#64748b;margin-top:.6rem}
+    </style>
+  </Fragment>
+
+  <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
+
+  <main class="wrap">
+    <h1 style="margin:.5rem 0 1rem">Fence Energizer Sizing</h1>
+
+    <fieldset>
+      <legend>Fence & conditions</legend>
+      <div class="row">
+        <div>
+          <label for="lenMode">Length input</label>
+          <select id="lenMode">
+            <option value="total">I know total length</option>
+            <option value="rect">Rectangle: length × width</option>
+          </select>
+        </div>
+        <div id="rowTotal" style="display:none">
+          <label for="totalLen">Total fence length</label>
+          <div style="display:flex;gap:.5rem">
+            <input id="totalLen" type="number" step="0.1" placeholder="e.g. 1320" style="flex:1" />
+            <select id="unit"><option value="ft">ft</option><option value="mi">mi</option></select>
+          </div>
+        </div>
+        <div id="rowRect">
+          <label for="rectL">Rectangle (L × W, ft)</label>
+          <div style="display:flex;gap:.5rem">
+            <input id="rectL" type="number" step="0.1" placeholder="L e.g. 660" style="flex:1" />
+            <input id="rectW" type="number" step="0.1" placeholder="W e.g. 330" style="flex:1" />
+          </div>
+          <div class="note">Perimeter = 2×(L+W)</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="fType">Fence type</label>
+          <select id="fType">
+            <option value="ht">High-tensile smooth</option>
+            <option value="barbed">Barbed</option>
+            <option value="mesh">Woven/mesh fence</option>
+          </select>
+        </div>
+        <div>
+          <label for="strands">Hot strands</label>
+          <input id="strands" type="number" step="1" value="5" />
+          <div class="note" id="strandsNote">Used for high-tensile/barbed only</div>
+        </div>
+        <div>
+          <label for="veg">Vegetation load</label>
+          <select id="veg">
+            <option value="low">Low (well maintained)</option>
+            <option value="med" selected>Medium (occasional contact)</option>
+            <option value="high">High (weeds/grass contact)</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <section class="result">
+      <div class="note">Results (rule-of-thumb)</div>
+      <div style="display:grid;gap:.5rem;margin-top:.4rem">
+        <div><strong>Effective wire miles:</strong> <span id="effMiles">—</span> mi</div>
+        <div><strong>Recommended output joules:</strong> <span id="recJ">—</span> J</div>
+        <div><strong>Good / Robust range:</strong> <span id="bandJ">—</span> J</div>
+        <div><strong>Suggested “miles” rating (marketing):</strong> <span id="milesRating">—</span> mi</div>
+      </div>
+      <p class="note" style="margin-top:.6rem">Conservative planning values. Always verify with your supplier for local conditions.</p>
+    </section>
+
+    <section class="content" id="explain">
+      <h2>How we got these numbers</h2>
+      <div id="steps" class="note">Enter fence length, type, strands, and vegetation to see step-by-step.</div>
+
+      <h3>Rules of thumb used here</h3>
+      <ul>
+        <li><strong>Effective wire miles</strong> = physical miles × hot strands (woven/mesh counts as 1)</li>
+        <li><strong>Base joules per effective mile</strong> (output J/mi):
+          <ul>
+            <li>Low vegetation: 0.6 J/mi</li>
+            <li>Medium vegetation: 1.0 J/mi</li>
+            <li>High vegetation: 2.0 J/mi</li>
+          </ul>
+        </li>
+        <li><strong>Fence type adjustments</strong> (multiply J):
+          <ul>
+            <li>High-tensile smooth: ×1.0</li>
+            <li>Barbed: ×1.1 (more leakage/contact)</li>
+            <li>Woven/mesh: ×1.2 (more leakage paths; counts as 1 strand)</li>
+          </ul>
+        </li>
+        <li><strong>Minimum energizer size</strong>: 1.0 J output (don’t go below this)</li>
+        <li><strong>Good/Robust band</strong>: ±25% around the recommendation</li>
+        <li><strong>Suggested marketing “miles”</strong>: recommended J ÷ 0.6 (lab-style clean single wire)</li>
+      </ul>
+
+      <h3>Example</h3>
+      <p>Rectangle 660×330 ft (½×¼ mile), HT 5 hot strands, medium vegetation:</p>
+      <ol>
+        <li>Perimeter = 2×(660+330) = <strong>1,980 ft</strong> = <strong>0.375 mi</strong></li>
+        <li>Effective wire miles = 0.375 × 5 = <strong>1.875 mi</strong></li>
+        <li>Base J/mi (medium) = 1.0 → J = 1.875 × 1.0 × 1.0 = <strong>1.88 J</strong> (≥ 1.0 min)</li>
+        <li>Good/Robust ≈ 1.4–2.3 J; suggested “miles” rating ≈ 1.88 ÷ 0.6 ≈ <strong>3.1 mi</strong></li>
+      </ol>
+
+      <h3>Notes</h3>
+      <ul>
+        <li>These are planning estimates. Real performance depends on grounding, insulators, joint quality, and actual vegetation.</li>
+        <li>If you have predators or long pulse intervals, size toward the <em>robust</em> end.</li>
+        <li>Solar units: derate for winter/cloudy periods or increase panel/battery size.</li>
+      </ul>
+
+      <p class="disclaimer">Estimates only. Follow manufacturer guidance and local code. Proper grounding is essential for safety and performance.</p>
+    </section>
+
+    <script is:inline>
+      // Helpers
+      const $ = (id) => document.getElementById(id);
+      const val = (id) => parseFloat(($(id)?.value ?? "").trim());
+      const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
+      const fmt2 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:2}) : "—";
+
+      // UI behavior
+      const fields = ["lenMode","totalLen","unit","rectL","rectW","fType","strands","veg"];
+      fields.forEach(id => $(id).addEventListener("input", compute));
+      $("lenMode").addEventListener("change", onLenMode);
+      $("fType").addEventListener("change", onFenceType);
+
+      function onLenMode(){
+        const m = $("lenMode").value;
+        $("rowTotal").style.display = m==="total" ? "" : "none";
+        $("rowRect").style.display  = m==="rect"  ? "" : "none";
+        compute();
+      }
+      function onFenceType(){
+        const mesh = $("fType").value === "mesh";
+        $("strands").disabled = mesh;
+        $("strandsNote").style.opacity = mesh ? ".6" : "1";
+        if (mesh) $("strands").value = "1";
+        compute();
+      }
+
+      // Core calculation
+      function milesFromInputs(){
+        if ($("lenMode").value === "total"){
+          const L = val("totalLen");
+          if (!(L>0)) return NaN;
+          return $("unit").value === "mi" ? L : (L/5280);
+        } else {
+          const L = val("rectL"), W = val("rectW");
+          if (!(L>0) || !(W>0)) return NaN;
+          const perFt = 2*(L+W);
+          return perFt/5280;
+        }
+      }
+
+      function vegJperMi(){
+        const v = $("veg").value;
+        if (v==="low") return 0.6;
+        if (v==="high") return 2.0;
+        return 1.0; // medium default
+      }
+      function typeFactor(){
+        const t = $("fType").value;
+        if (t==="barbed") return 1.1;
+        if (t==="mesh") return 1.2;
+        return 1.0; // high-tensile default
+      }
+
+      function compute(){
+        const miles = milesFromInputs();
+        if (!Number.isFinite(miles) || !(miles>0)){
+          show(); $("steps").innerHTML = `<span class="note">Enter fence length to see the step-by-step.</span>`; return;
+        }
+
+        const mesh = $("fType").value === "mesh";
+        const strands = mesh ? 1 : Math.max(1, Math.floor(val("strands") || 1));
+
+        const effMiles = miles * strands;
+        const baseJpm = vegJperMi();
+        const tFac = typeFactor();
+
+        let recJ = effMiles * baseJpm * tFac;
+        recJ = Math.max(recJ, 1.0); // minimum recommended output J
+
+        const bandLo = recJ * 0.75;
+        const bandHi = recJ * 1.25;
+
+        // Suggested “miles” rating (marketing) — clean, single-wire lab eq.: J / 0.6
+        const milesRating = recJ / 0.6;
+
+        // Steps
+        const lines = [];
+        lines.push(`<div>Physical miles = <strong>${fmt2(miles)}</strong> mi</div>`);
+        lines.push(`<div>Effective wire miles = ${fmt2(miles)} × ${strands} = <strong>${fmt2(effMiles)}</strong> mi</div>`);
+        lines.push(`<div>Base J/mi (veg) = <strong>${fmt2(baseJpm)}</strong>; fence type factor = <strong>${fmt2(tFac)}</strong></div>`);
+        lines.push(`<div>Recommended J = ${fmt2(effMiles)} × ${fmt2(baseJpm)} × ${fmt2(tFac)} = <strong>${fmt2(recJ)}</strong> J (≥ 1.0 J min)</div>`);
+        lines.push(`<div>Good/Robust range ≈ <strong>${fmt2(bandLo)}</strong>–<strong>${fmt2(bandHi)}</strong> J</div>`);
+        lines.push(`<div>Suggested “miles” rating ≈ ${fmt2(recJ)} ÷ 0.6 = <strong>${fmt2(milesRating)}</strong> mi</div>`);
+        $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
+
+        show({effMiles, recJ, bandLo, bandHi, milesRating});
+      }
+
+      function show(o={}){
+        $("effMiles").textContent   = fmt2(o.effMiles);
+        $("recJ").textContent       = fmt2(o.recJ);
+        $("bandJ").textContent      = (Number.isFinite(o.bandLo)&&Number.isFinite(o.bandHi)) ? `${fmt2(o.bandLo)}–${fmt2(o.bandHi)}` : "—";
+        $("milesRating").textContent= fmt2(o.milesRating);
+      }
+
+      // init
+      onLenMode();
+      onFenceType();
+      compute();
+    </script>
+  </main>
+</Layout>

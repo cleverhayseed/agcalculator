@@ -2,9 +2,36 @@
 import Layout from "../layouts/Layout.astro";
 
 const tools = [
+  // ========= LIVE =========
   { title: "Grain Bin Capacity (Bushels & Weight)", href: "/calculators/grain-bin-capacity/", status: "Live" },
-  { title: "Fence Planner (Perimeter, Posts, Wire)", href: "/calculators/fence-planner/", status: "Live" },
+  { title: "Grain Moisture Shrink (Wet ↔ Dry Bu)", href: "/calculators/grain-moisture-shrink/", status: "Live" },
   { title: "Hay Bale Weight & Load Planner", href: "/calculators/hay-bale-planner/", status: "Live" },
+  { title: "Bale Yield Planner (Bales ↔ Tons)", href: "/calculators/bale-yield-planner/", status: "Live" },
+
+  { title: "Fence Planner (Perimeter, Posts, Wire)", href: "/calculators/fence-planner/", status: "Live" },
+  { title: "Fence Energizer Sizing (Joules & Range)", href: "/calculators/fence-energizer-sizing/", status: "Live" },
+
+  { title: "Field Capacity & Spray Rate (ac/hr, GPA)", href: "/calculators/field-capacity/", status: "Live" },
+
+  { title: "Livestock Water Needs (Daily & Tank Sizing)", href: "/calculators/livestock-water/", status: "Live" },
+
+  { title: "Irrigation Runtime (Depth from Flow & Area)", href: "/calculators/irrigation-runtime/", status: "Live" },
+  { title: "Rainwater Catchment (Roof → Gallons)", href: "/calculators/rainwater-catchment/", status: "Live" },
+
+  { title: "Seed Rate & Plant Density", href: "/calculators/seed-rate-density/", status: "Live" },
+
+  { title: "Stocking Rate & AUM", href: "/calculators/stocking-rate-aum/", status: "Live" },
+  { title: "Pasture Stocking Planner (Head/Acre)", href: "/calculators/pasture-stocking/", status: "Live" },
+
+  // ====== COMING SOON ======
+  { title: "Pasture Rotation & Paddock Planner", status: "Coming soon" },
+  { title: "Bale Count & Storage Planner", status: "Coming soon" },
+  { title: "Fuel Use & Haul Weight (Truck/Trailer)", status: "Coming soon" },
+  { title: "Pipe/Friction Loss (Flow & Pressure)", status: "Coming soon" },
+  { title: "Tractor Ballast & Weight Distribution", status: "Coming soon" },
+  { title: "Livestock Chute / Load-out Planner", status: "Coming soon" },
+  { title: "Pond Volume & Liner Estimator", status: "Coming soon" },
+  { title: "Equipment Depreciation & Ownership Cost", status: "Coming soon" },
 ];
 ---
 
@@ -12,20 +39,14 @@ const tools = [
 
 <Fragment slot="head">
   <title>AgCalculator — Do the farm math.</title>
-  <p style="margin:.25rem 0 1rem">
-  <button id="install-btn" style="display:none;padding:.4rem .7rem;border:1px solid #cbd5e1;border-radius:10px;background:white;cursor:pointer">
-    Add to Home Screen
-  </button>
-  </p>
-
-  <meta name="description" content="Fast, offline-friendly tools for common farm & homestead jobs — including a grain bin capacity calculator." />
+  <meta name="description" content="Fast, offline-friendly tools for farm & homestead jobs: grain bin capacity, moisture shrink, hay & bale planning, fence planning & energizer sizing, field capacity & spray GPA, livestock water, irrigation runtime, rain catchment, seed rate, stocking rate & AUM, and more." />
   <link rel="canonical" href="https://agcalculator.com/" />
 
   <!-- Open Graph -->
   <meta property="og:site_name" content="AgCalculator" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="AgCalculator — Do the farm math." />
-  <meta property="og:description" content="Fast, offline-friendly tools for common farm & homestead jobs — including a grain bin capacity calculator." />
+  <meta property="og:description" content="Fast, offline-friendly tools for farm & homestead jobs." />
   <meta property="og:url" content="https://agcalculator.com/" />
   <meta property="og:image" content="https://agcalculator.com/og-home.png?v=1" />
   <meta property="og:image:width" content="1200" />
@@ -34,41 +55,19 @@ const tools = [
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="AgCalculator — Do the farm math." />
-  <meta name="twitter:description" content="Fast, offline-friendly tools for common farm & homestead jobs — including a grain bin capacity calculator." />
+  <meta name="twitter:description" content="Fast, offline-friendly tools for farm & homestead jobs." />
   <meta name="twitter:image" content="https://agcalculator.com/og-home.png?v=1" />
-
-  <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Are these results exact?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "They are estimates based on geometry and typical defaults. Always verify before purchasing materials or operating equipment."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Do the tools work offline?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. AgCalculator is a lightweight PWA—add it to your home screen to use it without a connection."
-      }
-    }
-  ]
-}
-</script>
-
 </Fragment>
-
 
   <header>
     <div class="wrap">
       <h1>AgCalculator</h1>
       <p>Do the farm math. Fast, offline-friendly tools for common farm &amp; homestead jobs.</p>
+      <p style="margin:.5rem 0 0">
+        <button id="install-btn" style="display:none;padding:.4rem .7rem;border:1px solid #cbd5e1;border-radius:10px;background:white;cursor:pointer">
+          Add to Home Screen
+        </button>
+      </p>
     </div>
   </header>
 
@@ -78,73 +77,56 @@ const tools = [
         t.href ? (
           <a class="card" href={t.href}>
             <strong>{t.title}</strong>
-            <div class="status">{t.status}</div>
+            <div class="status live">{t.status}</div>
           </a>
         ) : (
           <div class="card">
             <strong>{t.title}</strong>
-            <div class="status">{t.status}</div>
+            <div class="status soon">{t.status}</div>
           </div>
         )
       )}
     </section>
-    
-        <!-- Publisher content: how it works + mini FAQ -->
-    <section class="content">
-      <h2>How AgCalculator helps</h2>
-      <p>AgCalculator provides lightweight, offline-friendly tools for common farm and homestead math. Each calculator shows the formulas used so you can verify the numbers before you buy materials or operate equipment.</p>
 
-      <h3>What’s inside</h3>
+    <section class="how">
+      <h2>How it works</h2>
+      <p>Each tool runs entirely in your browser for speed and offline use. No logins — just the math with clear formulas and step-by-step explanations so you can validate numbers quickly.</p>
       <ul>
-        <li><a href="/calculators/grain-bin-capacity/">Grain Bin Capacity</a> — cylinder + cone math to estimate bushels, weight, and fill %.</li>
-        <li><a href="/calculators/fence-planner/">Fence Planner</a> — perimeter, posts, gate openings, wire length, and rolls.</li>
-        <li><a href="/calculators/hay-bale-planner/">Hay Bale Planner</a> — bale volume, weight by density, and max bales by payload.</li>
+        <li>Works on slow rural internet (and offline after first load)</li>
+        <li>Clear formulas &amp; units, with practical defaults you can change</li>
+        <li>Privacy-friendly analytics (Plausible) to keep improving</li>
       </ul>
-
-      <h3>FAQ</h3>
-      <p><strong>Are these results exact?</strong> They’re estimates based on geometry and typical defaults. Always verify before purchasing materials or operating equipment.</p>
-      <p><strong>Do the tools work offline?</strong> Yes—this site is a small PWA. Add it to your home screen and it’ll work with no connection.</p>
+      <p style="margin:.5rem 0 0"><a href="/about/">Learn more</a></p>
     </section>
 
-    <style>
-      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin:1rem 1rem 0}
-      .content h2{margin:.2rem 0 .6rem}
-      .content h3{margin:.8rem 0 .3rem}
-      .content ul{margin:.2rem 0 .2rem 1.1rem}
-      @media(min-width:720px){ .content{margin:1rem auto 0; max-width:960px} }
-    </style>
-
     <script is:inline>
-  let deferredPrompt;
-  const btn = document.getElementById('install-btn');
+      let deferredPrompt;
+      const btn = document.getElementById('install-btn');
 
-  const isStandalone =
-    window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+      const isStandalone =
+        window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 
-  // Show button for Android/desktop when installable
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    if (!isStandalone) btn.style.display = 'inline-block';
-  });
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (!isStandalone) btn.style.display = 'inline-block';
+      });
 
-  // Show button on iOS (no prompt API) if not installed
-  if (isIOS && !isStandalone) btn.style.display = 'inline-block';
+      if (isIOS && !isStandalone) btn.style.display = 'inline-block';
 
-  btn.addEventListener('click', async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      deferredPrompt = null;
-      btn.textContent = outcome === 'accepted' ? 'Installed' : 'Add to Home Screen';
-    } else if (isIOS) {
-      alert('On iPhone/iPad: tap the Share icon → “Add to Home Screen”.');
-    }
-  });
-</script>
-
+      btn?.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          deferredPrompt = null;
+          btn.textContent = outcome === 'accepted' ? 'Installed' : 'Add to Home Screen';
+        } else if (isIOS) {
+          alert('On iPhone/iPad: tap the Share icon → “Add to Home Screen”.');
+        }
+      });
+    </script>
   </main>
 
   <footer class="wrap">
@@ -163,7 +145,11 @@ const tools = [
     .grid{display:grid;gap:1rem;padding:1.25rem 1rem}
     @media(min-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
     .card{padding:1rem;border:1px solid #e5e7eb;border-radius:14px;background:white;display:block}
-    .status{display:inline-block;margin-top:.4rem;padding:.15rem .5rem;border-radius:999px;background:#94a3b8;color:white;font-size:.8rem}
+    .status{display:inline-block;margin-top:.4rem;padding:.15rem .5rem;border-radius:999px;font-size:.8rem;color:white}
+    .status.live{background:#22c55e}
+    .status.soon{background:#94a3b8}
+    .how{background:white;border:1px solid #e5e7eb;border-radius:14px;margin:0 1rem 1.5rem;padding:1rem}
+    .how h2{margin:.25rem 0 .5rem;color:var(--green)}
     footer{padding:2rem 1rem;color:#64748b}
   </style>
 </Layout>

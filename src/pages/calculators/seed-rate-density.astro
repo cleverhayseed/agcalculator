@@ -1,0 +1,362 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>Seed Rate & Planting Density Calculator | AgCalculator</title>
+    <meta name="description" content="Figure seeds per acre (or ft²), pounds of seed, and plants per row from spacing, germination, and purity. Works for row crop or broadcast." />
+    <link rel="canonical" href="https://agcalculator.com/calculators/seed-rate-density/" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="AgCalculator" />
+    <meta property="og:title" content="Seed Rate & Planting Density Calculator" />
+    <meta property="og:description" content="Compute seed needed from spacing, target population, germination, purity, and seeds-per-pound." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://agcalculator.com/calculators/seed-rate-density/" />
+    <meta property="og:image" content="https://agcalculator.com/og-hay-bale.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"WebApplication",
+      "name":"Seed Rate & Planting Density Calculator",
+      "applicationCategory":"Calculator",
+      "operatingSystem":"Web",
+      "url":"https://agcalculator.com/calculators/seed-rate-density/",
+      "description":"Figure seeds per acre (or ft²), pounds of seed, and plants per row from spacing, germination, and purity. Works for row crop or broadcast.",
+      "publisher":{"@type":"Organization","name":"AgCalculator","url":"https://agcalculator.com"},
+      "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"BreadcrumbList",
+      "itemListElement":[
+        {"@type":"ListItem","position":1,"name":"Home","item":"https://agcalculator.com/"},
+        {"@type":"ListItem","position":2,"name":"Seed Rate & Planting Density","item":"https://agcalculator.com/calculators/seed-rate-density/"}
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"FAQPage",
+      "mainEntity":[
+        {
+          "@type":"Question",
+          "name":"How do germination and purity affect seed needed?",
+          "acceptedAnswer":{"@type":"Answer","text":"You must plant extra seed to overcome non-germinating seed (germ %) and inert/other matter (purity %). Required seed = target plants ÷ (germ×purity)."}
+        },
+        {
+          "@type":"Question",
+          "name":"What if I don't know seeds per pound?",
+          "acceptedAnswer":{"@type":"Answer","text":"Leave it blank—you’ll still get seeds per acre (or ft²). Enter seeds/lb later to see pounds of seed required."}
+        },
+        {
+          "@type":"Question",
+          "name":"Does this consider field loss after emergence?",
+          "acceptedAnswer":{"@type":"Answer","text":"Not directly. Add a small reserve % to cover in-field loss, pests, or uneven depth."}
+        }
+      ]
+    }
+    </script>
+
+    <style>
+      :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
+      *{box-sizing:border-box}
+      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:white}
+      .wrap{max-width:960px;margin:0 auto;padding:1rem}
+      a{color:var(--green);text-decoration:none}
+      fieldset{background:white;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
+      legend{padding:0 .4rem;color:var(--muted)}
+      label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
+      input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
+      .row{display:grid;gap:.8rem}
+      @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
+      .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+      .note{color:var(--muted);font-size:.9rem}
+      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content h2{margin:.2rem 0 .6rem}
+      .content h3{margin:.8rem 0 .3rem}
+      .content ul,.content ol{margin:.2rem 0 .2rem 1rem}
+      .content .disclaimer{color:#64748b;margin-top:.6rem}
+      code{background:#f1f5f9;padding:0 .25rem;border-radius:4px}
+    </style>
+  </Fragment>
+
+  <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
+
+  <main class="wrap">
+    <h1 style="margin:.5rem 0 1rem">Seed Rate &amp; Planting Density</h1>
+
+    <fieldset>
+      <legend>Method</legend>
+      <div class="row">
+        <div>
+          <label for="mode">Choose calculator</label>
+          <select id="mode">
+            <option value="row">Row crop (row & in-row spacing)</option>
+            <option value="area">Broadcast / target population</option>
+          </select>
+        </div>
+        <div>
+          <label for="areaMode">Area input</label>
+          <select id="areaMode">
+            <option value="ac">Acres</option>
+            <option value="ft2">Square feet</option>
+          </select>
+        </div>
+        <div>
+          <label for="areaVal">Area</label>
+          <input id="areaVal" type="number" step="0.01" placeholder="e.g. 1.0" />
+          <div class="note">1 acre = 43,560 ft²</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset id="rowBox">
+      <legend>Row spacing</legend>
+      <div class="row">
+        <div>
+          <label for="rowIn">Row spacing (in)</label>
+          <input id="rowIn" type="number" step="0.1" placeholder="e.g. 30" />
+        </div>
+        <div>
+          <label for="inRowIn">In-row spacing (in)</label>
+          <input id="inRowIn" type="number" step="0.1" placeholder="e.g. 6" />
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <div class="note">Plants/ft² = 144 ÷ (row × in-row)</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset id="areaBox" style="display:none">
+      <legend>Target population</legend>
+      <div class="row">
+        <div>
+          <label for="targetPer">Target plants</label>
+          <select id="targetPer">
+            <option value="acre">per acre</option>
+            <option value="ft2">per ft²</option>
+          </select>
+        </div>
+        <div>
+          <label for="targetVal">Target value</label>
+          <input id="targetVal" type="number" step="1" placeholder="e.g. 32000" />
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <div class="note">If you know plants/acre or plants/ft²</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Seed quality & size</legend>
+      <div class="row">
+        <div>
+          <label for="germ">Germination (%)</label>
+          <input id="germ" type="number" step="0.1" value="90" />
+        </div>
+        <div>
+          <label for="purity">Purity (%)</label>
+          <input id="purity" type="number" step="0.1" value="98" />
+        </div>
+        <div>
+          <label for="reserve">Reserve / overplant (%)</label>
+          <input id="reserve" type="number" step="0.1" value="0" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="seedsPerLb">Seeds per pound (optional)</label>
+          <input id="seedsPerLb" type="number" step="1" placeholder="e.g. 2900 (soy) / 16000 (wheat)" />
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <div class="note">We'll convert seeds → pounds if provided</div>
+        </div>
+        <div></div>
+      </div>
+    </fieldset>
+
+    <section class="result">
+      <div class="note">Results</div>
+      <div style="display:grid;gap:.5rem;margin-top:.4rem">
+        <div><strong>Target stand (per acre):</strong> <span id="plantsAcre">—</span></div>
+        <div><strong>Seeds required (per acre):</strong> <span id="seedsAcre">—</span></div>
+        <div><strong>Seed rate:</strong> <span id="lbsAcre">—</span> lb/acre</div>
+        <div><strong>Seeds for your area:</strong> <span id="seedsArea">—</span></div>
+        <div><strong>Pounds for your area:</strong> <span id="lbsArea">—</span> lb</div>
+        <div id="rowExtras"><strong>Plants per 1000 ft of row:</strong> <span id="plantsPerK">—</span></div>
+      </div>
+      <p class="note" style="margin-top:.6rem">Estimates only. Calibrate your planter/drill for exact delivery.</p>
+    </section>
+
+    <section class="content" id="explain">
+      <h2>How we got these numbers</h2>
+      <div id="steps" class="note">Enter spacing or target population to see the step-by-step.</div>
+
+      <h3>Formulas</h3>
+      <ul>
+        <li><strong>Plants/ft²</strong> (row mode) = <code>144 ÷ (row(in) × in-row(in))</code></li>
+        <li><strong>Plants/acre</strong> = plants/ft² × 43,560</li>
+        <li><strong>Effective seed fraction</strong> = (germ% × purity%) ÷ 10000</li>
+        <li><strong>Required seeds</strong> = target plants ÷ effective × (1 + reserve%)</li>
+        <li><strong>Pounds/acre</strong> = seeds/acre ÷ seeds-per-pound</li>
+        <li><strong>Plants per 1000 ft row</strong> = 1000 ÷ (in-row spacing (ft))</li>
+      </ul>
+
+      <h3>Example</h3>
+      <p>30 in row, 6 in in-row; germ 90%, purity 98%, reserve 5%:</p>
+      <ol>
+        <li>Plants/ft² = 144 ÷ (30×6) = <strong>0.80</strong></li>
+        <li>Plants/acre = 0.80 × 43,560 ≈ <strong>34,848</strong></li>
+        <li>Effective = 0.90×0.98 = <strong>0.882</strong></li>
+        <li>Required seeds/acre ≈ 34,848 ÷ 0.882 × 1.05 ≈ <strong>41,498</strong></li>
+      </ol>
+
+      <h3>Notes</h3>
+      <ul>
+        <li>Seeds-per-pound varies by crop & seed size—use a tag or local reference.</li>
+        <li>Reserve % lets you overplant slightly for field losses or uneven depth.</li>
+        <li>Always confirm with a catch-test / calibration run.</li>
+      </ul>
+
+      <p class="disclaimer">Estimates only. Verify before purchasing materials or operating equipment.</p>
+    </section>
+
+    <script is:inline>
+      // Helpers
+      const $ = (id) => document.getElementById(id);
+      const num = (id) => parseFloat(($(id)?.value ?? "").trim());
+      const fmt0 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
+      const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
+
+      // Wire up UI
+      ["mode","areaMode","targetPer"].forEach(id => $(id).addEventListener("change", onMode));
+      const inputs = ["areaVal","rowIn","inRowIn","targetVal","germ","purity","reserve","seedsPerLb"];
+      inputs.forEach(id => $(id).addEventListener("input", compute));
+      onMode(); compute();
+
+      function areaFt2(){
+        const mode = $("areaMode").value;
+        const v = num("areaVal");
+        if (!(v>0)) return NaN;
+        return mode==="ac" ? v*43560 : v;
+      }
+
+      function effectiveFraction(){
+        const g = Math.max(0, Math.min(100, num("germ") || 0))/100;
+        const p = Math.max(0, Math.min(100, num("purity") || 0))/100;
+        return g*p; // 0..1
+      }
+
+      function seedsNeeded(targetPlants){
+        const eff = effectiveFraction();
+        const reserve = Math.max(0, num("reserve") || 0)/100;
+        if (!(targetPlants>0) || !(eff>0)) return NaN;
+        return targetPlants/eff * (1+reserve);
+      }
+
+      function onMode(){
+        const m = $("mode").value;
+        $("rowBox").style.display  = m==="row" ? "" : "none";
+        $("areaBox").style.display = m==="area" ? "" : "none";
+        $("rowExtras").style.display = m==="row" ? "" : "none";
+        compute();
+      }
+
+      function compute(){
+        const Aft2 = areaFt2();
+        const m = $("mode").value;
+
+        if (!(Aft2>0)){
+          show(); $("steps").innerHTML = `<span class="note">Enter area to see the step-by-step.</span>`; return;
+        }
+
+        let plantsPerFt2 = NaN, plantsPerAcre = NaN, plantsArea = NaN, seedsAcre = NaN, lbsAcre = NaN, seedsArea = NaN, lbsArea = NaN, plantsPerK = NaN;
+
+        if (m==="row"){
+          const rowIn = num("rowIn"), inRowIn = num("inRowIn");
+          if (!(rowIn>0) || !(inRowIn>0)){ show(); $("steps").innerHTML = `<span class="note">Enter both spacings.</span>`; return; }
+
+          plantsPerFt2 = 144 / (rowIn * inRowIn);
+          plantsPerAcre = plantsPerFt2 * 43560;
+          plantsArea = plantsPerFt2 * Aft2;
+
+          const seedsPerAcre = seedsNeeded(plantsPerAcre);
+          const seedsForArea = seedsNeeded(plantsArea);
+
+          const sPerLb = num("seedsPerLb");
+
+          seedsAcre = seedsPerAcre;
+          seedsArea = seedsForArea;
+          lbsAcre = (sPerLb>0 && seedsPerAcre>0) ? (seedsPerAcre / sPerLb) : NaN;
+          lbsArea = (sPerLb>0 && seedsForArea>0) ? (seedsForArea / sPerLb) : NaN;
+
+          // Plants per 1000 ft of row:
+          const inRowFt = inRowIn/12;
+          plantsPerK = (inRowFt>0) ? (1000 / inRowFt) : NaN;
+
+          // Steps
+          const eff = effectiveFraction();
+          const reserve = Math.max(0, num("reserve") || 0)/100;
+          const lines = [];
+          lines.push(`<div>Plants/ft² = 144 ÷ (${rowIn} × ${inRowIn}) = <strong>${fmt1(plantsPerFt2)}</strong></div>`);
+          lines.push(`<div>Plants/acre = ${fmt1(plantsPerFt2)} × 43,560 = <strong>${fmt0(plantsPerAcre)}</strong></div>`);
+          lines.push(`<div>Effective fraction = germ × purity = <strong>${eff.toFixed(3)}</strong></div>`);
+          lines.push(`<div>Seeds/acre = plants ÷ eff × (1+reserve) = ${fmt0(plantsPerAcre)} ÷ ${eff.toFixed(3)} × ${(1+reserve).toFixed(2)} = <strong>${fmt0(seedsPerAcre)}</strong></div>`);
+          $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
+
+        } else {
+          const per = $("targetPer").value;
+          const t = num("targetVal");
+          if (!(t>0)){ show(); $("steps").innerHTML = `<span class="note">Enter a target population.</span>`; return; }
+
+          plantsPerAcre = (per==="acre") ? t : (t * 43560);
+          plantsPerFt2  = plantsPerAcre / 43560;
+          plantsArea    = plantsPerFt2 * Aft2;
+
+          const seedsPerAcre = seedsNeeded(plantsPerAcre);
+          const seedsForArea = seedsNeeded(plantsArea);
+
+          const sPerLb = num("seedsPerLb");
+          seedsAcre = seedsPerAcre;
+          seedsArea = seedsForArea;
+          lbsAcre = (sPerLb>0 && seedsPerAcre>0) ? (seedsPerAcre / sPerLb) : NaN;
+          lbsArea = (sPerLb>0 && seedsForArea>0) ? (seedsForArea / sPerLb) : NaN;
+
+          const eff = effectiveFraction();
+          const reserve = Math.max(0, num("reserve") || 0)/100;
+          const lines = [];
+          lines.push(`<div>Plants/acre = <strong>${fmt0(plantsPerAcre)}</strong> (${fmt1(plantsPerFt2)} per ft²)</div>`);
+          lines.push(`<div>Area plants = ${fmt1(plantsPerFt2)} × ${Aft2.toLocaleString()} = <strong>${fmt0(plantsArea)}</strong></div>`);
+          lines.push(`<div>Seeds/acre = ${fmt0(plantsPerAcre)} ÷ ${eff.toFixed(3)} × ${(1+reserve).toFixed(2)} = <strong>${fmt0(seedsPerAcre)}</strong></div>`);
+          $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
+        }
+
+        show({
+          plantsPerAcre, seedsAcre, lbsAcre,
+          seedsArea, lbsArea, plantsPerK
+        });
+      }
+
+      function show(o={}){
+        $("plantsAcre").textContent = fmt0(o.plantsPerAcre);
+        $("seedsAcre").textContent  = fmt0(o.seedsAcre);
+        $("lbsAcre").textContent    = Number.isFinite(o.lbsAcre) ? o.lbsAcre.toLocaleString(undefined,{maximumFractionDigits:2}) : "—";
+        $("seedsArea").textContent  = fmt0(o.seedsArea);
+        $("lbsArea").textContent    = Number.isFinite(o.lbsArea) ? o.lbsArea.toLocaleString(undefined,{maximumFractionDigits:2}) : "—";
+        $("plantsPerK").textContent = fmt0(o.plantsPerK);
+      }
+    </script>
+  </main>
+</Layout>

@@ -1,0 +1,255 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>Grain Moisture Shrink & Drying Cost Calculator | AgCalculator</title>
+    <meta name="description" content="Estimate moisture shrink, net bushels, weight loss, and drying cost from start to target moisture for corn, soybeans, wheat, and more." />
+    <link rel="canonical" href="https://agcalculator.com/calculators/grain-moisture-shrink/" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="AgCalculator" />
+    <meta property="og:title" content="Grain Moisture Shrink & Drying Cost Calculator" />
+    <meta property="og:description" content="Estimate moisture shrink, net bushels, weight loss, and drying cost quickly." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://agcalculator.com/calculators/grain-moisture-shrink/" />
+    <meta property="og:image" content="https://agcalculator.com/og-grain-bin.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"WebApplication",
+      "name":"Grain Moisture Shrink & Drying Cost Calculator",
+      "applicationCategory":"Calculator",
+      "operatingSystem":"Web",
+      "url":"https://agcalculator.com/calculators/grain-moisture-shrink/",
+      "description":"Estimate moisture shrink, net bushels, weight loss, and drying cost from start to target moisture.",
+      "publisher":{"@type":"Organization","name":"AgCalculator","url":"https://agcalculator.com"},
+      "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"BreadcrumbList",
+      "itemListElement":[
+        {"@type":"ListItem","position":1,"name":"Home","item":"https://agcalculator.com/"},
+        {"@type":"ListItem","position":2,"name":"Grain Moisture Shrink & Drying Cost","item":"https://agcalculator.com/calculators/grain-moisture-shrink/"}
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"FAQPage",
+      "mainEntity":[
+        {
+          "@type":"Question",
+          "name":"What shrink factor does this use?",
+          "acceptedAnswer":{"@type":"Answer","text":"Base shrink factor uses Dry Matter basis: net bushels = wet bushels × (100 − target%)/(100 − start%). You can add an elevator policy shrink on top as a percent of wet bushels."}
+        },
+        {
+          "@type":"Question",
+          "name":"How is drying cost estimated?",
+          "acceptedAnswer":{"@type":"Answer","text":"If you enter a rate in $ per percentage point per bushel, cost = bushels × max(start% − target%, 0) × rate. This is a simple estimate; check your local schedule."}
+        },
+        {
+          "@type":"Question",
+          "name":"What test weight should I use?",
+          "acceptedAnswer":{"@type":"Answer","text":"Use your measured test weight for best accuracy (e.g., corn 56 lb/bu, soybeans 60 lb/bu)."}
+        }
+      ]
+    }
+    </script>
+
+    <style>
+      :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
+      *{box-sizing:border-box}
+      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:white}
+      .wrap{max-width:960px;margin:0 auto;padding:1rem}
+      a{color:var(--green);text-decoration:none}
+      fieldset{background:white;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
+      legend{padding:0 .4rem;color:var(--muted)}
+      label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
+      input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
+      .row{display:grid;gap:.8rem}
+      @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
+      .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+      .note{color:var(--muted);font-size:.9rem}
+      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content h2{margin:.2rem 0 .6rem}
+      .content h3{margin:.8rem 0 .3rem}
+      .content ul,.content ol{margin:.2rem 0 .2rem .9rem}
+      .content .disclaimer{color:#64748b;margin-top:.6rem}
+    </style>
+  </Fragment>
+
+  <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
+
+  <main class="wrap">
+    <h1 style="margin:.5rem 0 1rem">Grain Moisture Shrink &amp; Drying Cost</h1>
+
+    <fieldset>
+      <legend>Inputs</legend>
+      <div class="row">
+        <div>
+          <label for="wetBu">Wet bushels</label>
+          <input id="wetBu" type="number" step="1" placeholder="e.g. 12000" />
+        </div>
+        <div>
+          <label for="startM">Start moisture (%)</label>
+          <input id="startM" type="number" step="0.1" placeholder="e.g. 19" />
+        </div>
+        <div>
+          <label for="targetM">Target moisture (%)</label>
+          <input id="targetM" type="number" step="0.1" placeholder="e.g. 15" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="tw">Test weight (lb/bu)</label>
+          <input id="tw" type="number" step="0.1" value="56" />
+        </div>
+        <div>
+          <label for="elevShrink">Elevator policy shrink (% of wet bu, optional)</label>
+          <input id="elevShrink" type="number" step="0.01" placeholder="e.g. 1.5" />
+        </div>
+        <div>
+          <label for="dryRate">Drying rate ($/pt/bu, optional)</label>
+          <input id="dryRate" type="number" step="0.001" placeholder="e.g. 0.04" />
+        </div>
+      </div>
+
+      <p class="note">Tip: If you don’t want elevator policy or drying cost, leave those blank.</p>
+    </fieldset>
+
+    <section class="result">
+      <div class="note">Results</div>
+      <div style="display:grid;gap:.5rem;margin-top:.4rem">
+        <div><strong>Base shrink factor:</strong> <span id="shrinkFactor">—</span></div>
+        <div><strong>Net bushels (base shrink):</strong> <span id="netBu">—</span> bu</div>
+        <div><strong>Elevator policy shrink:</strong> <span id="elevBu">—</span> bu</div>
+        <div><strong>Final net bushels:</strong> <span id="finalBu">—</span> bu</div>
+        <div><strong>Weight loss:</strong> <span id="lostLb">—</span> lb (<span id="lostT">—</span> tons)</div>
+        <div><strong>Estimated drying cost:</strong> <span id="dryCost">—</span></div>
+      </div>
+      <p class="note" style="margin-top:.6rem">Estimates only. Policies vary—confirm with your elevator or dryer.</p>
+    </section>
+
+    <section class="content" id="explain">
+      <h2>How we got these numbers</h2>
+      <div id="steps" class="note">Enter values to see the step-by-step.</div>
+
+      <h3>Formulas</h3>
+      <ul>
+        <li><strong>Base shrink factor</strong> = (100 − target%) ÷ (100 − start%)</li>
+        <li><strong>Net bu (base)</strong> = wet bu × base shrink factor</li>
+        <li><strong>Elevator policy shrink</strong> (optional) = wet bu × policy%</li>
+        <li><strong>Final net bu</strong> = max(0, net bu (base) − policy bu)</li>
+        <li><strong>Weight loss</strong> (lb) = (wet bu − final net bu) × test weight</li>
+        <li><strong>Drying cost</strong> (optional) = wet bu × max(start − target, 0) × $/pt/bu</li>
+      </ul>
+
+      <h3>Example</h3>
+      <p>12,000 wet bu, 19%→15%, corn 56 lb/bu, 1.5% policy, $0.04/pt/bu:</p>
+      <ol>
+        <li>Base shrink = (100−15)/(100−19) ≈ <strong>1.0494</strong></li>
+        <li>Net bu (base) = 12,000 × 1.0494 ≈ <strong>12,593 bu</strong></li>
+        <li>Policy bu = 12,000 × 0.015 = <strong>180 bu</strong></li>
+        <li>Final net bu ≈ 12,593 − 180 = <strong>12,413 bu</strong></li>
+        <li>Weight loss ≈ (12,000 − 12,413) × 56 ≈ <strong>−23,128 lb</strong> (negative indicates gain from drying math vs. policy—always check local rules)</li>
+        <li>Drying cost ≈ 12,000 × 4 × 0.04 = <strong>$1,920</strong></li>
+      </ol>
+
+      <h3>Notes</h3>
+      <ul>
+        <li>Some elevators compute shrink differently; use this as a planning estimate.</li>
+        <li>Negative “weight loss” can appear when base shrink increases net bu but policy shrink subtracts—this reflects differing methods. Use your elevator’s statements as source of truth.</li>
+      </ul>
+
+      <p class="disclaimer">Estimates only. Verify with your elevator, dryer schedule, and local policies.</p>
+    </section>
+
+    <script is:inline>
+      // Small helpers (inline—no shared deps)
+      const $ = (id) => document.getElementById(id);
+      const num = (id) => parseFloat(($(id)?.value ?? "").trim());
+      const fmt0 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
+      const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
+      const money = (n) => Number.isFinite(n) ? "$"+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) : "—";
+
+      const inputs = ["wetBu","startM","targetM","tw","elevShrink","dryRate"];
+      inputs.forEach(id => $(id).addEventListener("input", compute));
+
+      function compute(){
+        const wetBu = num("wetBu");
+        const s = num("startM");
+        const t = num("targetM");
+        const tw = num("tw") || 56;
+        const policyPct = num("elevShrink");     // %
+        const dryRate = num("dryRate");          // $/pt/bu
+
+        if(!(wetBu>0) || !(s>=0) || !(t>=0) || !(s !== undefined && t !== undefined)){
+          show(); return;
+        }
+
+        // Base shrink factor on dry matter basis
+        const denom = (100 - s);
+        const shrinkFactor = denom>0 ? ((100 - t) / denom) : NaN;
+
+        let netBase = Number.isFinite(shrinkFactor) ? wetBu * shrinkFactor : NaN;
+
+        // Elevator policy shrink (optional) as % of wet bu
+        const policyBu = (policyPct>0 && wetBu>0) ? wetBu * (policyPct/100) : 0;
+
+        const finalBu = Number.isFinite(netBase) ? Math.max(0, netBase - policyBu) : NaN;
+
+        // Weight loss from wet to final (simple)
+        const lostBu = Number.isFinite(finalBu) ? (wetBu - finalBu) : NaN;
+        const lostLb = Number.isFinite(lostBu) ? lostBu * tw : NaN;
+        const lostT  = Number.isFinite(lostLb) ? (lostLb/2000) : NaN;
+
+        // Drying cost estimate
+        const points = Math.max(0, s - t);
+        const cost = (dryRate>0 && wetBu>0 && points>0) ? wetBu * points * dryRate : NaN;
+
+        // Step-by-step
+        const lines = [];
+        if (Number.isFinite(shrinkFactor)) lines.push(`<div>Base shrink factor = (100 − ${t}) ÷ (100 − ${s}) = <strong>${shrinkFactor.toFixed(4)}</strong></div>`);
+        if (Number.isFinite(netBase)) lines.push(`<div>Net bu (base) = ${fmt0(wetBu)} × ${shrinkFactor?.toFixed(4) ?? "—"} = <strong>${fmt0(netBase)}</strong> bu</div>`);
+        if (policyPct>0) lines.push(`<div>Policy shrink = ${fmt0(wetBu)} × ${policyPct}% = <strong>${fmt0(policyBu)}</strong> bu</div>`);
+        if (Number.isFinite(finalBu)) lines.push(`<div>Final net bu = ${fmt0(netBase)} − ${fmt0(policyBu)} = <strong>${fmt0(finalBu)}</strong> bu</div>`);
+        if (Number.isFinite(lostLb)) lines.push(`<div>Weight loss = (wet − final) × TW = (${fmt0(wetBu)} − ${fmt0(finalBu)}) × ${tw} = <strong>${fmt0(lostLb)}</strong> lb (${fmt1(lostT)} tons)</div>`);
+        if (Number.isFinite(cost)) lines.push(`<div>Drying cost = ${fmt0(wetBu)} × ${points} pt × ${money(dryRate)} = <strong>${money(cost)}</strong></div>`);
+        $("steps").innerHTML = lines.length ? `<div style="display:grid;gap:.35rem">${lines.join("")}</div>` : `<span class="note">Enter values to see the step-by-step.</span>`;
+
+        show({
+          shrinkFactor,
+          netBase,
+          policyBu,
+          finalBu,
+          lostLb,
+          lostT,
+          cost
+        });
+      }
+
+      function show(o={}){
+        $("shrinkFactor").textContent = Number.isFinite(o.shrinkFactor) ? o.shrinkFactor.toFixed(4) : "—";
+        $("netBu").textContent  = fmt0(o.netBase);
+        $("elevBu").textContent = fmt0(o.policyBu);
+        $("finalBu").textContent = fmt0(o.finalBu);
+        $("lostLb").textContent  = fmt0(o.lostLb);
+        $("lostT").textContent   = fmt1(o.lostT);
+        $("dryCost").textContent = money(o.cost);
+      }
+
+      compute();
+    </script>
+  </main>
+</Layout>

@@ -1,0 +1,348 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>Livestock Water Needs (Daily & Tank Sizing) | AgCalculator</title>
+    <meta name="description" content="Estimate daily and period water needs for cattle, sheep, goats, horses, swine, and poultry. Size tanks/troughs, check refill time, and see how long your tank will last." />
+    <link rel="canonical" href="https://agcalculator.com/calculators/livestock-water/" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="AgCalculator" />
+    <meta property="og:title" content="Livestock Water Needs (Daily & Tank Sizing)" />
+    <meta property="og:description" content="Compute gallons per day and per period, required tank size for a refill interval, or how long an existing tank will last." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://agcalculator.com/calculators/livestock-water/" />
+    <meta property="og:image" content="https://agcalculator.com/og-hay-bale.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"WebApplication",
+      "name":"Livestock Water Needs (Daily & Tank Sizing)",
+      "applicationCategory":"Calculator",
+      "operatingSystem":"Web",
+      "url":"https://agcalculator.com/calculators/livestock-water/",
+      "description":"Estimate daily and period water needs and size tanks/troughs with simple adjustments for heat, activity, reserve, and wildlife.",
+      "publisher":{"@type":"Organization","name":"AgCalculator","url":"https://agcalculator.com"},
+      "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"BreadcrumbList",
+      "itemListElement":[
+        {"@type":"ListItem","position":1,"name":"Home","item":"https://agcalculator.com/"},
+        {"@type":"ListItem","position":2,"name":"Livestock Water Needs","item":"https://agcalculator.com/calculators/livestock-water/"}
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"FAQPage",
+      "mainEntity":[
+        {
+          "@type":"Question",
+          "name":"What base water rates do you use?",
+          "acceptedAnswer":{"@type":"Answer","text":"Typical planning values in gallons/head/day: cow-calf 12–20 (20 lactating), beef yearling 6–12 (9 used), dairy (lact.) ~30, horse 10, sheep 2, goat 2, swine 6, poultry 0.05 per bird. Always adjust to your conditions."}
+        },
+        {
+          "@type":"Question",
+          "name":"How do adjustments work?",
+          "acceptedAnswer":{"@type":"Answer","text":"We multiply daily need by (1 + heat% + activity% + reserve% + wildlife%). For hot days or long moves, bump these up. You can also set a custom base rate."}
+        },
+        {
+          "@type":"Question",
+          "name":"How many gallons are in a cubic foot?",
+          "acceptedAnswer":{"@type":"Answer","text":"1 ft³ ≈ 7.4805 gallons. The trough calculator converts L×W×D in feet to gallons automatically."}
+        }
+      ]
+    }
+    </script>
+
+    <style>
+      :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
+      *{box-sizing:border-box}
+      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:white}
+      .wrap{max-width:960px;margin:0 auto;padding:1rem}
+      a{color:var(--green);text-decoration:none}
+      fieldset{background:white;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
+      legend{padding:0 .4rem;color:var(--muted)}
+      label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
+      input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
+      .row{display:grid;gap:.8rem}
+      @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
+      .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+      .note{color:var(--muted);font-size:.9rem}
+      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content h2{margin:.2rem 0 .6rem}
+      .content h3{margin:.8rem 0 .3rem}
+      .content ul,.content ol{margin:.2rem 0 .2rem 1rem}
+      .content .disclaimer{color:#64748b;margin-top:.6rem}
+      code{background:#f1f5f9;padding:0 .25rem;border-radius:4px}
+    </style>
+  </Fragment>
+
+  <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
+
+  <main class="wrap">
+    <h1 style="margin:.5rem 0 1rem">Livestock Water Needs</h1>
+
+    <fieldset>
+      <legend>Herd & base rate</legend>
+      <div class="row">
+        <div>
+          <label for="species">Species / class</label>
+          <select id="species">
+            <option value="cow" data-gpd="12">Beef cow (dry) — 12 gpd</option>
+            <option value="cowlac" data-gpd="20">Beef cow (lactating) — 20 gpd</option>
+            <option value="yearling" data-gpd="9">Beef yearling — 9 gpd</option>
+            <option value="dairylac" data-gpd="30">Dairy, lactating — 30 gpd</option>
+            <option value="horse" data-gpd="10">Horse — 10 gpd</option>
+            <option value="sheep" data-gpd="2">Sheep — 2 gpd</option>
+            <option value="goat" data-gpd="2">Goat — 2 gpd</option>
+            <option value="swine" data-gpd="6">Swine — 6 gpd</option>
+            <option value="poultry" data-gpd="0.05">Poultry (per bird) — 0.05 gpd</option>
+            <option value="custom" data-gpd="8">Custom (set below)</option>
+          </select>
+        </div>
+        <div>
+          <label for="gpd">Base rate (gal/head/day)</label>
+          <input id="gpd" type="number" step="0.01" value="12" />
+        </div>
+        <div>
+          <label for="head">Head count</label>
+          <input id="head" type="number" step="1" placeholder="e.g. 25" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="days">Days in period</label>
+          <input id="days" type="number" step="0.1" value="1" />
+        </div>
+        <div>
+          <label for="heat">Heat / weather adj (%)</label>
+          <input id="heat" type="number" step="1" value="0" />
+        </div>
+        <div>
+          <label for="activity">Activity / drive (%)</label>
+          <input id="activity" type="number" step="1" value="0" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="reserve">Reserve / safety (%)</label>
+          <input id="reserve" type="number" step="1" value="10" />
+        </div>
+        <div>
+          <label for="wildlife">Wildlife / spillage (%)</label>
+          <input id="wildlife" type="number" step="1" value="0" />
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <div class="note">All adjustments are additive then applied once.</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Tank / trough & refill</legend>
+      <div class="row">
+        <div>
+          <label for="solve">Solve for</label>
+          <select id="solve">
+            <option value="tank">Required tank for refill interval</option>
+            <option value="duration">How long my tank lasts</option>
+          </select>
+        </div>
+        <div id="rowInterval">
+          <label for="refillHrs">Refill interval (hours)</label>
+          <input id="refillHrs" type="number" step="0.1" value="12" />
+        </div>
+        <div>
+          <label for="flowGpm">Source flow (GPM, optional)</label>
+          <input id="flowGpm" type="number" step="0.1" placeholder="e.g. 5" />
+          <div class="note">We’ll estimate fill time if provided.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="tankGal">Existing tank (gal, optional)</label>
+          <input id="tankGal" type="number" step="1" placeholder="e.g. 300" />
+        </div>
+        <div>
+          <label for="tL">Trough L×W×D (ft, optional)</label>
+          <div style="display:flex; gap:.5rem">
+            <input id="tL" type="number" step="0.1" placeholder="L" style="flex:1" />
+            <input id="tW" type="number" step="0.1" placeholder="W" style="flex:1" />
+            <input id="tD" type="number" step="0.1" placeholder="D" style="flex:1" />
+          </div>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <div class="note">If both are set, we’ll add them.</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <section class="result">
+      <div class="note">Results</div>
+      <div style="display:grid;gap:.5rem;margin-top:.4rem">
+        <div><strong>Daily need:</strong> <span id="dayGal">—</span> gal/day</div>
+        <div><strong>Period total:</strong> <span id="periodGal">—</span> gal</div>
+        <div id="outTank"><strong>Required tank (for interval):</strong> <span id="needTank">—</span> gal</div>
+        <div id="outDur" style="display:none"><strong>Tank lasts:</strong> <span id="lastHrs">—</span> hr (<span id="lastDays">—</span> days)</div>
+        <div><strong>Existing tank capacity detected:</strong> <span id="haveTank">—</span> gal</div>
+        <div><strong>Fill time at source (optional):</strong> <span id="fillHrs">—</span> hr</div>
+      </div>
+      <p class="note" style="margin-top:.6rem">Planning estimates. Shade, wind, distance to water, and diet can swing usage.</p>
+    </section>
+
+    <section class="content" id="explain">
+      <h2>How we got these numbers</h2>
+      <div id="steps" class="note">Enter head, rate, and adjustments to see step-by-step.</div>
+
+      <h3>Formulas</h3>
+      <ul>
+        <li><strong>Adj. rate</strong> = base gpd × (1 + heat% + activity% + reserve% + wildlife%)</li>
+        <li><strong>Daily need</strong> = head × adj. rate</li>
+        <li><strong>Period total</strong> = daily × days</li>
+        <li><strong>Required tank</strong> (for interval) = daily × (interval hr ÷ 24)</li>
+        <li><strong>Tank duration</strong> (hours) = tank gal ÷ (daily ÷ 24)</li>
+        <li><strong>Trough gallons</strong> = L×W×D (ft³) × 7.4805</li>
+        <li><strong>Fill time</strong> (hr) = tank gal ÷ (GPM × 60)</li>
+      </ul>
+
+      <h3>Notes</h3>
+      <ul>
+        <li>Use higher reserves for heat waves, lactation peaks, or long moves.</li>
+        <li>Place tanks near shade and minimize walking distance to reduce consumption spikes.</li>
+      </ul>
+
+      <p class="disclaimer">Estimates only. Verify before purchasing materials or operating equipment.</p>
+    </section>
+
+    <script is:inline>
+      // Helpers
+      const $ = (id) => document.getElementById(id);
+      const val = (id) => parseFloat(($(id)?.value ?? "").trim());
+      const fmt0 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
+      const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
+      const GAL_PER_FT3 = 7.48052;
+
+      // Wire UI
+      ["species","solve"].forEach(id => $(id).addEventListener("change", onMode));
+      const inputs = ["gpd","head","days","heat","activity","reserve","wildlife","refillHrs","flowGpm","tankGal","tL","tW","tD"];
+      inputs.forEach(id => $(id).addEventListener("input", compute));
+      $("species").addEventListener("change", () => {
+        const g = parseFloat($("species").selectedOptions[0].dataset.gpd || "12");
+        $("gpd").value = g;
+        compute();
+      });
+      onMode(); compute();
+
+      function onMode(){
+        const s = $("solve").value;
+        $("outTank").style.display = s==="tank" ? "" : "none";
+        $("outDur").style.display  = s==="duration" ? "" : "none";
+        $("rowInterval").style.display = s==="tank" ? "" : "none";
+        compute();
+      }
+
+      function adjMultiplier(){
+        const heat = Math.max(0, val("heat")||0)/100;
+        const act  = Math.max(0, val("activity")||0)/100;
+        const res  = Math.max(0, val("reserve")||0)/100;
+        const wild = Math.max(0, val("wildlife")||0)/100;
+        return 1 + heat + act + res + wild;
+      }
+
+      function troughGallons(){
+        const L = val("tL"), W = val("tW"), D = val("tD");
+        if (L>0 && W>0 && D>0) return L*W*D*GAL_PER_FT3;
+        return 0;
+      }
+
+      function existingTankGal(){
+        const tank = Math.max(0, val("tankGal")||0);
+        const trough = Math.max(0, troughGallons());
+        return tank + trough;
+      }
+
+      function compute(){
+        const head = Math.max(0, val("head")||0);
+        const days = Math.max(0, val("days")||0);
+        const base = Math.max(0, val("gpd")||0);
+        const mult = adjMultiplier();
+
+        let adjRate = head>0 && base>0 ? base*mult : NaN;       // per head already rolled into adjRate later
+        let daily = Number.isFinite(adjRate) ? head * base * mult : NaN;
+        let period = Number.isFinite(daily) ? daily * days : NaN;
+
+        // Tank calcs
+        const mode = $("solve").value;
+        const interval = Math.max(0, val("refillHrs")||0);
+        const have = existingTankGal();
+        const gpm = Math.max(0, val("flowGpm")||0);
+
+        let needTank = NaN, lastHrs = NaN, lastDays = NaN, fillHrs = NaN;
+
+        if (mode === "tank"){
+          if (Number.isFinite(daily) && interval>0){
+            needTank = daily * (interval/24);
+          }
+          if (gpm>0 && Number.isFinite(needTank)){
+            fillHrs = needTank / (gpm*60);
+          }
+        } else {
+          if (have>0 && Number.isFinite(daily) && daily>0){
+            lastHrs = have / (daily/24);
+            lastDays = lastHrs/24;
+          }
+          if (gpm>0 && have>0){
+            fillHrs = have / (gpm*60);
+          }
+        }
+
+        // Steps
+        const lines = [];
+        const heat = Math.max(0, val("heat")||0), act = Math.max(0, val("activity")||0), res = Math.max(0, val("reserve")||0), wild = Math.max(0, val("wildlife")||0);
+        lines.push(`<div>Adj. multiplier = 1 + ${(heat/100).toFixed(2)} + ${(act/100).toFixed(2)} + ${(res/100).toFixed(2)} + ${(wild/100).toFixed(2)} = <strong>${mult.toFixed(2)}</strong></div>`);
+        lines.push(`<div>Daily need = head × base × mult = ${fmt0(head)} × ${fmt1(base)} × ${mult.toFixed(2)} = <strong>${fmt0(daily)}</strong> gal/day</div>`);
+        if (Number.isFinite(period)){
+          lines.push(`<div>Period total = daily × days = ${fmt0(daily)} × ${fmt1(days)} = <strong>${fmt0(period)}</strong> gal</div>`);
+        }
+        if (mode==="tank" && Number.isFinite(needTank)){
+          lines.push(`<div>Required tank = daily × (interval/24) = ${fmt0(daily)} × (${fmt1(interval)}/24) = <strong>${fmt0(needTank)}</strong> gal</div>`);
+        }
+        if (mode==="duration" && Number.isFinite(lastHrs)){
+          lines.push(`<div>Tank duration = tank ÷ (daily/24) = ${fmt0(have)} ÷ (${fmt0(daily)}/24) = <strong>${fmt1(lastHrs)}</strong> hr</div>`);
+        }
+        const trough = troughGallons();
+        if (trough>0){
+          lines.push(`<div>Trough gallons = L×W×D×7.4805 = ${val("tL")}×${val("tW")}×${val("tD")}×7.4805 = <strong>${fmt0(trough)}</strong> gal</div>`);
+        }
+        if (gpm>0 && Number.isFinite(fillHrs)){
+          lines.push(`<div>Fill time = tank ÷ (GPM×60) = ${fmt0(mode==="tank" ? needTank : have)} ÷ (${fmt1(gpm)}×60) = <strong>${fmt1(fillHrs)}</strong> hr</div>`);
+        }
+        $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
+
+        // Show
+        $("dayGal").textContent    = fmt0(daily);
+        $("periodGal").textContent = fmt0(period);
+        $("needTank").textContent  = fmt0(needTank);
+        $("haveTank").textContent  = fmt0(have || NaN);
+        $("lastHrs").textContent   = fmt1(lastHrs);
+        $("lastDays").textContent  = fmt1(lastDays);
+        $("fillHrs").textContent   = fmt1(fillHrs);
+      }
+    </script>
+  </main>
+</Layout>
