@@ -32,21 +32,6 @@ const CROPS = [
     <meta name="twitter:description" content="Estimate bale weight & haul capacity." />
     <meta name="twitter:image" content="https://agcalculator.com/og-hay-bale.png" />
 
-    <!-- Structured data -->
-    <script type="application/ld+json">
-    {
-      "@context":"https://schema.org",
-      "@type":"WebApplication",
-      "name":"Hay Bale Weight & Load Planner",
-      "applicationCategory":"Calculator",
-      "operatingSystem":"Web",
-      "url":"https://agcalculator.com/calculators/hay-bale-planner/",
-      "description":"Estimate hay bale weight from size and density, then see how many bales you can haul by weight.",
-      "publisher":{"@type":"Organization","name":"AgCalculator","url":"https://agcalculator.com"},
-      "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
-    }
-    </script>
-
     <!-- Breadcrumbs -->
     <script type="application/ld+json">
     {
@@ -55,6 +40,22 @@ const CROPS = [
       "itemListElement":[
         {"@type":"ListItem","position":1,"name":"Home","item":"https://agcalculator.com/"},
         {"@type":"ListItem","position":2,"name":"Hay Bale Planner","item":"https://agcalculator.com/calculators/hay-bale-planner/"}
+      ]
+    }
+    </script>
+
+    <!-- FAQ (adds helpful context for review + SEO) -->
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"FAQPage",
+      "mainEntity":[
+        {"@type":"Question","name":"How do you estimate bale weight?",
+         "acceptedAnswer":{"@type":"Answer","text":"We compute volume (round: π·(D/2)²·W; square: L·W·H in feet) and multiply by material density (lb/ft³), then optionally adjust for moisture."}},
+        {"@type":"Question","name":"Why is my density different?",
+         "acceptedAnswer":{"@type":"Answer","text":"Field densities vary by crop, moisture, and baler. Use the crop preset as a starting point then enter your measured density if available."}},
+        {"@type":"Question","name":"Why bales by weight only?",
+         "acceptedAnswer":{"@type":"Answer","text":"This tool checks payload by weight. Trailer space, stacking, and tie-down rules aren’t considered—verify fit and compliance separately."}}
       ]
     }
     </script>
@@ -73,6 +74,10 @@ const CROPS = [
       @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
       .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
       .note{color:var(--muted);font-size:.9rem}
+      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content h2{margin:.2rem 0 .6rem}
+      .content h3{margin:.8rem 0 .3rem}
+      .content ul{margin:.2rem 0 .2rem 1rem}
     </style>
   </Fragment>
 
@@ -157,16 +162,30 @@ const CROPS = [
       </div>
       <p class="note" style="margin-top:.6rem">Estimates only. Verify before purchasing materials or operating equipment.</p>
     </section>
+
+    <section class="content">
+      <h2>How this calculator works</h2>
+      <ul>
+        <li><strong>Round volume (ft³)</strong> = π·(D/2)²·W (inches ÷ 12 → feet)</li>
+        <li><strong>Square volume (ft³)</strong> = L·W·H (inches ÷ 12 → feet)</li>
+        <li><strong>Bale weight</strong> = volume × density (lb/ft³) × moisture adjustment</li>
+        <li><strong>Max bales by weight</strong> = floor(payload ÷ bale weight)</li>
+      </ul>
+      <h3>Tips</h3>
+      <ul>
+        <li>Densities vary by crop, moisture, baler, and storage—use your measured density if available.</li>
+        <li>Payload check is weight only; verify trailer space and tie-down rules separately.</li>
+      </ul>
+    </section>
   </main>
 
-  <!-- Single script using shared utils -->
+  <!-- Single script; NOTE absolute import from /src -->
   <script type="module">
-    import { $, num, fmt, onInputs } from "../../lib/utils.js";
+    import { $, num, fmt, onInputs } from "/src/lib/utils.js";
 
     const fields = ["bType","crop","density","dia","width","sL","sW","sH","moist","payload"];
     onInputs(fields, compute);
 
-    // Toggle round vs square inputs
     $("bType").addEventListener("change", () => {
       const round = $("bType").value === "round";
       $("roundRow").style.display  = round ? "" : "none";
@@ -174,7 +193,6 @@ const CROPS = [
       compute();
     });
 
-    // Crop -> density shortcut
     $("crop").addEventListener("change", () => {
       const den = parseFloat($("crop").selectedOptions[0].dataset.den || "10");
       $("density").value = den;
@@ -198,7 +216,7 @@ const CROPS = [
 
       let wt = vol * dens;
       const moist = num("moist") || 0;
-      if (moist !== 0) wt *= (1 + moist/100); // simple moisture bump
+      if (moist !== 0) wt *= (1 + moist/100);
 
       const tons = wt/2000;
       const payload = num("payload");
@@ -219,7 +237,7 @@ const CROPS = [
       $("maxBales").textContent = fmt(o.maxBales,0);
     }
 
-    // init defaults
+    // initialize defaults
     $("bType").dispatchEvent(new Event("change"));
     $("crop").dispatchEvent(new Event("change"));
   </script>
