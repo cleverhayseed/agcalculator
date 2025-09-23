@@ -231,7 +231,6 @@ const GRAINS = [
     .gauge{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
     .bar{height:100%;background:var(--green);width:0%}
 
-    /* content blocks (explainer + publisher content) */
     .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
     .content h2{margin:.2rem 0 .6rem}
     .content h3{margin:.8rem 0 .3rem}
@@ -239,9 +238,14 @@ const GRAINS = [
     .content .disclaimer{color:#64748b;margin-top:.6rem}
   </style>
 
-  <!-- Single module: calculator + explainer -->
   <script type="module">
-    import { $, num, fmt, onInputs } from "../../lib/utils.js";
+    // ---- inlined helpers (no external import) ------------------------------
+    const $ = (id) => document.getElementById(id);
+    const num = (id) => parseFloat((($(id)?.value ?? "") + "").trim());
+    const fmt = (n, d=0) =>
+      Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d}) : "—";
+    const onInputs = (ids, handler) => ids.forEach((id) => $(id).addEventListener("input", handler));
+    // -----------------------------------------------------------------------
 
     const fields = ["grain","tw","shrink","diam","wall","roofType","roofH","hopH","have"];
     onInputs(fields, () => { compute(); explain(); });
@@ -257,12 +261,12 @@ const GRAINS = [
       if(!(d>0 && wall>=0)) { return show(NaN,NaN,NaN,NaN); }
 
       const r = d/2;
-      const cyl = Math.PI * r * r * wall;                   // ft³
+      const cyl = Math.PI * r * r * wall;
       const roof = $("roofType").value === "cone" && roofH>0 ? (Math.PI * r * r * roofH / 3) : 0;
       const hopper = hopH>0 ? (Math.PI * r * r * hopH / 3) : 0;
       const ft3 = cyl + roof + hopper;
 
-      let bu = ft3 / 1.2445;                                // ft³ → bushels
+      let bu = ft3 / 1.2445;
       const shrink = parseFloat($("shrink").value || "0");
       if(shrink>0) bu *= (1 - shrink/100);
 
