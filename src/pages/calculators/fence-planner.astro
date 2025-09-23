@@ -43,6 +43,40 @@ const WIRE_TYPES = [
     }
     </script>
 
+    <!-- FAQ schema to reinforce helpful content -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do you count line posts vs. corner/gate posts?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Line posts are placed along the effective wire run at your chosen spacing. Corner posts are entered directly. Each gate adds two gate posts. Total posts = line posts + corner posts + gate posts."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do strands apply to mesh/field fence?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Mesh/field fence is treated as a single run of fabric; the strands control is disabled. For barbed or high-tensile smooth wire, strands multiplies the effective wire length."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are material cost estimates exact?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "They are rough estimates. Roll lengths and prices vary by supplier, and field conditions may require extra posts or splices. Always check with your supplier before purchasing."
+          }
+        }
+      ]
+    }
+    </script>
+
     <style>
       :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
       *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Inter,Arial,sans-serif;background:var(--bg);color:var(--slate)}
@@ -61,6 +95,7 @@ const WIRE_TYPES = [
       .content h2{margin:.2rem 0 .6rem}
       .content h3{margin:.8rem 0 .3rem}
       .content ul, .content ol{margin:.2rem 0 .2rem 1rem}
+      .disclaimer{color:#64748b;margin-top:.6rem}
     </style>
   </Fragment>
 
@@ -179,15 +214,46 @@ const WIRE_TYPES = [
       <p class="note" style="margin-top:.6rem">Estimates only. Verify before purchasing materials or operating equipment.</p>
     </section>
 
+    <!-- Publisher content: deeper explanations + example + mini FAQ -->
     <section class="content">
       <h2>How this calculator works</h2>
+      <p>This tool estimates fence materials from your layout, post spacing, and wire type. It supports either a known total length or a rectangle (perimeter), optional gates, and strand-based fences.</p>
+
+      <h3>Formulas</h3>
       <ul>
-        <li><strong>Perimeter</strong> = total run entered, or 2×(L+W) for a rectangle</li>
-        <li><strong>Effective wire run</strong> = perimeter − (gate count × gate width)</li>
-        <li><strong>Line posts</strong> = ceil(effective run ÷ spacing)</li>
-        <li><strong>Wire length</strong> = effective run × strands (for barbed/HT) or ×1 (mesh)</li>
-        <li><strong>Rolls</strong> = ceil(wire length ÷ roll length)</li>
+        <li><strong>Perimeter (rect)</strong> = 2 × (L + W)</li>
+        <li><strong>Effective wire run</strong> = total length − (gates × gate width)</li>
+        <li><strong>Line posts</strong> = ceil(effective run ÷ post spacing)</li>
+        <li><strong>Gate posts</strong> = gates × 2</li>
+        <li><strong>Total posts</strong> = line posts + corner posts + gate posts</li>
+        <li><strong>Wire feet</strong> = effective run × (strands if barbed/HT else 1)</li>
+        <li><strong>Wire rolls</strong> = ceil(wire feet ÷ roll length)</li>
+        <li><strong>Materials cost (optional)</strong> = (total posts × post cost) + (rolls × roll cost)</li>
       </ul>
+
+      <h3>Assumptions & notes</h3>
+      <ul>
+        <li>Post spacing is uniform along straight runs; corners/gates get their own posts.</li>
+        <li>Mesh/field fence is treated as a single “strand” (no strands multiplier).</li>
+        <li>Roll lengths are typical defaults; replace with what your supplier carries.</li>
+      </ul>
+
+      <h3>Example</h3>
+      <p>Rectangle 660 ft × 330 ft, 4 corners, post spacing 8 ft, barbed 4 strands, two 16 ft gates, 1320 ft rolls:</p>
+      <ol>
+        <li>Perimeter = 2×(660+330) = <strong>1,980 ft</strong></li>
+        <li>Gate openings = 2×16 = <strong>32 ft</strong> → Effective run = 1,980 − 32 = <strong>1,948 ft</strong></li>
+        <li>Line posts = ceil(1,948 ÷ 8) = <strong>244</strong></li>
+        <li>Gate posts = 2×2 = 4; Total posts = 244 + 4 corners + 4 = <strong>252</strong></li>
+        <li>Wire feet = 1,948 × 4 = <strong>7,792 ft</strong> → Rolls = ceil(7,792 ÷ 1,320) = <strong>6 rolls</strong></li>
+      </ol>
+
+      <h3>FAQ</h3>
+      <p><strong>How do you count line posts vs. corner/gate posts?</strong> Line posts use your spacing along the effective run. Corner posts are entered directly. Each gate adds two posts.</p>
+      <p><strong>Do strands apply to mesh/field fence?</strong> No—mesh is treated as a single run (strands disabled).</p>
+      <p><strong>Are material cost estimates exact?</strong> They’re estimates only; verify lengths and prices with your supplier.</p>
+
+      <p class="disclaimer">Estimates only. Verify before purchasing materials or operating equipment.</p>
     </section>
   </main>
 
