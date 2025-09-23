@@ -56,38 +56,37 @@ const GRAINS = [
       }
     </script>
     <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "What if my roof is flat?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Leave roof height at 0 so only the cylindrical volume is used."
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What if my roof is flat?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Leave roof height at 0 so only the cylindrical volume is used."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I use metric?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Convert metric to feet before entering values (1 m = 3.28084 ft). A metric toggle is planned."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Why don’t my numbers match label capacity?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Manufacturer ratings can include safety factors or different fill levels. This calculator uses geometric volume with your inputs."
+            }
+          }
+        ]
       }
-    },
-    {
-      "@type": "Question",
-      "name": "Can I use metric?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Convert metric to feet before entering values (1 m = 3.28084 ft). A metric toggle is planned."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Why don’t my numbers match label capacity?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Manufacturer ratings can include safety factors or different fill levels. This calculator uses geometric volume with your inputs."
-      }
-    }
-  ]
-}
-</script>
-
+    </script>
   </Fragment>
 
   <header>
@@ -168,85 +167,13 @@ const GRAINS = [
       <p class="note" style="margin-top:.6rem">Estimates only. Verify before purchasing materials or operating equipment.</p>
     </section>
 
-    <!-- Dynamic step-by-step explainer -->
-<section class="content" id="explain" style="margin-top:1rem">
-  <h2>How we got these numbers (with your inputs)</h2>
-  <div id="steps" class="note">Enter bin size to see the math step-by-step.</div>
-  <h3 style="margin-top:.8rem">Tips</h3>
-  <ul id="tips" style="margin:.2rem 0 0 1.1rem"></ul>
-</section>
-
-<style>
-  .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
-</style>
-
-<script type="module">
-  import { $, num, fmt } from "../../lib/utils.js";
-
-  // Hook into the existing compute() by observing output fields
-  const out = {
-    bu: $("bushels"),
-    lbs: $("lbs"),
-    tons: $("tons"),
-    ft3: $("cft"),
-  };
-
-  // Recompute explanation whenever inputs change (reuse your existing listeners)
-  const inputs = ["grain","tw","shrink","diam","wall","roofType","roofH","hopH","have"];
-  inputs.forEach(id => $(id).addEventListener("input", explain));
-  explain();
-
-  function explain(){
-    const d = num("diam"), wall = num("wall");
-    if(!(d>0 && wall>=0)) { $("steps").textContent = "Enter diameter and straight-wall height."; $("tips").innerHTML=""; return; }
-
-    const r = d/2;
-    const roofConical = $("roofType").value === "cone";
-    const roofH = num("roofH") || 0;
-    const hopH  = num("hopH")  || 0;
-
-    // Volumes
-    const cyl  = Math.PI * r * r * wall;
-    const roof = roofConical && roofH>0 ? (Math.PI * r * r * roofH / 3) : 0;
-    const hop  = hopH>0 ? (Math.PI * r * r * hopH / 3) : 0;
-    const ft3  = cyl + roof + hop;
-
-    // Bushels/weight
-    const shrink = parseFloat($("shrink").value || "0");
-    const buRaw  = ft3 / 1.2445;
-    const bu     = shrink>0 ? buRaw * (1 - shrink/100) : buRaw;
-    const tw     = num("tw") || 56;
-    const lbs    = bu * tw;
-    const tons   = lbs / 2000;
-
-    // Build explanation HTML
-    const lines = [];
-    lines.push(`<strong>Cylinder</strong> = π × (${r.toFixed(2)})² × ${fmt(wall,2)} = ${fmt(cyl,0)} ft³`);
-    if (roof>0) lines.push(`<strong>Conical roof</strong> = π × (${r.toFixed(2)})² × ${fmt(roofH,2)} ÷ 3 = ${fmt(roof,0)} ft³`);
-    if (hop>0)  lines.push(`<strong>Hopper</strong> = π × (${r.toFixed(2)})² × ${fmt(hopH,2)} ÷ 3 = ${fmt(hop,0)} ft³`);
-    lines.push(`<strong>Total volume</strong> = ${fmt(ft3,0)} ft³`);
-    lines.push(`<strong>Bushels</strong> = ft³ ÷ 1.2445 = ${fmt(buRaw,0)} bu${shrink>0 ? ` → shrink ${shrink}% = <strong>${fmt(bu,0)} bu</strong>` : ""}`);
-    lines.push(`<strong>Weight</strong> = bushels × test weight (${fmt(tw,0)} lb/bu) = <strong>${fmt(lbs,0)} lb</strong> (${fmt(tons,1)} tons)`);
-
-    $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.map(x=>`<div>${x}</div>`).join("")}</div>`;
-
-    // Tips list
-    const tips = [];
-    tips.push(`Test weight defaults to the selected grain; your measured test weight will give the best estimate.`);
-    if (shrink>0) tips.push(`Shrink applied: −${shrink}%. Set to 0% if you don’t want moisture adjustment.`);
-    if (roof===0 && roofConical) tips.push(`Roof type is “Conical” but height is 0; enter a height or switch to Flat.`);
-    if (hop>0) tips.push(`Hopper adds ${fmt(hop,0)} ft³ to total volume.`);
-    const have = num("have");
-    if (have>0 && bu>0){
-      const pct = Math.min(100, (have/bu)*100);
-      tips.push(`Reverse check: ${fmt(have,0)} bu would fill ~${fmt(pct,1)}% of this bin.`);
-    }
-    $("tips").innerHTML = tips.map(t=>`<li>${t}</li>`).join("");
-  }
-</script>
-
-        
-    </section> <!-- end Results -->
+    <!-- Step-by-step explainer -->
+    <section class="content" id="explain">
+      <h2>How we got these numbers (with your inputs)</h2>
+      <div id="steps" class="note">Enter bin size to see the math step-by-step.</div>
+      <h3 style="margin-top:.8rem">Tips</h3>
+      <ul id="tips" style="margin:.2rem 0 0 1.1rem"></ul>
+    </section>
 
     <!-- Publisher content: how it works + example + mini FAQ -->
     <section class="content">
@@ -285,17 +212,6 @@ const GRAINS = [
 
       <p class="disclaimer">Estimates only. Verify before purchasing materials or operating equipment.</p>
     </section>
-
-    <style>
-      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
-      .content h2{margin:.2rem 0 .6rem}
-      .content h3{margin:.8rem 0 .3rem}
-      .content ul, .content ol{margin:.2rem 0 .2rem .9rem}
-      .content .disclaimer{color:#64748b;margin-top:.6rem}
-    </style>
-  </main>
-
-
   </main>
 
   <style>
@@ -314,19 +230,26 @@ const GRAINS = [
     .note{color:var(--muted);font-size:.9rem}
     .gauge{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
     .bar{height:100%;background:var(--green);width:0%}
+
+    /* content blocks (explainer + publisher content) */
+    .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+    .content h2{margin:.2rem 0 .6rem}
+    .content h3{margin:.8rem 0 .3rem}
+    .content ul, .content ol{margin:.2rem 0 .2rem .9rem}
+    .content .disclaimer{color:#64748b;margin-top:.6rem}
   </style>
 
-  <!-- Single shared-utils script at the bottom -->
+  <!-- Single module: calculator + explainer -->
   <script type="module">
     import { $, num, fmt, onInputs } from "../../lib/utils.js";
 
     const fields = ["grain","tw","shrink","diam","wall","roofType","roofH","hopH","have"];
-    onInputs(fields, compute);
+    onInputs(fields, () => { compute(); explain(); });
 
     $("grain").addEventListener("change", (e) => {
       const opt = e.target.selectedOptions[0];
       $("tw").value = opt.dataset.tw || "56";
-      compute();
+      compute(); explain();
     });
 
     function compute(){
@@ -362,6 +285,54 @@ const GRAINS = [
       $("bar").style.width = Number.isFinite(pct) ? Math.max(0, Math.min(100, pct)) + "%" : "0%";
     }
 
+    function explain(){
+      const d = num("diam"), wall = num("wall");
+      const steps = $("steps"), tipsEl = $("tips");
+
+      if(!(d>0 && wall>=0)) { steps.textContent = "Enter diameter and straight-wall height."; tipsEl.innerHTML=""; return; }
+
+      const r = d/2;
+      const roofConical = $("roofType").value === "cone";
+      const roofH = num("roofH") || 0;
+      const hopH  = num("hopH")  || 0;
+
+      const cyl  = Math.PI * r * r * wall;
+      const roof = roofConical && roofH>0 ? (Math.PI * r * r * roofH / 3) : 0;
+      const hop  = hopH>0 ? (Math.PI * r * r * hopH / 3) : 0;
+      const ft3  = cyl + roof + hop;
+
+      const shrink = parseFloat($("shrink").value || "0");
+      const buRaw  = ft3 / 1.2445;
+      const bu     = shrink>0 ? buRaw * (1 - shrink/100) : buRaw;
+      const tw     = num("tw") || 56;
+      const lbs    = bu * tw;
+      const tons   = lbs / 2000;
+
+      const lines = [];
+      lines.push(`<strong>Cylinder</strong> = π × (${r.toFixed(2)})² × ${fmt(wall,2)} = ${fmt(cyl,0)} ft³`);
+      if (roof>0) lines.push(`<strong>Conical roof</strong> = π × (${r.toFixed(2)})² × ${fmt(roofH,2)} ÷ 3 = ${fmt(roof,0)} ft³`);
+      if (hop>0)  lines.push(`<strong>Hopper</strong> = π × (${r.toFixed(2)})² × ${fmt(hopH,2)} ÷ 3 = ${fmt(hop,0)} ft³`);
+      lines.push(`<strong>Total volume</strong> = ${fmt(ft3,0)} ft³`);
+      lines.push(`<strong>Bushels</strong> = ft³ ÷ 1.2445 = ${fmt(buRaw,0)} bu${shrink>0 ? ` → shrink ${shrink}% = <strong>${fmt(bu,0)} bu</strong>` : ""}`);
+      lines.push(`<strong>Weight</strong> = bushels × test weight (${fmt(tw,0)} lb/bu) = <strong>${fmt(lbs,0)} lb</strong> (${fmt(tons,1)} tons)`);
+
+      steps.innerHTML = `<div style="display:grid;gap:.35rem">${lines.map(x=>`<div>${x}</div>`).join("")}</div>`;
+
+      const tips = [];
+      tips.push(`Test weight defaults to the selected grain; your measured test weight will give the best estimate.`);
+      if (shrink>0) tips.push(`Shrink applied: −${shrink}%. Set to 0% if you don’t want moisture adjustment.`);
+      if (roof===0 && roofConical) tips.push(`Roof type is “Conical” but height is 0; enter a height or switch to Flat.`);
+      if (hop>0) tips.push(`Hopper adds ${fmt(hop,0)} ft³ to total volume.`);
+      const have = num("have");
+      if (have>0 && bu>0){
+        const pct = Math.min(100, (have/bu)*100);
+        tips.push(`Reverse check: ${fmt(have,0)} bu would fill ~${fmt(pct,1)}% of this bin.`);
+      }
+      tipsEl.innerHTML = tips.map(t=>`<li>${t}</li>`).join("");
+    }
+
+    // initial render
     compute();
+    explain();
   </script>
 </Layout>
