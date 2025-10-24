@@ -19,39 +19,57 @@ import Layout from "../layouts/Layout.astro";
   </Fragment>
 
   <main class="wrap" style="max-width: 800px; padding: 2rem 1rem;">
-    <h1>Privacy Policy</h1>
-    <p><em>Last updated: {new Date().toLocaleDateString()}</em></p>
+  <h1>Privacy Policy</h1>
+  <p><em>Last updated: {new Date().toLocaleDateString()}</em></p>
 
-    <h2>Who we are</h2>
-    <p>AgCalculator provides fast, offline-friendly calculators for common farm &amp; homestead jobs.</p>
+  <h2>Who we are</h2>
+  <p>AgCalculator provides lightweight, offline-friendly calculators for common farm &amp; homestead jobs.</p>
 
-    <h2>Advertising (Google AdSense)</h2>
-    <p>
-      We show ads via Google AdSense. Google and its partners may use cookies or device identifiers to serve ads based on your visits to this and/or other sites.
-      You can manage consent via the banner shown to users in the EEA/UK/Switzerland or adjust ad personalization in Google’s
-      <a href="https://adssettings.google.com" target="_blank" rel="noopener">Ad Settings</a>.
-    </p>
-    <p>
-      Our <code>ads.txt</code> is available at
-      <a href="/ads.txt">https://agcalculator.com/ads.txt</a>.
-    </p>
+  <h2>Advertising (Google AdSense)</h2>
+  <p>
+    We show ads via Google AdSense. Google and its partners may use cookies or device identifiers to serve,
+    measure, and personalize ads. Learn more at
+    <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener">How Google uses data when you use our partners’ sites or apps</a>
+    and Google’s
+    <a href="https://ads.google.com/intl/en/home/resources/technologies/ads.txt/" target="_blank" rel="noopener">ad technology overview</a>.
+  </p>
+  <p>
+    You can manage your choices via the consent banner (link below) or via Google’s
+    <a href="https://adssettings.google.com" target="_blank" rel="noopener">Ad Settings</a>.
+  </p>
+  <p>
+    Our <code>ads.txt</code> is available at
+    <a href="/ads.txt">https://agcalculator.com/ads.txt</a>.
+  </p>
 
-    <h2>Analytics (Plausible)</h2>
-    <p>
-      We use Plausible Analytics, a privacy-friendly, EU-based analytics tool. It does not set cookies and does not track individuals.
-      Aggregate usage data helps us understand which tools are useful and improve the site. Learn more at
-      <a href="https://plausible.io/data-policy" target="_blank" rel="noopener">plausible.io/data-policy</a>.
-    </p>
+  <h2>Analytics (Plausible)</h2>
+  <p>
+    We use Plausible Analytics (EU-based, cookie-less) to measure aggregate usage only.
+    It does not set cookies or track individuals. Details:
+    <a href="https://plausible.io/data-policy" target="_blank" rel="noopener">plausible.io/data-policy</a>.
+  </p>
 
-    <h2>Cookies &amp; consent</h2>
-    <p>
-      For users in the EEA/UK/Switzerland, we show a consent message that lets you choose whether advertising cookies are used.
-      Your choices can be changed at any time via the consent banner (when shown) or your browser settings.
-    </p>
+  <h2>EEA/UK/CH consent &amp; US privacy</h2>
+  <p>
+    In the EEA/UK/Switzerland, we ask for consent for advertising cookies. In certain US states,
+    you may have the right to opt out of the “sale” or “sharing” of personal information for targeted advertising.
+  </p>
 
-    <h2>Contact</h2>
-    <p>
-      Questions about this policy? Email us at <a href="mailto:info@cleverhayseed.com">info@cleverhayseed.com</a>.
-    </p>
-  </main>
+  <h3>Your choices</h3>
+  <ul>
+    <li><button id="privacy-choices" type="button" style="padding:.5rem .75rem;border:1px solid #cbd5e1;border-radius:8px;background:#fff;cursor:pointer">Open privacy choices</button></li>
+    <li>Google Ad Settings: <a href="https://adssettings.google.com" target="_blank" rel="noopener">adssettings.google.com</a></li>
+  </ul>
+
+  <h2>Contact</h2>
+  <p>Email: <a href="mailto:info@cleverhayseed.com">info@cleverhayseed.com</a></p>
+
+  <script is:inline>
+    // Re-open consent banner from this page
+    document.getElementById('privacy-choices')?.addEventListener('click', () => {
+      window.dispatchEvent(new CustomEvent('open-consent'));
+    });
+  </script>
+</main>
+
 </Layout>
