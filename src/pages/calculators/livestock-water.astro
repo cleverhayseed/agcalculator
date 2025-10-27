@@ -4,14 +4,14 @@ import Layout from "../../layouts/Layout.astro";
 
 <Layout>
   <Fragment slot="head">
-    <title>Livestock Water Needs (Daily & Tank Sizing) | AgCalculator</title>
-    <meta name="description" content="Estimate daily and period water needs for cattle, sheep, goats, horses, swine, and poultry. Size tanks/troughs, check refill time, and see how long your tank will last." />
+    <title>Livestock Water Needs (Daily &amp; Tank Sizing) | AgCalculator</title>
+    <meta name="description" content="Estimate daily and period water needs for cattle, sheep, goats, horses, swine, and poultry. Size tanks/troughs, check refill time, and see how long your tank will last. US ↔ Metric toggle." />
     <link rel="canonical" href="https://agcalculator.com/calculators/livestock-water/" />
 
     <!-- Open Graph -->
     <meta property="og:site_name" content="AgCalculator" />
     <meta property="og:title" content="Livestock Water Needs (Daily & Tank Sizing)" />
-    <meta property="og:description" content="Compute gallons per day and per period, required tank size for a refill interval, or how long an existing tank will last." />
+    <meta property="og:description" content="Compute gallons/liters per day and per period, required tank size for a refill interval, or how long an existing tank will last." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://agcalculator.com/calculators/livestock-water/" />
     <meta property="og:image" content="https://agcalculator.com/og-hay-bale.png" />
@@ -60,7 +60,7 @@ import Layout from "../../layouts/Layout.astro";
         {
           "@type":"Question",
           "name":"How many gallons are in a cubic foot?",
-          "acceptedAnswer":{"@type":"Answer","text":"1 ft³ ≈ 7.4805 gallons. The trough calculator converts L×W×D in feet to gallons automatically."}
+          "acceptedAnswer":{"@type":"Answer","text":"1 ft³ ≈ 7.4805 gallons. The trough calculator converts L×W×D in feet (or meters in metric mode) to volume automatically."}
         }
       ]
     }
@@ -86,6 +86,11 @@ import Layout from "../../layouts/Layout.astro";
       .content ul,.content ol{margin:.2rem 0 .2rem 1rem}
       .content .disclaimer{color:#64748b;margin-top:.6rem}
       code{background:#f1f5f9;padding:0 .25rem;border-radius:4px}
+
+      /* Units toggle */
+      .unit-toggle{display:flex;align-items:center;gap:.4rem;margin:0 0 1rem;padding:.5rem 1rem;background:#fff;border:1px solid #e2e8f0;border-radius:12px}
+      .u-btn{padding:.35rem .7rem;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer}
+      .u-btn.active{background:var(--green);border-color:var(--green);color:#fff}
     </style>
   </Fragment>
 
@@ -94,8 +99,16 @@ import Layout from "../../layouts/Layout.astro";
   <main class="wrap">
     <h1 style="margin:.5rem 0 1rem">Livestock Water Needs</h1>
 
+    <!-- Units toggle -->
+    <div class="unit-toggle" role="group" aria-label="Units">
+      <strong style="margin-right:.25rem">Units:</strong>
+      <button type="button" class="u-btn active" data-units="us" aria-pressed="true">US</button>
+      <button type="button" class="u-btn" data-units="metric" aria-pressed="false">Metric</button>
+      <small class="note" style="margin-left:.5rem">Saved on this device</small>
+    </div>
+
     <fieldset>
-      <legend>Herd & base rate</legend>
+      <legend>Herd &amp; base rate</legend>
       <div class="row">
         <div>
           <label for="species">Species / class</label>
@@ -113,8 +126,8 @@ import Layout from "../../layouts/Layout.astro";
           </select>
         </div>
         <div>
-          <label for="gpd">Base rate (gal/head/day)</label>
-          <input id="gpd" type="number" step="0.01" value="12" />
+          <label for="gpd" data-unit-label="Base rate (gal/head/day)|Base rate (L/head/day)">Base rate (gal/head/day)</label>
+          <input id="gpd" type="number" step="0.01" value="12" data-unit="gpd>lpd" data-unit-ph="e.g. 12|e.g. 45" />
         </div>
         <div>
           <label for="head">Head count</label>
@@ -152,7 +165,7 @@ import Layout from "../../layouts/Layout.astro";
     </fieldset>
 
     <fieldset>
-      <legend>Tank / trough & refill</legend>
+      <legend>Tank / trough &amp; refill</legend>
       <div class="row">
         <div>
           <label for="solve">Solve for</label>
@@ -166,23 +179,23 @@ import Layout from "../../layouts/Layout.astro";
           <input id="refillHrs" type="number" step="0.1" value="12" />
         </div>
         <div>
-          <label for="flowGpm">Source flow (GPM, optional)</label>
-          <input id="flowGpm" type="number" step="0.1" placeholder="e.g. 5" />
+          <label for="flowGpm" data-unit-label="Source flow (GPM, optional)|Source flow (L/min, optional)">Source flow (GPM, optional)</label>
+          <input id="flowGpm" type="number" step="0.1" placeholder="e.g. 5" data-unit="gpm>lpm" data-unit-ph="e.g. 5|e.g. 19" />
           <div class="note">We’ll estimate fill time if provided.</div>
         </div>
       </div>
 
       <div class="row">
         <div>
-          <label for="tankGal">Existing tank (gal, optional)</label>
-          <input id="tankGal" type="number" step="1" placeholder="e.g. 300" />
+          <label for="tankGal" data-unit-label="Existing tank (gal, optional)|Existing tank (L, optional)">Existing tank (gal, optional)</label>
+          <input id="tankGal" type="number" step="1" placeholder="e.g. 300" data-unit="gal>l" data-unit-ph="e.g. 300|e.g. 1100" />
         </div>
         <div>
-          <label for="tL">Trough L×W×D (ft, optional)</label>
+          <label for="">Trough L×W×D (<span data-unit-text="ft|m"></span>, optional)</label>
           <div style="display:flex; gap:.5rem">
-            <input id="tL" type="number" step="0.1" placeholder="L" style="flex:1" />
-            <input id="tW" type="number" step="0.1" placeholder="W" style="flex:1" />
-            <input id="tD" type="number" step="0.1" placeholder="D" style="flex:1" />
+            <input id="tL" type="number" step="0.1" placeholder="L" style="flex:1" data-unit="ft>m" />
+            <input id="tW" type="number" step="0.1" placeholder="W" style="flex:1" data-unit="ft>m" />
+            <input id="tD" type="number" step="0.1" placeholder="D" style="flex:1" data-unit="ft>m" />
           </div>
         </div>
         <div>
@@ -195,11 +208,11 @@ import Layout from "../../layouts/Layout.astro";
     <section class="result">
       <div class="note">Results</div>
       <div style="display:grid;gap:.5rem;margin-top:.4rem">
-        <div><strong>Daily need:</strong> <span id="dayGal">—</span> gal/day</div>
-        <div><strong>Period total:</strong> <span id="periodGal">—</span> gal</div>
-        <div id="outTank"><strong>Required tank (for interval):</strong> <span id="needTank">—</span> gal</div>
+        <div><strong>Daily need:</strong> <span id="dayGal">—</span> <span data-unit-text="gal/day|L/day"></span></div>
+        <div><strong>Period total:</strong> <span id="periodGal">—</span> <span data-unit-text="gal|L"></span></div>
+        <div id="outTank"><strong>Required tank (for interval):</strong> <span id="needTank">—</span> <span data-unit-text="gal|L"></span></div>
         <div id="outDur" style="display:none"><strong>Tank lasts:</strong> <span id="lastHrs">—</span> hr (<span id="lastDays">—</span> days)</div>
-        <div><strong>Existing tank capacity detected:</strong> <span id="haveTank">—</span> gal</div>
+        <div><strong>Existing tank capacity detected:</strong> <span id="haveTank">—</span> <span data-unit-text="gal|L"></span></div>
         <div><strong>Fill time at source (optional):</strong> <span id="fillHrs">—</span> hr</div>
       </div>
       <p class="note" style="margin-top:.6rem">Planning estimates. Shade, wind, distance to water, and diet can swing usage.</p>
@@ -211,23 +224,93 @@ import Layout from "../../layouts/Layout.astro";
 
       <h3>Formulas</h3>
       <ul>
-        <li><strong>Adj. rate</strong> = base gpd × (1 + heat% + activity% + reserve% + wildlife%)</li>
+        <li><strong>Adj. rate</strong> = base × (1 + heat% + activity% + reserve% + wildlife%)</li>
         <li><strong>Daily need</strong> = head × adj. rate</li>
         <li><strong>Period total</strong> = daily × days</li>
         <li><strong>Required tank</strong> (for interval) = daily × (interval hr ÷ 24)</li>
-        <li><strong>Tank duration</strong> (hours) = tank gal ÷ (daily ÷ 24)</li>
-        <li><strong>Trough gallons</strong> = L×W×D (ft³) × 7.4805</li>
-        <li><strong>Fill time</strong> (hr) = tank gal ÷ (GPM × 60)</li>
+        <li><strong>Tank duration</strong> (hours) = tank ÷ (daily ÷ 24)</li>
+        <li><strong>Trough volume</strong> (US) = L×W×D (ft³) × 7.4805 • (Metric) = L×W×D (m³) × 1000</li>
+        <li><strong>Fill time</strong> (hr) = tank ÷ (flow × 60)</li>
       </ul>
 
       <h3>Notes</h3>
       <ul>
         <li>Use higher reserves for heat waves, lactation peaks, or long moves.</li>
-        <li>Place tanks near shade and minimize walking distance to reduce consumption spikes.</li>
+        <li>Place tanks near shade and shorten walking distances to smooth demand spikes.</li>
       </ul>
 
       <p class="disclaimer">Estimates only. Verify before purchasing materials or operating equipment.</p>
     </section>
+
+    <!-- Units helper (page-local; persists in localStorage) -->
+    <script is:inline>
+      (function () {
+        const KEY = 'agc_units';
+        const $$ = (s) => document.querySelectorAll(s);
+        const conv = {
+          // length
+          'ft>m':  x => x * 0.3048,          'm>ft':   x => x / 0.3048,
+          // area (not used here, but kept for parity)
+          'ft2>m2':x => x / 10.76391041671,  'm2>ft2': x => x * 10.76391041671,
+          // flow & volume
+          'gpm>lpm': x => x * 3.785411784,   'lpm>gpm': x => x / 3.785411784,
+          'gal>l':   x => x * 3.785411784,   'l>gal':   x => x / 3.785411784,
+          // per-day rate
+          'gpd>lpd': x => x * 3.785411784,   'lpd>gpd': x => x / 3.785411784
+        };
+        window.AGCUnits = {
+          mode: () => localStorage.getItem(KEY) || 'us',
+          setMode(m){ localStorage.setItem(KEY, m); paint(m); },
+          get(el){
+            const raw = parseFloat(el.value);
+            if (!isFinite(raw)) return NaN;
+            const map = (el.dataset.unit || '').trim(); // us>metric key
+            if (!map) return raw; // already US
+            if (this.mode()==='us') return raw;
+            const [us, met] = map.split('>');
+            const fn = conv[`${met}>${us}`];
+            return fn ? fn(raw) : raw;
+          },
+          out(usNumber, map){
+            if (!isFinite(usNumber)) return NaN;
+            if (this.mode()==='us' || !map) return usNumber;
+            const fn = conv[map];
+            return fn ? fn(usNumber) : usNumber;
+          }
+        };
+        function paint(mode){
+          document.querySelectorAll('.unit-toggle .u-btn').forEach(btn => {
+            const on = btn.dataset.units === mode;
+            btn.classList.toggle('active', on);
+            btn.setAttribute('aria-pressed', String(on));
+          });
+          // Swap labels/placeholders/inline unit text
+          $$('[data-unit-label]').forEach(el => {
+            const [us, met] = el.dataset.unitLabel.split('|');
+            el.textContent = (mode==='metric' ? (met||us) : us);
+          });
+          $$('[data-unit-ph]').forEach(el => {
+            const [us, met] = el.dataset.unitPh.split('|');
+            el.placeholder = (mode==='metric' ? (met||us) : us);
+          });
+          $$('[data-unit-text]').forEach(el => {
+            const [us, met] = el.dataset.unitText.split('|');
+            el.textContent = (mode==='metric' ? (met||us) : us);
+          });
+          // Recompute
+          document.querySelectorAll('input,select').forEach(el => {
+            el.dispatchEvent(new Event('input',{bubbles:true}));
+            el.dispatchEvent(new Event('change',{bubbles:true}));
+          });
+        }
+        document.addEventListener('click', (e)=>{
+          const btn = e.target.closest('.u-btn');
+          if (!btn) return;
+          window.AGCUnits.setMode(btn.dataset.units);
+        });
+        paint(window.AGCUnits.mode());
+      })();
+    </script>
 
     <script is:inline>
       // Helpers
@@ -241,11 +324,15 @@ import Layout from "../../layouts/Layout.astro";
       ["species","solve"].forEach(id => $(id).addEventListener("change", onMode));
       const inputs = ["gpd","head","days","heat","activity","reserve","wildlife","refillHrs","flowGpm","tankGal","tL","tW","tD"];
       inputs.forEach(id => $(id).addEventListener("input", compute));
+
       $("species").addEventListener("change", () => {
-        const g = parseFloat($("species").selectedOptions[0].dataset.gpd || "12");
-        $("gpd").value = g;
+        // species base is stored in gallons/day; display in current units
+        const g_gpd = parseFloat($("species").selectedOptions[0].dataset.gpd || "12");
+        const isMetric = (window.AGCUnits.mode()==='metric');
+        $("gpd").value = isMetric ? (g_gpd * 3.785411784).toFixed(2) : g_gpd;
         compute();
       });
+
       onMode(); compute();
 
       function onMode(){
@@ -265,84 +352,114 @@ import Layout from "../../layouts/Layout.astro";
       }
 
       function troughGallons(){
-        const L = val("tL"), W = val("tW"), D = val("tD");
-        if (L>0 && W>0 && D>0) return L*W*D*GAL_PER_FT3;
+        // Read dimensions in current UI units, normalize to ft, then ft³ -> gal
+        const Lft = window.AGCUnits.get($("tL"));
+        const Wft = window.AGCUnits.get($("tW"));
+        const Dft = window.AGCUnits.get($("tD"));
+        if (Lft>0 && Wft>0 && Dft>0) return Lft*Wft*Dft*GAL_PER_FT3;
         return 0;
       }
 
-      function existingTankGal(){
-        const tank = Math.max(0, val("tankGal")||0);
-        const trough = Math.max(0, troughGallons());
-        return tank + trough;
+      function existingTankGallons(){
+        const tank = window.AGCUnits.get($("tankGal"));   // normalized to gallons
+        const trough = troughGallons();
+        return Math.max(0, (tank||0)) + Math.max(0, trough||0);
       }
 
       function compute(){
         const head = Math.max(0, val("head")||0);
         const days = Math.max(0, val("days")||0);
-        const base = Math.max(0, val("gpd")||0);
+
+        // Base rate: read in displayed units, normalize to gallons/day
+        const base_gpd = window.AGCUnits.get($("gpd")); // gallons/head/day
         const mult = adjMultiplier();
 
-        let adjRate = head>0 && base>0 ? base*mult : NaN;       // per head already rolled into adjRate later
-        let daily = Number.isFinite(adjRate) ? head * base * mult : NaN;
-        let period = Number.isFinite(daily) ? daily * days : NaN;
+        const adjPerHead_gpd = (head>0 && base_gpd>0) ? base_gpd*mult : NaN;
+        const daily_gal = Number.isFinite(adjPerHead_gpd) ? head * base_gpd * mult : NaN;
+        const period_gal = Number.isFinite(daily_gal) ? daily_gal * days : NaN;
 
-        // Tank calcs
+        // Tank calcs (US-normalized)
         const mode = $("solve").value;
-        const interval = Math.max(0, val("refillHrs")||0);
-        const have = existingTankGal();
-        const gpm = Math.max(0, val("flowGpm")||0);
+        const intervalHrs = Math.max(0, val("refillHrs")||0);
+        const have_gal = existingTankGallons();
+        const gpm = window.AGCUnits.get($("flowGpm")); // to GPM
 
-        let needTank = NaN, lastHrs = NaN, lastDays = NaN, fillHrs = NaN;
+        let needTank_gal = NaN, lastHrs = NaN, lastDays = NaN, fillHrs = NaN;
 
         if (mode === "tank"){
-          if (Number.isFinite(daily) && interval>0){
-            needTank = daily * (interval/24);
+          if (Number.isFinite(daily_gal) && intervalHrs>0){
+            needTank_gal = daily_gal * (intervalHrs/24);
           }
-          if (gpm>0 && Number.isFinite(needTank)){
-            fillHrs = needTank / (gpm*60);
+          if (gpm>0 && Number.isFinite(needTank_gal)){
+            fillHrs = needTank_gal / (gpm*60);
           }
         } else {
-          if (have>0 && Number.isFinite(daily) && daily>0){
-            lastHrs = have / (daily/24);
+          if (have_gal>0 && Number.isFinite(daily_gal) && daily_gal>0){
+            lastHrs = have_gal / (daily_gal/24);
             lastDays = lastHrs/24;
           }
-          if (gpm>0 && have>0){
-            fillHrs = have / (gpm*60);
+          if (gpm>0 && have_gal>0){
+            fillHrs = have_gal / (gpm*60);
           }
         }
+
+        // Units out
+        const isMetric = (window.AGCUnits.mode()==='metric');
+        const dayOut = window.AGCUnits.out(daily_gal,'gal>l');
+        const periodOut = window.AGCUnits.out(period_gal,'gal>l');
+        const needTankOut = window.AGCUnits.out(needTank_gal,'gal>l');
+        const haveOut = window.AGCUnits.out(have_gal,'gal>l');
 
         // Steps
         const lines = [];
         const heat = Math.max(0, val("heat")||0), act = Math.max(0, val("activity")||0), res = Math.max(0, val("reserve")||0), wild = Math.max(0, val("wildlife")||0);
         lines.push(`<div>Adj. multiplier = 1 + ${(heat/100).toFixed(2)} + ${(act/100).toFixed(2)} + ${(res/100).toFixed(2)} + ${(wild/100).toFixed(2)} = <strong>${mult.toFixed(2)}</strong></div>`);
-        lines.push(`<div>Daily need = head × base × mult = ${fmt0(head)} × ${fmt1(base)} × ${mult.toFixed(2)} = <strong>${fmt0(daily)}</strong> gal/day</div>`);
-        if (Number.isFinite(period)){
-          lines.push(`<div>Period total = daily × days = ${fmt0(daily)} × ${fmt1(days)} = <strong>${fmt0(period)}</strong> gal</div>`);
-        }
-        if (mode==="tank" && Number.isFinite(needTank)){
-          lines.push(`<div>Required tank = daily × (interval/24) = ${fmt0(daily)} × (${fmt1(interval)}/24) = <strong>${fmt0(needTank)}</strong> gal</div>`);
-        }
-        if (mode==="duration" && Number.isFinite(lastHrs)){
-          lines.push(`<div>Tank duration = tank ÷ (daily/24) = ${fmt0(have)} ÷ (${fmt0(daily)}/24) = <strong>${fmt1(lastHrs)}</strong> hr</div>`);
+
+        // show base rate in current UI units
+        const baseDisplay = window.AGCUnits.mode()==='metric' ? window.AGCUnits.out(base_gpd,'gal>l') : base_gpd;
+        const baseUnit = isMetric ? 'L/hd/day' : 'gal/hd/day';
+        const dayUnit  = isMetric ? 'L/day'    : 'gal/day';
+        const volUnit  = isMetric ? 'L'        : 'gal';
+
+        lines.push(`<div>Daily need = head × base × mult = ${fmt0(head)} × ${fmt1(baseDisplay)} ${baseUnit} × ${mult.toFixed(2)} = <strong>${fmt0(isMetric?dayOut:daily_gal)}</strong> ${dayUnit}</div>`);
+        if (Number.isFinite(period_gal)){
+          lines.push(`<div>Period total = daily × days = ${fmt0(isMetric?dayOut:daily_gal)} × ${fmt1(days)} = <strong>${fmt0(isMetric?periodOut:period_gal)}</strong> ${volUnit}</div>`);
         }
         const trough = troughGallons();
         if (trough>0){
-          lines.push(`<div>Trough gallons = L×W×D×7.4805 = ${val("tL")}×${val("tW")}×${val("tD")}×7.4805 = <strong>${fmt0(trough)}</strong> gal</div>`);
+          const tOut = window.AGCUnits.out(trough,'gal>l');
+          if (isMetric){
+            lines.push(`<div>Trough volume ≈ <strong>${fmt0(tOut)}</strong> L</div>`);
+          } else {
+            lines.push(`<div>Trough gallons = L×W×D×7.4805 = ${window.AGCUnits.get($("tL")).toFixed(2)}×${window.AGCUnits.get($("tW")).toFixed(2)}×${window.AGCUnits.get($("tD")).toFixed(2)}×7.4805 = <strong>${fmt0(trough)}</strong> gal</div>`);
+          }
+        }
+        if (mode==="tank" && Number.isFinite(needTank_gal)){
+          lines.push(`<div>Required tank = daily × (interval/24) = ${fmt0(isMetric?dayOut:daily_gal)} × (${fmt1(intervalHrs)}/24) = <strong>${fmt0(isMetric?needTankOut:needTank_gal)}</strong> ${volUnit}</div>`);
+        }
+        if (mode==="duration" && Number.isFinite(lastHrs)){
+          lines.push(`<div>Tank duration = tank ÷ (daily/24) = ${fmt0(isMetric?haveOut:have_gal)} ÷ (${fmt0(isMetric?dayOut:daily_gal)}/24) = <strong>${fmt1(lastHrs)}</strong> hr</div>`);
         }
         if (gpm>0 && Number.isFinite(fillHrs)){
-          lines.push(`<div>Fill time = tank ÷ (GPM×60) = ${fmt0(mode==="tank" ? needTank : have)} ÷ (${fmt1(gpm)}×60) = <strong>${fmt1(fillHrs)}</strong> hr</div>`);
+          const flowDisp = isMetric ? window.AGCUnits.out(gpm,'gpm>lpm') : gpm;
+          const flowUnit = isMetric ? 'L/min' : 'GPM';
+          const tankUsed = (mode==="tank" ? (isMetric?needTankOut:needTank_gal) : (isMetric?haveOut:have_gal));
+          lines.push(`<div>Fill time = tank ÷ (flow×60) = ${fmt0(tankUsed)} ${volUnit} ÷ (${fmt1(flowDisp)} ${flowUnit} × 60) = <strong>${fmt1(fillHrs)}</strong> hr</div>`);
         }
         $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
 
         // Show
-        $("dayGal").textContent    = fmt0(daily);
-        $("periodGal").textContent = fmt0(period);
-        $("needTank").textContent  = fmt0(needTank);
-        $("haveTank").textContent  = fmt0(have || NaN);
+        $("dayGal").textContent    = fmt0(isMetric ? dayOut : daily_gal);
+        $("periodGal").textContent = fmt0(isMetric ? periodOut : period_gal);
+        $("needTank").textContent  = fmt0(isMetric ? needTankOut : needTank_gal);
+        $("haveTank").textContent  = fmt0(isMetric ? haveOut : have_gal);
         $("lastHrs").textContent   = fmt1(lastHrs);
         $("lastDays").textContent  = fmt1(lastDays);
         $("fillHrs").textContent   = fmt1(fillHrs);
       }
+
+      // Initial compute
+      compute();
     </script>
   </main>
 </Layout>
