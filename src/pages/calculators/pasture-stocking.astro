@@ -85,6 +85,9 @@ import Layout from "../../layouts/Layout.astro";
       .content h3{margin:.8rem 0 .3rem}
       .content ul,.content ol{margin:.2rem 0 .2rem .9rem}
       .content .disclaimer{color:#64748b;margin-top:.6rem}
+      .ad-slot{display:none;margin:1rem 0}
+      .ad-slot.loaded{display:block}
+      .unit{font-variant-numeric:tabular-nums}
     </style>
   </Fragment>
 
@@ -92,6 +95,9 @@ import Layout from "../../layouts/Layout.astro";
 
   <main class="wrap">
     <h1 style="margin:.5rem 0 1rem">Pasture Stocking Rate &amp; Grazing Days</h1>
+
+    <!-- AdSense-safe top slot (hidden unless ad library present) -->
+    <div class="ad-slot" id="ad-top"></div>
 
     <fieldset>
       <legend>Inputs</legend>
@@ -105,66 +111,66 @@ import Layout from "../../layouts/Layout.astro";
           </select>
         </div>
         <div>
-          <label for="acres">Pasture size (acres)</label>
-          <input id="acres" type="number" step="0.01" placeholder="e.g. 40" />
+          <label for="unitSel">Units</label>
+          <select id="unitSel">
+            <option value="imp">Imperial (acres, lb)</option>
+            <option value="met">Metric (hectares, kg)</option>
+          </select>
         </div>
         <div>
-          <label for="forage">Forage production (lb DM/acre)</label>
-          <input id="forage" type="number" step="1" placeholder="e.g. 2500" />
+          <label for="acres" id="labArea">Pasture size (acres)</label>
+          <input id="acres" class="unit" type="number" step="0.01" placeholder="e.g. 40" />
         </div>
       </div>
 
       <div class="row">
         <div>
+          <label for="forage" id="labForage">Forage production (lb DM/acre)</label>
+          <input id="forage" class="unit" type="number" step="1" placeholder="e.g. 2500" />
+        </div>
+        <div>
           <label for="util">Utilization (%)</label>
           <input id="util" type="number" step="1" value="40" />
         </div>
         <div>
-          <label for="wt">Avg animal weight (lb)</label>
-          <input id="wt" type="number" step="1" value="1200" />
+          <label for="wt" id="labWt">Avg animal weight (lb)</label>
+          <input id="wt" class="unit" type="number" step="1" value="1200" />
         </div>
+      </div>
+
+      <div class="row">
         <div>
           <label for="intake">Daily intake (% of body weight)</label>
           <input id="intake" type="number" step="0.1" value="2.5" />
         </div>
-      </div>
 
-      <div class="row" id="rowDays">
-        <div>
+        <div id="rowDays">
           <label for="head">Head count</label>
           <input id="head" type="number" step="1" placeholder="e.g. 35" />
         </div>
-        <div>
-          <label>&nbsp;</label>
-          <div class="note">We’ll compute grazing days.</div>
-        </div>
-        <div></div>
-      </div>
 
-      <div class="row" id="rowHead" style="display:none">
-        <div>
+        <div id="rowHead" style="display:none">
           <label for="days">Grazing days</label>
           <input id="days" type="number" step="1" placeholder="e.g. 45" />
         </div>
-        <div>
-          <label>&nbsp;</label>
-          <div class="note">We’ll compute head capacity.</div>
-        </div>
-        <div></div>
       </div>
     </fieldset>
 
     <section class="result">
       <div class="note">Results</div>
       <div style="display:grid;gap:.5rem;margin-top:.4rem">
-        <div><strong>Total available forage (DM):</strong> <span id="avail">—</span> lb</div>
-        <div><strong>Intake per head per day:</strong> <span id="intakeLb">—</span> lb</div>
+        <div><strong>Total available forage (DM):</strong> <span id="avail">—</span> lb (<span id="availKg">—</span> kg)</div>
+        <div><strong>Intake per head per day:</strong> <span id="intakeLb">—</span> lb (<span id="intakeKg">—</span> kg)</div>
         <div id="outDays"><strong>Grazing days (est):</strong> <span id="resDays">—</span> days</div>
         <div id="outHead" style="display:none"><strong>Head capacity (est):</strong> <span id="resHead">—</span> head</div>
         <div><strong>AUMs from available forage:</strong> <span id="aums">—</span> AUM</div>
+        <div><strong>Stocking rate:</strong> <span id="aumPerAc">—</span> AUM/ac (<span id="aumPerHa">—</span> AUM/ha)</div>
       </div>
       <p class="note" style="margin-top:.6rem">Estimates only. Pastures vary with weather, species, and management—use conservatively.</p>
     </section>
+
+    <!-- Mid-article ad slot -->
+    <div class="ad-slot" id="ad-mid"></div>
 
     <section class="content" id="explain">
       <h2>How we got these numbers</h2>
@@ -177,6 +183,7 @@ import Layout from "../../layouts/Layout.astro";
         <li><strong>Grazing days</strong> = available forage ÷ (head × intake/head/day)</li>
         <li><strong>Head capacity</strong> = available forage ÷ (days × intake/head/day)</li>
         <li><strong>AUM</strong> = available forage ÷ 780 (lb DM per AUM)</li>
+        <li><strong>AUM per acre</strong> = AUM ÷ acres; <strong>AUM per hectare</strong> = AUM ÷ hectares</li>
       </ul>
 
       <h3>Example</h3>
@@ -197,82 +204,172 @@ import Layout from "../../layouts/Layout.astro";
 
       <p class="disclaimer">Estimates only. Verify with your extension service or grazing plan.</p>
     </section>
-
-    <script is:inline>
-      // Inline helpers
-      const $ = (id) => document.getElementById(id);
-      const num = (id) => parseFloat(($(id)?.value ?? "").trim());
-      const fmt0 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
-      const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
-
-      const fields = ["mode","acres","forage","util","wt","intake","head","days"];
-      fields.forEach(id => $(id).addEventListener("input", compute));
-      $("mode").addEventListener("change", onMode);
-      onMode(); compute();
-
-      function onMode(){
-        const m = $("mode").value;
-        $("rowDays").style.display = m==="days" ? "" : "none";
-        $("rowHead").style.display = m==="head" ? "" : "none";
-        $("outDays").style.display = m==="days" ? "" : "none";
-        $("outHead").style.display = m==="head" ? "" : "none";
-        compute();
-      }
-
-      function compute(){
-        const acres = num("acres");
-        const forage = num("forage");
-        const util = num("util");
-        const wt = num("wt");
-        const intakePct = num("intake");
-
-        if(!(acres>0) || !(forage>0) || !(util>=0) || !(wt>0) || !(intakePct>0)){
-          show(); $("steps").innerHTML = `<span class="note">Enter pasture, forage, and animal details to see the step-by-step.</span>`; return;
-        }
-
-        const avail = acres * forage * (util/100); // lb DM
-        const intakeLb = wt * (intakePct/100);    // lb/day/head
-        const AUM_LB = 780;
-        const aums = avail / AUM_LB;
-
-        let resDays = NaN, resHead = NaN, lines = [];
-        if (intakeLb>0){
-          if ($("mode").value === "days"){
-            const head = num("head");
-            if (head>0){
-              resDays = avail / (head * intakeLb);
-            }
-            lines.push(`<div>Available forage = ${acres} × ${fmt0(forage)} × ${util}% = <strong>${fmt0(avail)}</strong> lb</div>`);
-            lines.push(`<div>Intake/head/day = ${wt} × ${intakePct}% = <strong>${fmt0(intakeLb)}</strong> lb</div>`);
-            if (head>0){
-              lines.push(`<div>Grazing days = ${fmt0(avail)} ÷ (${fmt0(head)} × ${fmt0(intakeLb)}) = <strong>${fmt1(resDays)}</strong> days</div>`);
-            }
-          } else {
-            const days = num("days");
-            if (days>0){
-              resHead = avail / (days * intakeLb);
-            }
-            lines.push(`<div>Available forage = ${acres} × ${fmt0(forage)} × ${util}% = <strong>${fmt0(avail)}</strong> lb</div>`);
-            lines.push(`<div>Intake/head/day = ${wt} × ${intakePct}% = <strong>${fmt0(intakeLb)}</strong> lb</div>`);
-            if (days>0){
-              lines.push(`<div>Head capacity = ${fmt0(avail)} ÷ (${fmt1(days)} × ${fmt0(intakeLb)}) = <strong>${fmt1(resHead)}</strong> head</div>`);
-            }
-          }
-          lines.push(`<div>AUMs = ${fmt0(avail)} ÷ 780 = <strong>${fmt1(aums)}</strong> AUM</div>`);
-        }
-
-        $("steps").innerHTML = lines.length ? `<div style="display:grid;gap:.35rem">${lines.join("")}</div>` : `<span class="note">Enter pasture, forage, and animal details to see the step-by-step.</span>`;
-
-        show({avail,intakeLb,resDays,resHead,aums});
-      }
-
-      function show(o={}){
-        $("avail").textContent = fmt0(o.avail);
-        $("intakeLb").textContent = fmt0(o.intakeLb);
-        $("resDays").textContent = fmt1(o.resDays);
-        $("resHead").textContent = fmt1(o.resHead);
-        $("aums").textContent = fmt1(o.aums);
-      }
-    </script>
   </main>
+
+  <script is:inline>
+    // ===== Helpers & constants =====
+    const $ = (id) => document.getElementById(id);
+    const num = (id) => parseFloat(($(id)?.value ?? "").trim());
+    const fmt0 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
+    const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
+    const fmt2 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:2}) : "—";
+
+    const LB_TO_KG = 0.45359237;
+    const KG_TO_LB = 1 / LB_TO_KG;                 // 2.20462262
+    const AC_TO_HA = 0.404685642;
+    const HA_TO_AC = 1 / AC_TO_HA;                 // 2.47105381
+    const LBPAC_TO_KGHA = LB_TO_KG / AC_TO_HA;     // ~1.120849
+    const KGHA_TO_LBPAC = 1 / LBPAC_TO_KGHA;
+    const AUM_LB = 780;
+
+    // ===== Wire UI =====
+    const fields = ["mode","unitSel","acres","forage","util","wt","intake","head","days"];
+    fields.forEach(id => $(id).addEventListener("input", onAny));
+    $("mode").addEventListener("change", onMode);
+    $("unitSel").addEventListener("change", onUnitToggle);
+
+    // initialize
+    onMode();
+    onUnitToggle(true);
+    compute();
+
+    function onAny(){ compute(); }
+
+    function onMode(){
+      const m = $("mode").value;
+      $("rowDays").style.display = m==="days" ? "" : "none";
+      $("rowHead").style.display = m==="head" ? "" : "none";
+      $("outDays").style.display = m==="days" ? "" : "none";
+      $("outHead").style.display = m==="head" ? "" : "none";
+    }
+
+    function onUnitToggle(first=false){
+      const metric = $("unitSel").value === "met";
+      // Update labels
+      $("labArea").textContent = metric ? "Pasture size (hectares)" : "Pasture size (acres)";
+      $("labForage").textContent = metric ? "Forage production (kg DM/ha)" : "Forage production (lb DM/acre)";
+      $("labWt").textContent = metric ? "Avg animal weight (kg)" : "Avg animal weight (lb)";
+
+      // Convert current inputs (preserve meaning across toggle)
+      if (!first){
+        if (metric){
+          const ac = num("acres"); if (ac>0) $("acres").value = (ac*AC_TO_HA).toString();
+          const f  = num("forage"); if (f>0) $("forage").value = (f*LBPAC_TO_KGHA).toString();
+          const w  = num("wt"); if (w>0) $("wt").value = (w*LB_TO_KG).toString();
+        } else {
+          const ha = num("acres"); if (ha>0) $("acres").value = (ha*HA_TO_AC).toString();
+          const f2 = num("forage"); if (f2>0) $("forage").value = (f2*KGHA_TO_LBPAC).toString();
+          const w2 = num("wt"); if (w2>0) $("wt").value = (w2*KG_TO_LB).toString();
+        }
+      }
+      compute();
+    }
+
+    // ===== Core compute (internals in Imperial for consistency) =====
+    function getInputsImperial(){
+      const metric = $("unitSel").value === "met";
+
+      let acres = num("acres");
+      let forage = num("forage"); // per area
+      let wt = num("wt");
+
+      if (metric){
+        acres = acres>0 ? acres*HA_TO_AC : NaN;                    // ha -> ac
+        forage = forage>0 ? forage*KGHA_TO_LBPAC : NaN;            // kg/ha -> lb/ac
+        wt = wt>0 ? wt*KG_TO_LB : NaN;                             // kg -> lb
+      }
+
+      return {
+        acres,
+        forage_lbpac: forage,
+        util_pct: num("util"),
+        wt_lb: wt,
+        intake_pct: num("intake"),
+        mode: $("mode").value,
+        head: num("head"),
+        days: num("days"),
+        metric
+      };
+    }
+
+    function compute(){
+      const I = getInputsImperial();
+
+      if(!(I.acres>0) || !(I.forage_lbpac>0) || !(I.util_pct>=0) || !(I.wt_lb>0) || !(I.intake_pct>0)){
+        show(); $("steps").innerHTML = `<span class="note">Enter pasture, forage, and animal details to see the step-by-step.</span>`; return;
+      }
+
+      const avail_lb = I.acres * I.forage_lbpac * (I.util_pct/100);
+      const intake_lb = I.wt_lb * (I.intake_pct/100);
+
+      const aums = avail_lb / AUM_LB;
+      const aumPerAc = I.acres>0 ? (aums / I.acres) : NaN;
+      const aumPerHa = (I.acres*AC_TO_HA)>0 ? (aums / (I.acres*AC_TO_HA)) : NaN;
+
+      let resDays = NaN, resHead = NaN;
+      const lines = [];
+
+      lines.push(`<div>Available forage = ${fmt0(I.acres)} ac × ${fmt0(I.forage_lbpac)} lb/ac × ${fmt1(I.util_pct)}% = <strong>${fmt0(avail_lb)}</strong> lb</div>`);
+      lines.push(`<div>Intake/head/day = ${fmt0(I.wt_lb)} lb × ${fmt2(I.intake_pct/100)} = <strong>${fmt0(intake_lb)}</strong> lb/day</div>`);
+
+      if (intake_lb>0){
+        if (I.mode === "days"){
+          const head = I.head;
+          if (head>0){
+            resDays = avail_lb / (head * intake_lb);
+            lines.push(`<div>Grazing days = ${fmt0(avail_lb)} ÷ (${fmt0(head)} × ${fmt0(intake_lb)}) = <strong>${fmt1(resDays)}</strong> days</div>`);
+          } else {
+            lines.push(`<div>Enter head count to compute days.</div>`);
+          }
+        } else {
+          const days = I.days;
+          if (days>0){
+            resHead = avail_lb / (days * intake_lb);
+            lines.push(`<div>Head capacity = ${fmt0(avail_lb)} ÷ (${fmt1(days)} × ${fmt0(intake_lb)}) = <strong>${fmt1(resHead)}</strong> head</div>`);
+          } else {
+            lines.push(`<div>Enter grazing days to compute head capacity.</div>`);
+          }
+        }
+      }
+
+      lines.push(`<div>AUMs = ${fmt0(avail_lb)} ÷ 780 = <strong>${fmt1(aums)}</strong> AUM</div>`);
+      lines.push(`<div>Stocking rate = <strong>${fmt2(aumPerAc)}</strong> AUM/ac (<strong>${fmt2(aumPerHa)}</strong> AUM/ha)</div>`);
+
+      $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
+
+      // Show results (dual units where helpful)
+      const availKg = avail_lb * LB_TO_KG;
+      const intakeKg = intake_lb * LB_TO_KG;
+
+      show({
+        avail_lb, availKg, intake_lb, intakeKg,
+        resDays, resHead, aums, aumPerAc, aumPerHa
+      });
+
+      // Light analytics hook (no-op if not present)
+      if (!window.__pl_pasture_used){
+        window.__pl_pasture_used = true;
+        try { window.plausible && window.plausible("Used Pasture Stocking"); } catch {}
+      }
+    }
+
+    function show(o={}){
+      $("avail").textContent    = fmt0(o.avail_lb);
+      $("availKg").textContent  = fmt0(o.availKg);
+      $("intakeLb").textContent = fmt0(o.intake_lb);
+      $("intakeKg").textContent = fmt0(o.intakeKg);
+      $("resDays").textContent  = fmt1(o.resDays);
+      $("resHead").textContent  = fmt1(o.resHead);
+      $("aums").textContent     = fmt1(o.aums);
+      $("aumPerAc").textContent = fmt2(o.aumPerAc);
+      $("aumPerHa").textContent = fmt2(o.aumPerHa);
+    }
+
+    // Ad slots: reveal only when an ad library exists
+    (function(){
+      if (window.adsbygoogle || window.googletag) {
+        document.querySelectorAll(".ad-slot").forEach(el => el.classList.add("loaded"));
+      }
+    })();
+  </script>
 </Layout>
