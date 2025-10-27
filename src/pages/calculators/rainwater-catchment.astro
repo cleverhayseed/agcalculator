@@ -66,8 +66,10 @@ import Layout from "../../layouts/Layout.astro";
     }
     </script>
 
-    <!-- AdSense (replace ca-pub-xxxxxxxxxxxxxxxx with your publisher ID) -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxxxxxxxxxxxxxxx" crossorigin="anonymous"></script>
+    <!-- AdSense: client ID is your publisher account -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4050846968323757" crossorigin="anonymous"></script>
+    <!-- FYI ensure /ads.txt at site root contains:
+         google.com, pub-4050846968323757, DIRECT, f08c47fec0942fa0 -->
 
     <style>
       :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
@@ -96,13 +98,13 @@ import Layout from "../../layouts/Layout.astro";
   <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
 
   <main class="wrap">
-    <h1 style="margin:.5rem 0 0.25rem">Rainwater Catchment &amp; Tank Sizing</h1>
+    <h1 style="margin:.5rem 0 .25rem">Rainwater Catchment &amp; Tank Sizing</h1>
 
-    <!-- Ad slot #1 (top, responsive) -->
+    <!-- Ad slot #1 (responsive) -->
     <div class="ads">
       <ins class="adsbygoogle adwrap"
            style="display:block"
-           data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
+           data-ad-client="ca-pub-4050846968323757"
            data-ad-slot="1111111111"
            data-ad-format="auto"
            data-full-width-responsive="true"></ins>
@@ -189,46 +191,6 @@ import Layout from "../../layouts/Layout.astro";
       <p class="note">Enter rainfall for the time window you care about (storm, month, or season). We’ll compute harvest for that period.</p>
     </fieldset>
 
-    <fieldset>
-  <legend>Units & area</legend>
-  <div class="row">
-    <div>
-      <label for="uSys">Units</label>
-      <select id="uSys">
-        <option value="imp" selected>US (ft², inches, gallons)</option>
-        <option value="met">Metric (m², mm, liters)</option>
-      </select>
-    </div>
-    <div>
-      <label for="areaMode">Area input</label>
-      <select id="areaMode">
-        <option value="total">Total roof area</option>
-        <option value="rect">Rectangle (L × W)</option>
-      </select>
-    </div>
-    <div id="rowAreaTotal">
-      <label id="labelArea" for="area">Roof area (ft²)</label>
-      <input id="area" type="number" step="0.01" placeholder="e.g. 1800" />
-    </div>
-  </div>
-
-  <div class="row" id="rowAreaRect" style="display:none">
-    <div>
-      <label id="labelLen" for="len">Roof length (ft)</label>
-      <input id="len" type="number" step="0.01" placeholder="e.g. 60" />
-    </div>
-    <div>
-      <label id="labelWid" for="wid">Roof width (ft)</label>
-      <input id="wid" type="number" step="0.01" placeholder="e.g. 30" />
-    </div>
-    <div>
-      <label>&nbsp;</label>
-      <div class="note">Area = L × W</div>
-    </div>
-  </div>
-</fieldset>
-
-
     <section class="result">
       <div class="note">Results</div>
       <div style="display:grid;gap:.5rem;margin-top:.4rem">
@@ -244,7 +206,7 @@ import Layout from "../../layouts/Layout.astro";
     <div class="ads">
       <ins class="adsbygoogle adwrap"
            style="display:block"
-           data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
+           data-ad-client="ca-pub-4050846968323757"
            data-ad-slot="2222222222"
            data-ad-format="auto"
            data-full-width-responsive="true"></ins>
@@ -259,7 +221,7 @@ import Layout from "../../layouts/Layout.astro";
       <ul>
         <li><strong>Gross volume</strong> (US) = area(ft²) × rain(in) × 0.623</li>
         <li><strong>Gross volume</strong> (metric) = area(m²) × rain(mm) <em>(liters)</em></li>
-        <li><strong>Harvestable</strong> = gross × runoff coefficient − first-flush (≥ 0)</li>
+        <li><strong>Harvestable</strong> = max(0, gross × runoff coefficient − first-flush)</li>
         <li><strong>Suggested tank</strong> = daily demand × desired days</li>
         <li><strong>Days from harvest</strong> = harvestable ÷ daily demand</li>
         <li><strong>Days from existing tank</strong> = tank ÷ daily demand</li>
@@ -292,7 +254,8 @@ import Layout from "../../layouts/Layout.astro";
       const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
 
       // Constants
-      const FT2_PER_M2 = 10.7639;
+      const FT_PER_M = 3.28084;
+      const FT2_PER_M2 = FT_PER_M * FT_PER_M;
       const IN_PER_MM = 1/25.4;
       const GAL_PER_L = 0.264172;
       const L_PER_GAL = 3.78541;
@@ -326,19 +289,16 @@ import Layout from "../../layouts/Layout.astro";
       function areaSqft(){
         const sys = $("uSys").value;
         const mode = $("areaMode").value;
-        let A = NaN;
         if (mode==="total"){
           const v = num("area");
-          if (sys==="imp") A = v;
-          else A = v * FT2_PER_M2; // m² -> ft²
+          if (!(v>0)) return NaN;
+          return sys==="imp" ? v : v * FT2_PER_M2; // m² -> ft²
         } else {
           let L = num("len"), W = num("wid");
           if (!(L>0 && W>0)) return NaN;
-          if (sys==="met"){ L *= FT2_PER_M2**0.5; W *= FT2_PER_M2**0.5; } // m -> ft (sqrt conversion)
-          else { /* already ft */ }
-          A = L * W;
+          if (sys==="met"){ L *= FT_PER_M; W *= FT_PER_M; } // m -> ft
+          return L * W; // ft²
         }
-        return (A>0) ? A : NaN;
       }
 
       function rainInches(){
@@ -384,46 +344,41 @@ import Layout from "../../layouts/Layout.astro";
           return;
         }
 
-        // Base (compute in US gallons)
-        const grossGal = Aft2 * Rin * GAL_PER_IN_FT2;           // gal
-        let harvGal = Math.max(0, grossGal * k - flushG);       // gal (≥0)
+        // Compute in US gallons, then convert for display
+        const grossGal = Aft2 * Rin * GAL_PER_IN_FT2;  // gal
+        const harvGal  = Math.max(0, grossGal * k - flushG);
 
-        // Suggested tank
         const tankSuggestGal = (dGPD>0 && days>0) ? (dGPD * days) : NaN;
         const daysFromHarv   = (dGPD>0) ? (harvGal / dGPD) : NaN;
         const daysFromTank   = (dGPD>0 && tankG>0) ? (tankG / dGPD) : NaN;
 
-        // Show in selected units
         const sys = $("uSys").value;
+
         if (sys==="imp"){
           $("harv").textContent        = Number.isFinite(harvGal) ? fmt0(harvGal) + " gal" : "—";
           $("tankSuggest").textContent = Number.isFinite(tankSuggestGal) ? fmt0(tankSuggestGal) + " gal" : "—";
-          $("daysFromHarv").textContent= Number.isFinite(daysFromHarv) ? fmt1(daysFromHarv) + " days" : "—";
-          $("daysFromTank").textContent= Number.isFinite(daysFromTank) ? fmt1(daysFromTank) + " days" : "—";
         } else {
-          const harvL = harvGal * L_PER_GAL;
-          const tankSuggestL = Number.isFinite(tankSuggestGal) ? tankSuggestGal * L_PER_GAL : NaN;
-          $("harv").textContent        = Number.isFinite(harvL) ? fmt0(harvL) + " L" : "—";
-          $("tankSuggest").textContent = Number.isFinite(tankSuggestL) ? fmt0(tankSuggestL) + " L" : "—";
-          $("daysFromHarv").textContent= Number.isFinite(daysFromHarv) ? fmt1(daysFromHarv) + " days" : "—";
-          $("daysFromTank").textContent= Number.isFinite(daysFromTank) ? fmt1(daysFromTank) + " days" : "—";
+          $("harv").textContent        = Number.isFinite(harvGal) ? fmt0(harvGal * L_PER_GAL) + " L" : "—";
+          $("tankSuggest").textContent = Number.isFinite(tankSuggestGal) ? fmt0(tankSuggestGal * L_PER_GAL) + " L" : "—";
         }
+        $("daysFromHarv").textContent = Number.isFinite(daysFromHarv) ? fmt1(daysFromHarv) + " days" : "—";
+        $("daysFromTank").textContent = Number.isFinite(daysFromTank) ? fmt1(daysFromTank) + " days" : "—";
 
-        // Steps (always show both math and units clarity)
+        // Steps
         const sysLbl = sys==="imp" ? {a:"ft²", r:"in", v:"gal"} : {a:"m²", r:"mm", v:"L"};
         const Ashow = sys==="imp" ? Aft2 : (Aft2/FT2_PER_M2);
         const Rshow = sys==="imp" ? Rin : (Rin/IN_PER_MM);
         const grossShow = sys==="imp" ? grossGal : grossGal*L_PER_GAL;
-        const flushShow = sys==="imp" ? flushG : flushG*L_PER_GAL;
-        const harvShow  = sys==="imp" ? harvGal : harvGal*L_PER_GAL;
+        const flushShow = sys==="imp" ? flushG   : flushG  *L_PER_GAL;
+        const harvShow  = sys==="imp" ? harvGal  : harvGal *L_PER_GAL;
 
         const lines = [];
         if (sys==="imp"){
           lines.push(`<div>Gross = area × rain × 0.623 = ${fmt0(Ashow)} ${sysLbl.a} × ${fmt1(Rshow)} ${sysLbl.r} × 0.623 = <strong>${fmt0(grossShow)}</strong> ${sysLbl.v}</div>`);
         } else {
-          lines.push(`<div>Gross = area × rain (metric) = ${fmt0(Ashow)} ${sysLbl.a} × ${fmt1(Rshow)} ${sysLbl.r} = <strong>${fmt0(grossShow)}</strong> ${sysLbl.v}</div>`);
+          lines.push(`<div>Gross (metric) = area × rain = ${fmt0(Ashow)} ${sysLbl.a} × ${fmt1(Rshow)} ${sysLbl.r} = <strong>${fmt0(grossShow)}</strong> ${sysLbl.v}</div>`);
         }
-        lines.push(`<div>Harvestable = gross × coeff − first-flush = ${fmt0(grossShow)} × ${k} − ${fmt0(flushShow)} = <strong>${fmt0(harvShow)}</strong> ${sysLbl.v}</div>`);
+        lines.push(`<div>Harvestable = max(0, gross × coeff − first-flush) = max(0, ${fmt0(grossShow)} × ${k} − ${fmt0(flushShow)}) = <strong>${fmt0(harvShow)}</strong> ${sysLbl.v}</div>`);
         if (Number.isFinite(tankSuggestGal)){
           const tsShow = sys==="imp" ? tankSuggestGal : tankSuggestGal*L_PER_GAL;
           const dShow  = sys==="imp" ? dGPD : dGPD*L_PER_GAL;
@@ -434,8 +389,8 @@ import Layout from "../../layouts/Layout.astro";
           lines.push(`<div>Days from harvest = harvest ÷ daily = ${fmt0(harvShow)} ÷ ${fmt0(dShow)} = <strong>${fmt1(daysFromHarv)}</strong> days</div>`);
         }
         if (Number.isFinite(daysFromTank)){
-          const tShow = sys==="imp" ? tankG : tankG*L_PER_GAL;
-          const dShow = sys==="imp" ? dGPD : dGPD*L_PER_GAL;
+          const tShow  = sys==="imp" ? tankG : tankG*L_PER_GAL;
+          const dShow  = sys==="imp" ? dGPD : dGPD*L_PER_GAL;
           lines.push(`<div>Days from existing tank = ${fmt0(tShow)} ÷ ${fmt0(dShow)} = <strong>${fmt1(daysFromTank)}</strong> days</div>`);
         }
         $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
