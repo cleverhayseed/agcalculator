@@ -189,6 +189,46 @@ import Layout from "../../layouts/Layout.astro";
       <p class="note">Enter rainfall for the time window you care about (storm, month, or season). We’ll compute harvest for that period.</p>
     </fieldset>
 
+    <fieldset>
+  <legend>Units & area</legend>
+  <div class="row">
+    <div>
+      <label for="uSys">Units</label>
+      <select id="uSys">
+        <option value="imp" selected>US (ft², inches, gallons)</option>
+        <option value="met">Metric (m², mm, liters)</option>
+      </select>
+    </div>
+    <div>
+      <label for="areaMode">Area input</label>
+      <select id="areaMode">
+        <option value="total">Total roof area</option>
+        <option value="rect">Rectangle (L × W)</option>
+      </select>
+    </div>
+    <div id="rowAreaTotal">
+      <label id="labelArea" for="area">Roof area (ft²)</label>
+      <input id="area" type="number" step="0.01" placeholder="e.g. 1800" />
+    </div>
+  </div>
+
+  <div class="row" id="rowAreaRect" style="display:none">
+    <div>
+      <label id="labelLen" for="len">Roof length (ft)</label>
+      <input id="len" type="number" step="0.01" placeholder="e.g. 60" />
+    </div>
+    <div>
+      <label id="labelWid" for="wid">Roof width (ft)</label>
+      <input id="wid" type="number" step="0.01" placeholder="e.g. 30" />
+    </div>
+    <div>
+      <label>&nbsp;</label>
+      <div class="note">Area = L × W</div>
+    </div>
+  </div>
+</fieldset>
+
+
     <section class="result">
       <div class="note">Results</div>
       <div style="display:grid;gap:.5rem;margin-top:.4rem">
