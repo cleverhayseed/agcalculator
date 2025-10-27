@@ -7,17 +7,47 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="description" content="AgCalculator — quick, reliable farm & ranch calculators. Simple tools for grain, hay, pasture, irrigation and more." />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
 
-    <!-- Favicon -->
+    <!-- Performance hints -->
+    <link rel="preconnect" href="https://plausible.io" />
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin />
+    <link rel="dns-prefetch" href="https://plausible.io" />
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+
+    <!-- Favicon / Icons -->
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png" />
 
-    <!-- Consent + AdSense loader -->
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#2F855A" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="AgCalculator" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <!-- Consent + AdSense loader (loads AdSense ONLY after user grants ads consent) -->
     <script is:inline>
       (function () {
         const KEY = 'agc_ads_consent'; // 'granted' | 'denied'
-        const hasChoice = () => localStorage.getItem(KEY) === 'granted' || localStorage.getItem(KEY) === 'denied';
-        const grant = () => { localStorage.setItem(KEY, 'granted'); loadAdsense(); hideBanner(); };
-        const deny  = () => { localStorage.setItem(KEY, 'denied'); hideBanner(); };
+        const $ = (sel) => document.querySelector(sel);
+
+        function hasChoice() {
+          const v = localStorage.getItem(KEY);
+          return v === 'granted' || v === 'denied';
+        }
+        function grant() {
+          localStorage.setItem(KEY, 'granted');
+          loadAdsense();
+          hideBanner();
+        }
+        function deny() {
+          localStorage.setItem(KEY, 'denied');
+          hideBanner();
+        }
 
         function loadAdsense() {
           if (document.getElementById('adsbygooglejs')) return;
@@ -29,16 +59,21 @@
           document.head.appendChild(s);
         }
 
-        function bannerEl() {
+        function createBanner() {
+          if (document.getElementById('consent-banner')) return;
           const el = document.createElement('div');
           el.id = 'consent-banner';
-          el.style.cssText = "position:fixed;inset:auto 1rem 1rem 1rem;z-index:9999;background:#fff;border:1px solid #cbd5e1;border-radius:12px;max-width:680px;margin:0 auto;padding:1rem;box-shadow:0 6px 18px rgba(0,0,0,.08)";
+          el.role = 'dialog';
+          el.ariaLabel = 'Privacy choices for advertising';
+          el.style.cssText =
+            'position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:9999;background:#fff;border:1px solid #cbd5e1;border-radius:12px;max-width:720px;margin:0 auto;padding:1rem;box-shadow:0 8px 24px rgba(0,0,0,.08);';
           el.innerHTML = `
-            <div style="display:flex;gap:.8rem;align-items:flex-start">
-              <div style="flex:1">
-                <strong>Privacy choices</strong>
-                <div style="color:#64748b;margin-top:.25rem;font-size:.95rem">
-                  We use cookies for ads (Google AdSense). Choose whether to allow advertising cookies. Analytics (Plausible) is cookie-less.
+            <div style="display:flex;gap:.9rem;align-items:flex-start">
+              <div style="flex:1;min-width:0">
+                <strong style="display:block;font-size:1rem">Privacy choices</strong>
+                <div style="color:#64748b;margin-top:.25rem;font-size:.95rem;line-height:1.45">
+                  We use Google AdSense for advertising and only load it after you allow ads. Our analytics (Plausible) is cookie-free.
+                  You can change this anytime via “Privacy choices” in the footer.
                 </div>
               </div>
               <div style="display:flex;gap:.5rem;flex-wrap:wrap">
@@ -49,30 +84,23 @@
           document.body.appendChild(el);
           document.getElementById('consent-allow').onclick = grant;
           document.getElementById('consent-deny').onclick = deny;
-          return el;
         }
-
         function hideBanner() { document.getElementById('consent-banner')?.remove(); }
 
-        // Reopen handler (from Privacy page or footer)
+        // API for pages/links to reopen the banner
         window.addEventListener('open-consent', () => {
           localStorage.removeItem(KEY);
-          bannerEl();
+          createBanner();
         });
 
-        // Add a small "Privacy choices" link to the footer automatically
+        // Footer inline link handler (added in markup below)
         window.addEventListener('load', () => {
-          const footer = document.querySelector('footer .wrap small');
-          if (footer && !footer.querySelector('#privacy-choices-inline')) {
-            const sep = document.createTextNode(' · ');
-            const link = document.createElement('a');
-            link.id = 'privacy-choices-inline';
-            link.href = '#';
-            link.textContent = 'Privacy choices';
-            link.style.cssText = 'color:#2F855A;text-decoration:none;';
-            link.onclick = (e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('open-consent')); };
-            footer.appendChild(sep);
-            footer.appendChild(link);
+          const link = document.getElementById('privacy-choices-inline');
+          if (link) {
+            link.addEventListener('click', (e) => {
+              e.preventDefault();
+              window.dispatchEvent(new CustomEvent('open-consent'));
+            });
           }
         });
 
@@ -80,80 +108,46 @@
         if (hasChoice()) {
           if (localStorage.getItem(KEY) === 'granted') loadAdsense();
         } else {
-          // Show banner until a choice is made
-          if (document.readyState === 'complete') bannerEl(); else window.addEventListener('load', bannerEl);
+          if (document.readyState === 'complete') createBanner(); else window.addEventListener('load', createBanner);
         }
       })();
     </script>
 
-
-    <!-- Plausible queue (in case the external script is slow to load) -->
+    <!-- Plausible (cookie-free) -->
     <script is:inline>
-      window.plausible = window.plausible || function () {
-        (window.plausible.q = window.plausible.q || []).push(arguments);
-      };
+      window.plausible = window.plausible || function(){ (window.plausible.q = window.plausible.q || []).push(arguments); };
     </script>
-    <!-- Plausible main script (site-wide) -->
     <script defer data-domain="agcalculator.com" src="https://plausible.io/js/script.js"></script>
 
-    <!-- PWA / icons -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
-    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png" />
-
-    <!-- PWA manifest + theme color -->
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="theme-color" content="#2F855A" />
-
-    <!-- iOS Add to Home Screen helpers -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="AgCalculator" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-
+    <!-- Organization schema -->
     <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "AgCalculator",
-  "url": "https://agcalculator.com",
-  "logo": "https://agcalculator.com/icons/icon-192.png",
-  "sameAs": [
-    "mailto:info@cleverhayseed.com"
-  ]
-}
-</script>
-<!-- Site entity & navigation (E-E-A-T) -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "AgCalculator",
-  "url": "https://agcalculator.com"
-}
-</script>
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "AgCalculator",
+      "url": "https://agcalculator.com",
+      "logo": "https://agcalculator.com/icons/icon-192.png",
+      "sameAs": ["mailto:info@cleverhayseed.com"]
+    }
+    </script>
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SiteNavigationElement",
-  "name": ["Calculators", "About", "Privacy", "Terms"],
-  "url": [
-    "https://agcalculator.com/",
-    "https://agcalculator.com/about/",
-    "https://agcalculator.com/privacy/",
-    "https://agcalculator.com/terms/"
-  ]
-}
-</script>
-
-
+    <!-- Base styles -->
     <style>
-  :root{ --green:#2F855A; --slate:#334155; --bg:#F8FAFC }
-  *{ box-sizing:border-box }
-  body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,Inter,Arial,sans-serif; background:var(--bg); color:var(--slate) }
-  a{ color:var(--green); text-decoration:none }
-</style>
-
+      :root{ --green:#2F855A; --slate:#334155; --muted:#64748B; --bg:#F8FAFC }
+      *{ box-sizing:border-box }
+      html,body{ height:100% }
+      body{
+        margin:0; font-family:system-ui,-apple-system,Segoe UI,Inter,Arial,sans-serif;
+        background:var(--bg); color:var(--slate); line-height:1.5;
+      }
+      a{ color:var(--green); text-decoration:none }
+      a:focus-visible, button:focus-visible{ outline:2px solid var(--green); outline-offset:2px }
+      .wrap{ max-width:960px; margin:0 auto; padding:0 1rem }
+      .card{
+        background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:1rem;
+        box-shadow:0 2px 8px rgba(0,0,0,.03)
+      }
+    </style>
 
     <!-- Pages can inject title/canonicals/JSON-LD here -->
     <slot name="head" />
@@ -163,36 +157,29 @@
     <slot />
 
     <!-- Site-wide footer -->
-   <footer style="padding:2rem 1rem;color:#64748b">
-  <div class="wrap" style="max-width:960px;margin:0 auto;">
-<small>
-  © {new Date().getFullYear()} AgCalculator ·
-  <a href="/about/" style="color:#2F855A;text-decoration:none;">About</a>
-  ·
-  <a href="/privacy/" style="color:#2F855A;text-decoration:none;">Privacy</a>
-  ·
-  <a href="/terms/" style="color:#2F855A;text-decoration:none;">Terms</a>
-  ·
-  <a href="mailto:info@cleverhayseed.com" style="color:#2F855A;text-decoration:none;">Contact</a>
-</small>
+    <footer style="padding:2rem 0;color:var(--muted)">
+      <div class="wrap">
+        <small>
+          © {new Date().getFullYear()} AgCalculator ·
+          <a href="/about/">About</a> ·
+          <a href="/privacy/">Privacy</a> ·
+          <a href="/terms/">Terms</a> ·
+          <a href="mailto:info@cleverhayseed.com">Contact</a> ·
+          <a id="privacy-choices-inline" href="#">Privacy choices</a>
+        </small>
+      </div>
+    </footer>
 
-
-  </div>
-</footer>
-
-    <!-- Install-app logic (footer link) -->
+    <!-- Optional: “Install app” link handler (only runs if an element with id="install-app" exists) -->
     <script is:inline>
       (function () {
         const installLink = document.getElementById('install-app');
         if (!installLink) return;
-
         let deferredPrompt = null;
 
-        // Detect iOS (no beforeinstallprompt)
         const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent);
 
         window.addEventListener('beforeinstallprompt', (e) => {
-          // Prevent the mini-infobar on mobile
           e.preventDefault();
           deferredPrompt = e;
         });
@@ -202,13 +189,14 @@
 
           if (deferredPrompt) {
             deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            try { window.plausible && window.plausible('A2HS installed'); } catch {}
+            try {
+              const { outcome } = await deferredPrompt.userChoice;
+              if (outcome) { try { window.plausible && window.plausible('A2HS installed'); } catch {} }
+            } catch {}
             deferredPrompt = null;
             return;
           }
 
-          // Fallback guidance (works on iOS and any browser without a prompt)
           if (isIOS()) {
             alert('On iPhone/iPad: tap the Share button → “Add to Home Screen”.');
           } else {
@@ -218,11 +206,11 @@
       })();
     </script>
 
-    <!-- Register service worker -->
+    <!-- Service worker -->
     <script is:inline>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').catch(console.error);
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
         });
       }
     </script>
