@@ -16,7 +16,7 @@ const GRAINS = [
 <Layout>
   <Fragment slot="head">
     <title>Grain Bin Capacity Calculator (Bushels &amp; Weight) | AgCalculator</title>
-    <meta name="description" content="Calculate grain bin capacity in bushels and estimate grain weight fast. Supports common bin sizes and dimensions." />
+    <meta name="description" content="Calculate grain bin capacity in bushels and estimate grain weight. Supports roof/hopper geometry, shrink, and a US ↔ Metric toggle." />
     <link rel="canonical" href="https://agcalculator.com/calculators/grain-bin-capacity/" />
 
     <!-- Social -->
@@ -55,6 +55,7 @@ const GRAINS = [
         ]
       }
     </script>
+    <!-- FAQ schema (matches on-page FAQ) -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -73,7 +74,7 @@ const GRAINS = [
             "name": "Can I use metric?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Convert metric to feet before entering values (1 m = 3.28084 ft). A metric toggle is planned."
+              "text": "Yes. Use the US↔Metric toggle. The UI converts ft/m, ft³/m³, lb/t and test weight between lb/bu and kg/hl for display."
             }
           },
           {
@@ -83,10 +84,45 @@ const GRAINS = [
               "@type": "Answer",
               "text": "Manufacturer ratings can include safety factors or different fill levels. This calculator uses geometric volume with your inputs."
             }
+          },
+          {
+            "@type": "Question",
+            "name": "Where do test weight defaults come from?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "They are common industry values for typical dry grain. For best accuracy, enter your measured test weight."
+            }
           }
         ]
       }
     </script>
+
+    <style>
+      :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
+      *{box-sizing:border-box}
+      a{color:var(--green);text-decoration:none}
+      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:#fff}
+      .wrap{max-width:960px;margin:0 auto;padding:1rem}
+      fieldset{background:#fff;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
+      legend{padding:0 .4rem;color:var(--muted)}
+      label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
+      input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
+      .row{display:grid;gap:.8rem}
+      @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
+      .result{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+      .note{color:var(--muted);font-size:.9rem}
+      .gauge{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
+      .bar{height:100%;background:var(--green);width:0%}
+      .content{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content h2{margin:.2rem 0 .6rem}
+      .content h3{margin:.8rem 0 .3rem}
+      .content ul, .content ol{margin:.2rem 0 .2rem .9rem}
+      .content .disclaimer{color:#64748b;margin-top:.6rem}
+      /* Units toggle */
+      .unit-toggle{display:flex;align-items:center;gap:.4rem;margin:0 0 1rem;padding:.5rem 1rem;background:#fff;border:1px solid #e2e8f0;border-radius:12px}
+      .u-btn{padding:.35rem .7rem;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer}
+      .u-btn.active{background:var(--green);border-color:var(--green);color:#fff}
+    </style>
   </Fragment>
 
   <header>
@@ -96,8 +132,16 @@ const GRAINS = [
   <main class="wrap">
     <h1 style="margin:.5rem 0 1rem">Grain Bin Capacity (Bushels &amp; Weight)</h1>
 
+    <!-- Units toggle -->
+    <div class="unit-toggle" role="group" aria-label="Units">
+      <strong style="margin-right:.25rem">Units:</strong>
+      <button type="button" class="u-btn active" data-units="us" aria-pressed="true">US</button>
+      <button type="button" class="u-btn" data-units="metric" aria-pressed="false">Metric</button>
+      <small class="note" style="margin-left:.5rem">Saved on this device</small>
+    </div>
+
     <fieldset>
-      <legend>Inputs (imperial)</legend>
+      <legend>Inputs</legend>
 
       <div class="row">
         <div>
@@ -107,8 +151,8 @@ const GRAINS = [
           </select>
         </div>
         <div>
-          <label for="tw">Test weight (lb/bu)</label>
-          <input id="tw" type="number" step="0.1" value="56" />
+          <label data-unit-label="Test weight (lb/bu)|Test weight (kg/hl)" for="tw">Test weight (lb/bu)</label>
+          <input id="tw" type="number" step="0.1" value="56" data-unit="lbbu>kghl" data-unit-ph="e.g. 56|e.g. 72.1" />
         </div>
         <div>
           <label for="shrink">Moisture shrink (%)</label>
@@ -118,12 +162,12 @@ const GRAINS = [
 
       <div class="row">
         <div>
-          <label for="diam">Bin diameter (ft)</label>
-          <input id="diam" type="number" step="0.01" placeholder="e.g. 36" />
+          <label for="diam">Bin diameter (<span data-unit-text="ft|m"></span>)</label>
+          <input id="diam" type="number" step="0.01" placeholder="e.g. 36" data-unit="ft>m" data-unit-ph="e.g. 36|e.g. 11.0" />
         </div>
         <div>
-          <label for="wall">Straight-wall height (ft)</label>
-          <input id="wall" type="number" step="0.01" placeholder="e.g. 24" />
+          <label for="wall">Straight-wall height (<span data-unit-text="ft|m"></span>)</label>
+          <input id="wall" type="number" step="0.01" placeholder="e.g. 24" data-unit="ft>m" data-unit-ph="e.g. 24|e.g. 7.3" />
         </div>
         <div>
           <label for="roofType">Roof type</label>
@@ -136,16 +180,17 @@ const GRAINS = [
 
       <div class="row">
         <div>
-          <label for="roofH">Conical roof height (ft)</label>
-          <input id="roofH" type="number" step="0.01" placeholder="0" />
+          <label for="roofH">Conical roof height (<span data-unit-text="ft|m"></span>)</label>
+          <input id="roofH" type="number" step="0.01" placeholder="0" data-unit="ft>m" data-unit-ph="0|0" />
         </div>
         <div>
-          <label for="hopH">Hopper height (optional, ft)</label>
-          <input id="hopH" type="number" step="0.01" placeholder="0" />
+          <label for="hopH">Hopper height (optional, <span data-unit-text="ft|m"></span>)</label>
+          <input id="hopH" type="number" step="0.01" placeholder="0" data-unit="ft>m" data-unit-ph="0|0" />
         </div>
         <div>
-          <label for="have">Reverse: if I have this many bushels…</label>
+          <label for="have">Reverse: if I have this many <span data-unit-text="bushels|bushels (US)"></span>…</label>
           <input id="have" type="number" step="1" placeholder="e.g. 12000" />
+          <div class="note">Reverse uses U.S. bushels even in metric mode.</div>
         </div>
       </div>
 
@@ -155,9 +200,9 @@ const GRAINS = [
     <section class="result" id="out">
       <div class="note">Results</div>
       <div style="display:grid;gap:.5rem;margin-top:.4rem">
-        <div><strong>Bushels:</strong> <span id="bushels">—</span></div>
-        <div><strong>Weight:</strong> <span id="lbs">—</span> lb (<span id="tons">—</span> tons)</div>
-        <div><strong>Volume:</strong> <span id="cft">—</span> ft³</div>
+        <div><strong>Bushels:</strong> <span id="bushels">—</span> bu</div>
+        <div><strong>Weight:</strong> <span id="lbs">—</span> <span data-unit-text="lb|kg"></span> (<span id="tons">—</span> <span data-unit-text="tons|t"></span>)</div>
+        <div><strong>Volume:</strong> <span id="cft">—</span> <span data-unit-text="ft³|m³"></span></div>
         <div style="margin-top:.5rem">
           <div class="note">Fill estimate (from reverse input)</div>
           <div style="font-variant-numeric:tabular-nums;font-size:1.2rem"><span id="fillPct">—</span></div>
@@ -175,10 +220,11 @@ const GRAINS = [
       <ul id="tips" style="margin:.2rem 0 0 1.1rem"></ul>
     </section>
 
-    <!-- Publisher content: how it works + example + mini FAQ -->
+    <!-- Publisher content -->
     <section class="content">
       <h2>How this calculator works</h2>
-      <p>This tool estimates the grain volume in a cylindrical bin and converts that volume to bushels and weight.</p>
+      <p>This tool treats the bin as a cylinder plus optional cones (roof and/or hopper), converts volume to U.S. bushels, then applies test weight to estimate grain weight.</p>
+
       <h3>Formulas</h3>
       <ul>
         <li><strong>Cylinder volume (ft³)</strong> = π × (D/2)² × H</li>
@@ -190,12 +236,13 @@ const GRAINS = [
 
       <h3>Assumptions & notes</h3>
       <ul>
-        <li>Bin is approximated as a perfect cylinder plus optional cone sections.</li>
-        <li><em>Moisture shrink</em> reduces bushels by the chosen percent.</li>
-        <li>Test weight defaults come from common industry values; always use your measured weight when available.</li>
+        <li>Geometry assumes a true cylinder and right cones; eave overhangs and roof pitch variations aren’t modeled.</li>
+        <li><em>Moisture shrink</em> reduces calculated bushels by the chosen percent.</li>
+        <li>Default test weights reflect common industry values; measured test weight yields the best estimate.</li>
+        <li>Unit facts: 1 U.S. bu = 1.2445 ft³ ≈ 35.24 L; 1 lb/bu ≈ 1.287 kg/hl.</li>
       </ul>
 
-      <h3>Example</h3>
+      <h3>Worked example</h3>
       <p>36&nbsp;ft diameter, 24&nbsp;ft straight wall, conical roof 4&nbsp;ft, corn at 56&nbsp;lb/bu, no shrink:</p>
       <ol>
         <li>Cylinder: π×18²×24 ≈ <strong>24,429 ft³</strong></li>
@@ -206,37 +253,99 @@ const GRAINS = [
       </ol>
 
       <h3>FAQ</h3>
-      <p><strong>What if my roof is flat?</strong> Leave roof height at 0.</p>
-      <p><strong>Can I use metric?</strong> Enter metric values converted to feet (1&nbsp;m = 3.28084&nbsp;ft). A metric toggle is planned.</p>
-      <p><strong>Why don’t my numbers match label capacity?</strong> Manufacturer ratings can include safety factors or different fill levels; this tool uses pure geometry.</p>
+      <p><strong>What if my roof is flat?</strong> Leave roof height at 0 so only the cylindrical volume is used.</p>
+      <p><strong>Can I use metric?</strong> Yes — toggle at the top. The UI converts ft/m, ft³/m³ and lb/t; test weight switches to kg/hl.</p>
+      <p><strong>Why don’t my numbers match label capacity?</strong> Manufacturer ratings may use different fill levels or safety factors; we use pure geometry.</p>
+      <p><strong>Where do test weight defaults come from?</strong> Common industry values for typical dry grain; adjust to your measured test weight.</p>
 
-      <p class="disclaimer">Estimates only. Verify before purchasing materials or operating equipment.</p>
+      <p class="disclaimer">Prepared by AgCalculator · Last updated October 27, 2025</p>
+    </section>
+
+    <section class="content">
+      <h3>Also try…</h3>
+      <ul>
+        <li><a href="/calculators/grain-moisture-shrink/">Grain Moisture Shrink (Wet ↔ Dry Bu)</a></li>
+        <li><a href="/calculators/bale-yield-planner/">Bale Yield Planner (Bales ↔ Tons)</a></li>
+      </ul>
     </section>
   </main>
 
-  <style>
-    :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
-    *{box-sizing:border-box}
-    a{color:var(--green);text-decoration:none}
-    header{padding:1rem;border-bottom:1px solid #e5e7eb;background:white}
-    .wrap{max-width:960px;margin:0 auto;padding:1rem}
-    fieldset{background:white;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
-    legend{padding:0 .4rem;color:var(--muted)}
-    label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
-    input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
-    .row{display:grid;gap:.8rem}
-    @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
-    .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
-    .note{color:var(--muted);font-size:.9rem}
-    .gauge{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
-    .bar{height:100%;background:var(--green);width:0%}
+  <script is:inline>
+    // ===== Units helper (page-local) ========================================
+    (function () {
+      const KEY = 'agc_units';
+      const $$ = (s) => document.querySelectorAll(s);
 
-    .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
-    .content h2{margin:.2rem 0 .6rem}
-    .content h3{margin:.8rem 0 .3rem}
-    .content ul, .content ol{margin:.2rem 0 .2rem .9rem}
-    .content .disclaimer{color:#64748b;margin-top:.6rem}
-  </style>
+      // Conversions
+      const conv = {
+        'ft>m': x => x * 0.3048,       'm>ft': x => x / 0.3048,
+        'ft3>m3': x => x * 0.028316846592, 'm3>ft3': x => x / 0.028316846592,
+        'lb>kg': x => x * 0.45359237,  'kg>lb': x => x / 0.45359237,
+        'lb>t': x => x * 0.00045359237,'t>lb': x => x / 0.00045359237,
+        // Test weight: lb/bu ↔ kg/hl (1 lb/bu ≈ 1.287185997 kg/hl)
+        'lbbu>kghl': x => x * 1.287185997, 'kghl>lbbu': x => x / 1.287185997
+      };
+
+      window.AGCUnits = {
+        mode: () => localStorage.getItem(KEY) || 'us',
+        setMode(m){ localStorage.setItem(KEY, m); paint(m); },
+        // Normalize input to US units for math
+        get(el){
+          const raw = parseFloat(el.value);
+          if (!isFinite(raw)) return NaN;
+          const map = (el.dataset.unit || '').trim();
+          if (!map) return raw;
+          const [us, metric] = map.split('>');
+          if (this.mode() === 'us') return raw;               // already US
+          const fn = conv[`${metric}>${us}`];
+          return fn ? fn(raw) : raw;
+        },
+        // Convert US value for display
+        out(usNumber, map){
+          if (!isFinite(usNumber)) return NaN;
+          if (this.mode() === 'us' || !map) return usNumber;
+          const fn = conv[map];
+          return fn ? fn(usNumber) : usNumber;
+        },
+        conv
+      };
+
+      function paint(mode){
+        document.querySelectorAll('.unit-toggle .u-btn').forEach(btn => {
+          const on = btn.dataset.units === mode;
+          btn.classList.toggle('active', on);
+          btn.setAttribute('aria-pressed', String(on));
+        });
+        $$('[data-unit-label]').forEach(el => {
+          const [us, met] = el.dataset.unitLabel.split('|');
+          el.textContent = (mode === 'metric' ? met : us);
+        });
+        $$('input[data-unit-ph]').forEach(el => {
+          const [us, met] = el.dataset.unitPh.split('|');
+          el.placeholder = (mode === 'metric' ? met : us);
+        });
+        $$('[data-unit-text]').forEach(el => {
+          const [us, met] = el.dataset.unitText.split('|');
+          el.textContent = (mode === 'metric' ? met : us);
+        });
+
+        // Trigger recompute
+        document.querySelectorAll('input,select').forEach(el => {
+          el.dispatchEvent(new Event('input', {bubbles:true}));
+          el.dispatchEvent(new Event('change', {bubbles:true}));
+        });
+      }
+
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.u-btn');
+        if (!btn) return;
+        window.AGCUnits.setMode(btn.dataset.units);
+      });
+
+      // Init
+      paint(window.AGCUnits.mode());
+    })();
+  </script>
 
   <script type="module">
     // ---- inlined helpers (no external import) ------------------------------
@@ -250,15 +359,25 @@ const GRAINS = [
     const fields = ["grain","tw","shrink","diam","wall","roofType","roofH","hopH","have"];
     onInputs(fields, () => { compute(); explain(); });
 
+    // Set test weight default when grain changes (respect current unit mode)
     $("grain").addEventListener("change", (e) => {
       const opt = e.target.selectedOptions[0];
-      $("tw").value = opt.dataset.tw || "56";
+      const lbbu = parseFloat(opt.dataset.tw || "56");
+      if (window.AGCUnits.mode() === 'metric') {
+        $("tw").value = (window.AGCUnits.conv['lbbu>kghl'](lbbu)).toFixed(1);
+      } else {
+        $("tw").value = lbbu.toString();
+      }
       compute(); explain();
     });
 
     function compute(){
-      const d = num("diam"), wall = num("wall"), roofH = num("roofH") || 0, hopH = num("hopH") || 0;
-      if(!(d>0 && wall>=0)) { return show(NaN,NaN,NaN,NaN); }
+      // Dimensions normalized to feet
+      const d = window.AGCUnits.get($("diam"));
+      const wall = window.AGCUnits.get($("wall"));
+      const roofH = window.AGCUnits.get($("roofH")) || 0;
+      const hopH = window.AGCUnits.get($("hopH")) || 0;
+      if(!(d>0 && wall>=0)) { return show(NaN,NaN,NaN,NaN,NaN); }
 
       const r = d/2;
       const cyl = Math.PI * r * r * wall;
@@ -266,39 +385,46 @@ const GRAINS = [
       const hopper = hopH>0 ? (Math.PI * r * r * hopH / 3) : 0;
       const ft3 = cyl + roof + hopper;
 
+      // Test weight normalized to lb/bu
+      const tw_lbb = window.AGCUnits.get($("tw")) || 56;
       let bu = ft3 / 1.2445;
       const shrink = parseFloat($("shrink").value || "0");
       if(shrink>0) bu *= (1 - shrink/100);
 
-      const tw = num("tw") || 56;
-      const pounds = bu * tw;
-      const tons = pounds / 2000;
+      const pounds = bu * tw_lbb;
+      const tonsUS = pounds / 2000;
 
       const have = num("have");
       const pct = (have>0 && bu>0) ? Math.min(100, (have/bu)*100) : NaN;
 
-      show(bu, pounds, ft3, tons, pct);
+      show(bu, pounds, ft3, tonsUS, pct);
     }
 
-    function show(bu, lbs, ft3, tons, pct){
+    function show(bu, lbsUS, ft3US, tonsUS, pct){
+      const metric = (window.AGCUnits.mode()==='metric');
+
+      const volDisp = metric ? window.AGCUnits.out(ft3US, 'ft3>m3') : ft3US;
+      const wtDisp  = metric ? window.AGCUnits.out(lbsUS, 'lb>kg')  : lbsUS;
+      const tonDisp = metric ? window.AGCUnits.out(lbsUS, 'lb>t')    : tonsUS;
+
       $("bushels").textContent = fmt(bu,0);
-      $("lbs").textContent = fmt(lbs,0);
-      $("tons").textContent = fmt(tons,1);
-      $("cft").textContent = fmt(ft3,0);
+      $("lbs").textContent = metric ? fmt(wtDisp,0) : fmt(wtDisp,0);
+      $("tons").textContent = metric ? fmt(tonDisp,2) : fmt(tonDisp,1);
+      $("cft").textContent = metric ? fmt(volDisp,2) : fmt(volDisp,0);
       $("fillPct").textContent = Number.isFinite(pct) ? fmt(pct,1) + "%" : "—";
       $("bar").style.width = Number.isFinite(pct) ? Math.max(0, Math.min(100, pct)) + "%" : "0%";
     }
 
     function explain(){
-      const d = num("diam"), wall = num("wall");
+      const d = window.AGCUnits.get($("diam")), wall = window.AGCUnits.get($("wall"));
       const steps = $("steps"), tipsEl = $("tips");
 
       if(!(d>0 && wall>=0)) { steps.textContent = "Enter diameter and straight-wall height."; tipsEl.innerHTML=""; return; }
 
       const r = d/2;
       const roofConical = $("roofType").value === "cone";
-      const roofH = num("roofH") || 0;
-      const hopH  = num("hopH")  || 0;
+      const roofH = window.AGCUnits.get($("roofH")) || 0;
+      const hopH  = window.AGCUnits.get($("hopH"))  || 0;
 
       const cyl  = Math.PI * r * r * wall;
       const roof = roofConical && roofH>0 ? (Math.PI * r * r * roofH / 3) : 0;
@@ -308,7 +434,7 @@ const GRAINS = [
       const shrink = parseFloat($("shrink").value || "0");
       const buRaw  = ft3 / 1.2445;
       const bu     = shrink>0 ? buRaw * (1 - shrink/100) : buRaw;
-      const tw     = num("tw") || 56;
+      const tw     = window.AGCUnits.get($("tw")) || 56;
       const lbs    = bu * tw;
       const tons   = lbs / 2000;
 
@@ -318,7 +444,7 @@ const GRAINS = [
       if (hop>0)  lines.push(`<strong>Hopper</strong> = π × (${r.toFixed(2)})² × ${fmt(hopH,2)} ÷ 3 = ${fmt(hop,0)} ft³`);
       lines.push(`<strong>Total volume</strong> = ${fmt(ft3,0)} ft³`);
       lines.push(`<strong>Bushels</strong> = ft³ ÷ 1.2445 = ${fmt(buRaw,0)} bu${shrink>0 ? ` → shrink ${shrink}% = <strong>${fmt(bu,0)} bu</strong>` : ""}`);
-      lines.push(`<strong>Weight</strong> = bushels × test weight (${fmt(tw,0)} lb/bu) = <strong>${fmt(lbs,0)} lb</strong> (${fmt(tons,1)} tons)`);
+      lines.push(`<strong>Weight</strong> = bushels × test weight (${fmt(tw,1)} lb/bu) = <strong>${fmt(lbs,0)} lb</strong> (${fmt(tons,1)} tons)`);
 
       steps.innerHTML = `<div style="display:grid;gap:.35rem">${lines.map(x=>`<div>${x}</div>`).join("")}</div>`;
 
@@ -336,6 +462,16 @@ const GRAINS = [
     }
 
     // initial render
+    (function initDefaults(){
+      // Ensure test weight default matches current unit mode on first load
+      const opt = $("grain").selectedOptions[0];
+      const lbbu = parseFloat(opt?.dataset?.tw || "56");
+      if (window.AGCUnits.mode() === 'metric') {
+        $("tw").value = (window.AGCUnits.conv['lbbu>kghl'](lbbu)).toFixed(1);
+      } else {
+        $("tw").value = lbbu.toString();
+      }
+    })();
     compute();
     explain();
   </script>
