@@ -1,7 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 ---
-
 <Layout>
   <Fragment slot="head">
     <title>Bale Count from Field Yield (Round & Square) | AgCalculator</title>
@@ -42,6 +41,7 @@ import Layout from "../../layouts/Layout.astro";
       ]
     }
     </script>
+    <!-- FAQ schema that matches on-page FAQ -->
     <script type="application/ld+json">
     {
       "@context":"https://schema.org",
@@ -50,17 +50,27 @@ import Layout from "../../layouts/Layout.astro";
         {
           "@type":"Question",
           "name":"Should I use density or a known bale weight?",
-          "acceptedAnswer":{"@type":"Answer","text":"Use a scale-based bale weight whenever possible. Density × volume is a good estimate when you don’t have a weight ticket."}
+          "acceptedAnswer":{"@type":"Answer","text":"Use a scale-based bale weight whenever possible. Density × volume is a solid estimate when you don’t have a weight ticket."}
         },
         {
           "@type":"Question",
           "name":"What density should I use?",
-          "acceptedAnswer":{"@type":"Answer","text":"Typical dry grass hay ~10 lb/ft³, alfalfa ~12 lb/ft³, straw ~8 lb/ft³. Actual values vary with moisture and baler settings."}
+          "acceptedAnswer":{"@type":"Answer","text":"Typical dry grass hay is about 10 lb/ft³, alfalfa about 12 lb/ft³, and straw about 8 lb/ft³. Actual values vary with moisture and baler tension."}
+        },
+        {
+          "@type":"Question",
+          "name":"How much does moisture change the results?",
+          "acceptedAnswer":{"@type":"Answer","text":"Wetter bales weigh more. If moisture varies across the field, use a conservative estimate or weigh a small sample of bales."}
         },
         {
           "@type":"Question",
           "name":"How accurate are the load estimates?",
-          "acceptedAnswer":{"@type":"Answer","text":"Load counts assume weight-limited hauling (payload in pounds). They don’t consider deck space or legal axle/group limits—confirm before transport."}
+          "acceptedAnswer":{"@type":"Answer","text":"Load counts assume weight-limited hauling (payload). They don’t consider deck space or legal axle/group limits—confirm before transport."}
+        },
+        {
+          "@type":"Question",
+          "name":"Can I use metric units?",
+          "acceptedAnswer":{"@type":"Answer","text":"Yes. This page includes a US↔Metric toggle. Internally, math uses US units and values are converted for display."}
         }
       ]
     }
@@ -69,22 +79,26 @@ import Layout from "../../layouts/Layout.astro";
     <style>
       :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
       *{box-sizing:border-box}
-      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:white}
+      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:#fff}
       .wrap{max-width:960px;margin:0 auto;padding:1rem}
       a{color:var(--green);text-decoration:none}
-      fieldset{background:white;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
+      fieldset{background:#fff;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
       legend{padding:0 .4rem;color:var(--muted)}
       label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
       input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
       .row{display:grid;gap:.8rem}
       @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
-      .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+      .result{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
       .note{color:var(--muted);font-size:.9rem}
-      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
       .content h2{margin:.2rem 0 .6rem}
       .content h3{margin:.8rem 0 .3rem}
       .content ul,.content ol{margin:.2rem 0 .2rem 1rem}
       .content .disclaimer{color:#64748b;margin-top:.6rem}
+      /* units toggle */
+      .unit-toggle{display:flex;align-items:center;gap:.4rem;margin:0 0 1rem;padding:.5rem 1rem;background:#fff;border:1px solid #e2e8f0;border-radius:12px}
+      .u-btn{padding:.35rem .7rem;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer}
+      .u-btn.active{background:var(--green);border-color:var(--green);color:#fff}
     </style>
   </Fragment>
 
@@ -93,12 +107,21 @@ import Layout from "../../layouts/Layout.astro";
   <main class="wrap">
     <h1 style="margin:.5rem 0 1rem">Bale Count from Field Yield</h1>
 
+    <!-- Units toggle (page-local) -->
+    <div class="unit-toggle" role="group" aria-label="Units">
+      <strong style="margin-right:.25rem">Units:</strong>
+      <button type="button" class="u-btn active" data-units="us" aria-pressed="true">US</button>
+      <button type="button" class="u-btn" data-units="metric" aria-pressed="false">Metric</button>
+      <small class="note" style="margin-left:.5rem">Saved on this device</small>
+    </div>
+
     <fieldset>
       <legend>Field & yield</legend>
       <div class="row">
         <div>
-          <label for="acres">Acres</label>
-          <input id="acres" type="number" step="0.01" placeholder="e.g. 42" />
+          <label data-unit-label="Acres|Hectares" for="acres">Acres</label>
+          <input id="acres" type="number" step="0.01" placeholder="e.g. 42"
+                 data-unit="ac>ha" data-unit-ph="e.g. 42|e.g. 17" />
         </div>
         <div>
           <label for="yMode">Yield input</label>
@@ -108,16 +131,19 @@ import Layout from "../../layouts/Layout.astro";
           </select>
         </div>
         <div id="tonsCol">
-          <label for="tonsA">Yield (tons/acre)</label>
-          <input id="tonsA" type="number" step="0.01" placeholder="e.g. 2.4" />
+          <label data-unit-label="Yield (tons/acre)|Yield (t/ha)" for="tonsA">Yield (tons/acre)</label>
+          <input id="tonsA" type="number" step="0.01" placeholder="e.g. 2.4"
+                 data-unit="tonac>t/ha" data-unit-ph="e.g. 2.4|e.g. 5.4" />
         </div>
         <div id="balesCol" style="display:none">
-          <label for="balesA">Yield (bales/acre)</label>
-          <input id="balesA" type="number" step="0.01" placeholder="e.g. 4.2" />
+          <label data-unit-label="Yield (bales/acre)|Yield (bales/ha)" for="balesA">Yield (bales/acre)</label>
+          <input id="balesA" type="number" step="0.01" placeholder="e.g. 4.2"
+                 data-unit="baleac>b/ha" data-unit-ph="e.g. 4.2|e.g. 10.4" />
         </div>
         <div>
-          <label for="payload">Truck/trailer payload (lb, optional)</label>
-          <input id="payload" type="number" step="1" placeholder="e.g. 10000" />
+          <label data-unit-label="Truck/trailer payload (lb, optional)|Truck/trailer payload (kg, optional)" for="payload">Truck/trailer payload (lb, optional)</label>
+          <input id="payload" type="number" step="1" placeholder="e.g. 10000"
+                 data-unit="lb>kg" data-unit-ph="e.g. 10000|e.g. 4536" />
         </div>
       </div>
     </fieldset>
@@ -133,23 +159,24 @@ import Layout from "../../layouts/Layout.astro";
           </select>
         </div>
         <div>
-          <label for="baleWt">Known bale weight (lb, optional)</label>
-          <input id="baleWt" type="number" step="1" placeholder="e.g. 850" />
+          <label data-unit-label="Known bale weight (lb, optional)|Known bale weight (kg, optional)" for="baleWt">Known bale weight (lb, optional)</label>
+          <input id="baleWt" type="number" step="1" placeholder="e.g. 850"
+                 data-unit="lb>kg" data-unit-ph="e.g. 850|e.g. 386" />
         </div>
         <div>
-          <label for="density">Density (lb/ft³)</label>
-          <input id="density" type="number" step="0.1" value="10" />
+          <label data-unit-label="Density (lb/ft³)|Density (kg/m³)" for="density">Density (lb/ft³)</label>
+          <input id="density" type="number" step="0.1" value="10" data-unit="lbft3>kgm3" />
         </div>
       </div>
 
       <div class="row" id="roundRow">
         <div>
-          <label for="dia">Round bale diameter (in)</label>
-          <input id="dia" type="number" step="0.1" value="60" />
+          <label data-unit-label="Round bale diameter (in)|Round bale diameter (cm)" for="dia">Round bale diameter (in)</label>
+          <input id="dia" type="number" step="0.1" value="60" data-unit="in>cm" />
         </div>
         <div>
-          <label for="width">Round bale width (in)</label>
-          <input id="width" type="number" step="0.1" value="60" />
+          <label data-unit-label="Round bale width (in)|Round bale width (cm)" for="width">Round bale width (in)</label>
+          <input id="width" type="number" step="0.1" value="60" data-unit="in>cm" />
         </div>
         <div>
           <label>&nbsp;</label>
@@ -159,16 +186,16 @@ import Layout from "../../layouts/Layout.astro";
 
       <div class="row" id="squareRow" style="display:none">
         <div>
-          <label for="sL">Square length (in)</label>
-          <input id="sL" type="number" step="0.1" value="36" />
+          <label data-unit-label="Square length (in)|Square length (cm)" for="sL">Square length (in)</label>
+          <input id="sL" type="number" step="0.1" value="36" data-unit="in>cm" />
         </div>
         <div>
-          <label for="sW">Square width (in)</label>
-          <input id="sW" type="number" step="0.1" value="18" />
+          <label data-unit-label="Square width (in)|Square width (cm)" for="sW">Square width (in)</label>
+          <input id="sW" type="number" step="0.1" value="18" data-unit="in>cm" />
         </div>
         <div>
-          <label for="sH">Square height (in)</label>
-          <input id="sH" type="number" step="0.1" value="14" />
+          <label data-unit-label="Square height (in)|Square height (cm)" for="sH">Square height (in)</label>
+          <input id="sH" type="number" step="0.1" value="14" data-unit="in>cm" />
         </div>
       </div>
       <p class="note">If you enter a known bale weight, density and size are ignored for weight calculation.</p>
@@ -177,9 +204,9 @@ import Layout from "../../layouts/Layout.astro";
     <section class="result">
       <div class="note">Results</div>
       <div style="display:grid;gap:.5rem;margin-top:.4rem">
-        <div><strong>Estimated bale weight:</strong> <span id="wt">—</span> lb (<span id="tonsPerBale">—</span> tons)</div>
+        <div><strong>Estimated bale weight:</strong> <span id="wt">—</span> <span data-unit-text="lb|kg"></span> (<span id="tonsPerBale">—</span> <span data-unit-text="tons|t"></span>)</div>
         <div><strong>Total bales:</strong> <span id="totalBales">—</span></div>
-        <div><strong>Total tonnage:</strong> <span id="totalTons">—</span> tons</div>
+        <div><strong>Total tonnage:</strong> <span id="totalTons">—</span> <span data-unit-text="tons|t"></span></div>
         <div><strong>Loads by payload (est):</strong> <span id="loads">—</span></div>
       </div>
       <p class="note" style="margin-top:.6rem">Bales-by-weight only (space/axle limits not considered).</p>
@@ -209,35 +236,143 @@ import Layout from "../../layouts/Layout.astro";
         <li><strong>Loads</strong> (if payload given) = ceil( total weight ÷ payload )</li>
       </ul>
 
-      <h3>Example</h3>
-      <p>42 ac at 2.4 tons/ac, 5×5 round (60×60 in), density 10 lb/ft³, payload 10,000 lb:</p>
+      <h3>Worked example (bales/acre option)</h3>
+      <p><em>Scenario:</em> 35 acres at 3.5 bales/acre; known bale weight 900 lb; payload 14,000 lb.</p>
       <ol>
-        <li>Round volume = π×(5/2)²×5 ≈ <strong>98.2 ft³</strong></li>
-        <li>Bale weight = 98.2 × 10 ≈ <strong>982 lb</strong></li>
-        <li>Total tons = 42 × 2.4 = <strong>100.8 tons</strong></li>
-        <li>Total bales ≈ (100.8 × 2000) ÷ 982 ≈ <strong>205 bales</strong></li>
-        <li>Loads ≈ (100.8 × 2000) ÷ 10,000 ≈ <strong>21 loads</strong></li>
+        <li>Total bales = 35 × 3.5 = <strong>123 bales</strong>.</li>
+        <li>Total weight = 123 × 900 = <strong>110,700 lb</strong>.</li>
+        <li>Total tons = 110,700 ÷ 2,000 = <strong>55.4 tons</strong>.</li>
+        <li>Loads ≈ 110,700 ÷ 14,000 = 7.91 → <strong>8 loads</strong> (rounded up).</li>
       </ol>
 
-      <h3>Notes</h3>
+      <h3>Assumptions & notes</h3>
       <ul>
-        <li>Moisture, baler tension, and crop type change density—use a known bale weight when possible.</li>
-        <li>Yield may vary across the field; consider using a conservative number.</li>
-        <li>For transport, check deck space, tie-down, and legal axle limits in addition to payload.</li>
+        <li><strong>Geometry:</strong> Round bales treated as cylinders; square/rectangular bales use finished, tied dimensions.</li>
+        <li><strong>Density:</strong> Dry grass hay ≈ 10 lb/ft³; alfalfa ≈ 12 lb/ft³; straw ≈ 8 lb/ft³ (moisture and baler tension vary).</li>
+        <li><strong>Known weight overrides density/size:</strong> Use average scale weight when available.</li>
+        <li><strong>Short tons:</strong> 1 ton = 2,000 lb.</li>
+        <li><strong>Transport:</strong> Payload-only loads; verify deck space and legal axle/group limits.</li>
+        <li><strong>Field variation:</strong> Yield is rarely uniform—use conservative inputs when planning hauling.</li>
       </ul>
 
-      <p class="disclaimer">Estimates only. Verify before purchasing materials or operating equipment.</p>
+      <p class="disclaimer">Prepared by AgCalculator · Last updated October 27, 2025</p>
     </section>
+
+    <section class="content" id="faq">
+      <h3>FAQ</h3>
+
+      <h4>Should I use density or a known bale weight?</h4>
+      <p>Use a scale-based bale weight whenever possible. Density × volume is a solid estimate when you don’t have a weight ticket.</p>
+
+      <h4>What density should I use?</h4>
+      <p>Typical dry grass hay ~10 lb/ft³, alfalfa ~12 lb/ft³, straw ~8 lb/ft³. Moisture and baler tension change density.</p>
+
+      <h4>How much does moisture change the results?</h4>
+      <p>Wetter bales weigh more; if moisture varies, use a conservative estimate or weigh a small sample.</p>
+
+      <h4>How accurate are the load estimates?</h4>
+      <p>Loads here are weight-based only. Real loads may be limited by deck space, stacking pattern, tie-downs, and legal axle/group limits.</p>
+
+      <h4>Can I use metric units?</h4>
+      <p>Yes—toggle at the top of the page. The math runs in US units and values are converted for display.</p>
+    </section>
+
+    <section class="content" id="related">
+      <h3>Also try…</h3>
+      <ul>
+        <li><a href="/calculators/hay-bale-planner/">Hay Bale Weight &amp; Load Planner</a> — plan truck/trailer loads by bale size and density.</li>
+        <li><a href="/calculators/field-capacity/">Field Capacity &amp; Spray Rate</a> — estimate acres/hour to plan time and fuel around baling operations.</li>
+      </ul>
+    </section>
+
+    <!-- ===== Units helper + calculator logic (page-local) ===== -->
+    <script is:inline>
+      (function () {
+        const KEY = 'agc_units';
+        const $$ = (s) => document.querySelectorAll(s);
+
+        const conv = {
+          'ft>m': x => x * 0.3048,               'm>ft': x => x / 0.3048,
+          'in>cm': x => x * 2.54,                'cm>in': x => x / 2.54,
+          'ft3>m3': x => x * 0.028316846592,     'm3>ft3': x => x / 0.028316846592,
+          'ac>ha': x => x * 0.4046856422,        'ha>ac': x => x / 0.4046856422,
+          'lb>kg': x => x * 0.45359237,          'kg>lb': x => x / 0.45359237,
+          'ton>t': x => x * 0.90718474,          't>ton': x => x / 0.90718474, // short ton ↔ tonne
+          'lbft3>kgm3': x => x * 16.018463,      'kgm3>lbft3': x => x / 16.018463,
+          // rate conversions
+          'tonac>t/ha': x => x * (0.90718474/0.4046856422),  't/ha>tonac': x => x * (0.4046856422/0.90718474),
+          'baleac>b/ha': x => x * 2.4710538147,              'b/ha>baleac': x => x / 2.4710538147
+        };
+
+        window.AGCUnits = {
+          mode: () => localStorage.getItem(KEY) || 'us',
+          setMode(m){ localStorage.setItem(KEY, m); paint(m); },
+          // Read a field normalized to US units for math
+          get(el){
+            const raw = parseFloat(el.value);
+            if (!isFinite(raw)) return NaN;
+            const map = (el.dataset.unit || '').trim();
+            if (!map) return raw;
+            const [us, metric] = map.split('>');
+            if (this.mode() === 'us') return raw;
+            const fn = conv[`${metric}>${us}`];
+            return fn ? fn(raw) : raw;
+          },
+          // Convert a US-number to display units for output
+          out(usNumber, map){
+            if (!isFinite(usNumber)) return NaN;
+            if (this.mode() === 'us' || !map) return usNumber;
+            const fn = conv[map]; // map is us>metric
+            return fn ? fn(usNumber) : usNumber;
+          }
+        };
+
+        function paint(mode){
+          document.querySelectorAll('.unit-toggle .u-btn').forEach(btn => {
+            const on = btn.dataset.units === mode;
+            btn.classList.toggle('active', on);
+            btn.setAttribute('aria-pressed', String(on));
+          });
+
+          // Swap UI labels/placeholders/unit text
+          $$('[data-unit-label]').forEach(el => {
+            const [us, met] = el.dataset.unitLabel.split('|');
+            el.textContent = (mode === 'metric' ? met : us);
+          });
+          $$('input[data-unit-ph]').forEach(el => {
+            const [us, met] = el.dataset.unitPh.split('|');
+            el.placeholder = (mode === 'metric' ? met : us);
+          });
+          $$('[data-unit-text]').forEach(el => {
+            const [us, met] = el.dataset.unitText.split('|');
+            el.textContent = (mode === 'metric' ? met : us);
+          });
+
+          // Trigger recalculation
+          document.querySelectorAll('input,select').forEach(el => {
+            el.dispatchEvent(new Event('input', {bubbles:true}));
+            el.dispatchEvent(new Event('change', {bubbles:true}));
+          });
+        }
+
+        document.addEventListener('click', (e) => {
+          const btn = e.target.closest('.u-btn');
+          if (!btn) return;
+          window.AGCUnits.setMode(btn.dataset.units);
+        });
+
+        // Initialize
+        paint(window.AGCUnits.mode());
+      })();
+    </script>
 
     <script is:inline>
       // Helpers (inline)
       const $ = (id) => document.getElementById(id);
-      const val = (id) => parseFloat(($(id)?.value ?? "").trim());
       const fmt0 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
       const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
       const ceil = (n) => Math.ceil(n);
 
-      // Mode toggles
       $("yMode").addEventListener("change", () => {
         const m = $("yMode").value;
         $("tonsCol").style.display  = m==="tons"  ? "" : "none";
@@ -255,22 +390,23 @@ import Layout from "../../layouts/Layout.astro";
       fields.forEach(id => $(id).addEventListener("input", compute));
 
       function baleVolumeFt3(){
-        const known = val("baleWt");
+        const known = AGCUnits.get($("baleWt")); // normalized to lb
         if (Number.isFinite(known) && known>0) return { wt: known, vol: NaN, usedKnown: true };
 
-        const dens = val("density");
+        const dens = AGCUnits.get($("density")); // lb/ft³
         if (!(dens>0)) return { wt: NaN, vol: NaN, usedKnown: false };
 
         if ($("bType").value === "round"){
-          const D = val("dia")/12, W = val("width")/12;
-          if (D>0 && W>0){
-            const vol = Math.PI * Math.pow(D/2,2) * W;
+          const Dft = AGCUnits.get($("dia"))/12;   // inches→feet already normalized
+          const Wft = AGCUnits.get($("width"))/12;
+          if (Dft>0 && Wft>0){
+            const vol = Math.PI * Math.pow(Dft/2,2) * Wft; // ft³
             return { wt: vol * dens, vol, usedKnown: false };
           }
         } else {
-          const L = val("sL")/12, W = val("sW")/12, H = val("sH")/12;
-          if (L>0 && W>0 && H>0){
-            const vol = L*W*H;
+          const Lft = AGCUnits.get($("sL"))/12, Wft = AGCUnits.get($("sW"))/12, Hft = AGCUnits.get($("sH"))/12;
+          if (Lft>0 && Wft>0 && Hft>0){
+            const vol = Lft*Wft*Hft; // ft³
             return { wt: vol * dens, vol, usedKnown: false };
           }
         }
@@ -278,16 +414,16 @@ import Layout from "../../layouts/Layout.astro";
       }
 
       function compute(){
-        const acres = val("acres");
-        const mode  = $("yMode").value;
-        const tonsA = val("tonsA");
-        const balesA= val("balesA");
-        const payload = val("payload");
+        const acres   = AGCUnits.get($("acres"));  // ac
+        const mode    = $("yMode").value;
+        const tonsA   = AGCUnits.get($("tonsA"));  // ton/ac (normalized)
+        const balesA  = AGCUnits.get($("balesA")); // bales/ac (normalized)
+        const payload = AGCUnits.get($("payload")); // lb
 
-        const { wt: baleWt, vol, usedKnown } = baleVolumeFt3();
+        const { wt: baleWtUS, vol, usedKnown } = baleVolumeFt3();
 
-        let totalBales = NaN, totalTons = NaN, loads = NaN, lines = [];
-        let tonsPerBale = Number.isFinite(baleWt) ? (baleWt / 2000) : NaN;
+        let totalBales = NaN, totalTonsUS = NaN, loads = NaN, lines = [];
+        let tonsPerBaleUS = Number.isFinite(baleWtUS) ? (baleWtUS / 2000) : NaN;
 
         if (!(acres>0)){
           show(); $("steps").innerHTML = `<span class="note">Enter acres, yield, and bale details to see the step-by-step.</span>`; return;
@@ -297,47 +433,48 @@ import Layout from "../../layouts/Layout.astro";
           if (!(tonsA>0)){
             show(); $("steps").innerHTML = `<span class="note">Enter a tons/acre value.</span>`; return;
           }
-          totalTons = acres * tonsA;
-          if (Number.isFinite(baleWt) && baleWt>0){
-            totalBales = (totalTons * 2000) / baleWt;
+          totalTonsUS = acres * tonsA; // short tons
+          if (Number.isFinite(baleWtUS) && baleWtUS>0){
+            totalBales = (totalTonsUS * 2000) / baleWtUS;
           }
-          lines.push(`<div>Total tons = ${fmt1(acres)} × ${fmt1(tonsA)} = <strong>${fmt1(totalTons)}</strong> tons</div>`);
-          if (Number.isFinite(baleWt)){
-            lines.push(`<div>Est. bale wt = ${fmt0(baleWt)} lb${usedKnown ? " (known)" : ""}${Number.isFinite(vol) ? ` (from ${fmt1(vol)} ft³ × ${fmt1(val("density"))} lb/ft³)` : ""}</div>`);
-            lines.push(`<div>Total bales = (${fmt1(totalTons)} × 2000) ÷ ${fmt0(baleWt)} = <strong>${fmt0(totalBales)}</strong></div>`);
+          lines.push(`<div>Total tons = ${fmt1(acres)} × ${fmt1(tonsA)} = <strong>${fmt1(totalTonsUS)}</strong> tons</div>`);
+          if (Number.isFinite(baleWtUS)){
+            lines.push(`<div>Est. bale wt = ${fmt0(baleWtUS)} lb${usedKnown ? " (known)" : ""}${Number.isFinite(vol) ? ` (from ${fmt1(vol)} ft³ × ${fmt1(AGCUnits.get($("density")))} lb/ft³)` : ""}</div>`);
+            lines.push(`<div>Total bales = (${fmt1(totalTonsUS)} × 2000) ÷ ${fmt0(baleWtUS)} = <strong>${fmt0(totalBales)}</strong></div>`);
           }
         } else { // bales per acre
           if (!(balesA>0)){
             show(); $("steps").innerHTML = `<span class="note">Enter a bales/acre value.</span>`; return;
           }
           totalBales = acres * balesA;
-          if (Number.isFinite(baleWt) && baleWt>0){
-            totalTons = (totalBales * baleWt) / 2000;
+          if (Number.isFinite(baleWtUS) && baleWtUS>0){
+            totalTonsUS = (totalBales * baleWtUS) / 2000;
           }
           lines.push(`<div>Total bales = ${fmt1(acres)} × ${fmt1(balesA)} = <strong>${fmt0(totalBales)}</strong></div>`);
-          if (Number.isFinite(baleWt)){
-            lines.push(`<div>Est. bale wt = ${fmt0(baleWt)} lb${usedKnown ? " (known)" : ""}${Number.isFinite(vol) ? ` (from ${fmt1(vol)} ft³ × ${fmt1(val("density"))} lb/ft³)` : ""}</div>`);
-            lines.push(`<div>Total tons = ${fmt0(totalBales)} × ${fmt0(baleWt)} ÷ 2000 = <strong>${fmt1(totalTons)}</strong> tons</div>`);
+          if (Number.isFinite(baleWtUS)){
+            lines.push(`<div>Est. bale wt = ${fmt0(baleWtUS)} lb${usedKnown ? " (known)" : ""}${Number.isFinite(vol) ? ` (from ${fmt1(vol)} ft³ × ${fmt1(AGCUnits.get($("density")))} lb/ft³)` : ""}</div>`);
+            lines.push(`<div>Total tons = ${fmt0(totalBales)} × ${fmt0(baleWtUS)} ÷ 2000 = <strong>${fmt1(totalTonsUS)}</strong> tons</div>`);
           }
         }
 
-        if (Number.isFinite(totalTons) && payload>0){
-          const totalLb = totalTons * 2000;
+        if (Number.isFinite(totalTonsUS) && payload>0){
+          const totalLb = totalTonsUS * 2000;
           loads = ceil(totalLb / payload);
-          lines.push(`<div>Loads ≈ (${fmt1(totalTons)} × 2000) ÷ ${fmt0(payload)} = <strong>${fmt0(loads)}</strong> loads</div>`);
+          lines.push(`<div>Loads ≈ (${fmt1(totalTonsUS)} × 2000) ÷ ${fmt0(payload)} = <strong>${fmt0(loads)}</strong> loads</div>`);
         }
 
         $("steps").innerHTML = lines.length ? `<div style="display:grid;gap:.35rem">${lines.join("")}</div>` : `<span class="note">Enter acres, yield, and bale details to see the step-by-step.</span>`;
 
-        show({baleWt, tonsPerBale, totalBales, totalTons, loads});
-      }
+        // Display (convert to metric if needed)
+        const wtDisplay        = AGCUnits.out(baleWtUS, 'lb>kg');
+        const tonsPerBaleDisp  = AGCUnits.out(tonsPerBaleUS, 'ton>t');
+        const totalTonsDisplay = AGCUnits.out(totalTonsUS, 'ton>t');
 
-      function show(o={}){
-        $("wt").textContent          = fmt0(o.baleWt);
-        $("tonsPerBale").textContent = fmt1(o.tonsPerBale);
-        $("totalBales").textContent  = fmt0(o.totalBales);
-        $("totalTons").textContent   = fmt1(o.totalTons);
-        $("loads").textContent       = fmt0(o.loads);
+        $("wt").textContent          = AGCUnits.mode()==='metric' ? fmt0(wtDisplay) : fmt0(baleWtUS);
+        $("tonsPerBale").textContent = AGCUnits.mode()==='metric' ? fmt1(tonsPerBaleDisp) : fmt1(tonsPerBaleUS);
+        $("totalBales").textContent  = fmt0(totalBales);
+        $("totalTons").textContent   = AGCUnits.mode()==='metric' ? fmt1(totalTonsDisplay) : fmt1(totalTonsUS);
+        $("loads").textContent       = fmt0(loads);
       }
 
       // init
