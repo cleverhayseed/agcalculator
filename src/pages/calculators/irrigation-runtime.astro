@@ -4,14 +4,14 @@ import Layout from "../../layouts/Layout.astro";
 
 <Layout>
   <Fragment slot="head">
-    <title>Irrigation Flow & Run-Time Calculator (Sprinkler / Drip) | AgCalculator</title>
-    <meta name="description" content="Figure out how long to run your irrigation to apply a target depth, or how much water you applied in a given run. Works for sprinklers and drip." />
+    <title>Irrigation Flow &amp; Run-Time Calculator (Sprinkler / Drip) | AgCalculator</title>
+    <meta name="description" content="Figure out how long to run your irrigation to apply a target depth, or how much water you applied in a given run. Works for sprinklers and drip. US ↔ Metric toggle." />
     <link rel="canonical" href="https://agcalculator.com/calculators/irrigation-runtime/" />
 
     <!-- Open Graph -->
     <meta property="og:site_name" content="AgCalculator" />
     <meta property="og:title" content="Irrigation Flow & Run-Time Calculator" />
-    <meta property="og:description" content="Compute precipitation rate, run time, applied depth, and gallons for sprinklers or drip." />
+    <meta property="og:description" content="Compute precipitation rate, run-time, applied depth, and gallons/liters for sprinklers or drip." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://agcalculator.com/calculators/irrigation-runtime/" />
     <meta property="og:image" content="https://agcalculator.com/og-hay-bale.png" />
@@ -55,12 +55,12 @@ import Layout from "../../layouts/Layout.astro";
         {
           "@type":"Question",
           "name":"What precipitation rate formula does this use?",
-          "acceptedAnswer":{"@type":"Answer","text":"Inches/hour = (Total GPM × 96.3) ÷ Area(ft²). For drip, we convert GPH to GPM first (GPM = GPH ÷ 60)."}
+          "acceptedAnswer":{"@type":"Answer","text":"Inches/hour = (Total GPM × 96.3) ÷ Area(ft²). For drip, we convert GPH to GPM first (GPM = GPH ÷ 60). In metric, mm/hour = (L/min × 60) ÷ Area(m²)."}
         },
         {
           "@type":"Question",
           "name":"How are total gallons computed?",
-          "acceptedAnswer":{"@type":"Answer","text":"1 inch of water over 1 square foot is ~0.623 gallons. Gallons = Area(ft²) × Depth(in) × 0.623."}
+          "acceptedAnswer":{"@type":"Answer","text":"1 inch of water over 1 square foot is ~0.623 gallons. Gallons = Area(ft²) × Depth(in) × 0.623. In metric, liters = Area(m²) × Depth(mm)."}
         }
       ]
     }
@@ -85,6 +85,10 @@ import Layout from "../../layouts/Layout.astro";
       .content h3{margin:.8rem 0 .3rem}
       .content ul,.content ol{margin:.2rem 0 .2rem 1rem}
       .content .disclaimer{color:#64748b;margin-top:.6rem}
+      /* Units toggle */
+      .unit-toggle{display:flex;align-items:center;gap:.4rem;margin:0 0 1rem;padding:.5rem 1rem;background:#fff;border:1px solid #e2e8f0;border-radius:12px}
+      .u-btn{padding:.35rem .7rem;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer}
+      .u-btn.active{background:var(--green);border-color:var(--green);color:#fff}
     </style>
   </Fragment>
 
@@ -93,8 +97,16 @@ import Layout from "../../layouts/Layout.astro";
   <main class="wrap">
     <h1 style="margin:.5rem 0 1rem">Irrigation Flow &amp; Run-Time</h1>
 
+    <!-- Units toggle -->
+    <div class="unit-toggle" role="group" aria-label="Units">
+      <strong style="margin-right:.25rem">Units:</strong>
+      <button type="button" class="u-btn active" data-units="us" aria-pressed="true">US</button>
+      <button type="button" class="u-btn" data-units="metric" aria-pressed="false">Metric</button>
+      <small class="note" style="margin-left:.5rem">Saved on this device</small>
+    </div>
+
     <fieldset>
-      <legend>System type & goal</legend>
+      <legend>System type &amp; goal</legend>
       <div class="row">
         <div>
           <label for="sys">System</label>
@@ -122,19 +134,19 @@ import Layout from "../../layouts/Layout.astro";
       <legend>Area</legend>
       <div class="row">
         <div>
-          <label for="areaMode">Area input</label>
+          <label for="areaMode" data-unit-label="Area input|Area input">Area input</label>
           <select id="areaMode">
-            <option value="sqft">Square feet</option>
-            <option value="ac">Acres</option>
+            <option value="sq">Square feet</option>
+            <option value="big">Acres</option>
           </select>
         </div>
-        <div id="rowSqft">
-          <label for="areaSqft">Area (ft²)</label>
-          <input id="areaSqft" type="number" step="1" placeholder="e.g. 43560" />
+        <div id="rowSq">
+          <label for="areaSq" data-unit-label="Area (ft²)|Area (m²)">Area (ft²)</label>
+          <input id="areaSq" type="number" step="1" placeholder="e.g. 43560" data-unit="ft2>m2" data-unit-ph="e.g. 43560|e.g. 1000" />
         </div>
-        <div id="rowAc" style="display:none">
-          <label for="areaAc">Area (acres)</label>
-          <input id="areaAc" type="number" step="0.01" placeholder="e.g. 1.0" />
+        <div id="rowBig" style="display:none">
+          <label for="areaBig" data-unit-label="Area (acres)|Area (hectares)">Area (acres)</label>
+          <input id="areaBig" type="number" step="0.01" placeholder="e.g. 1.0" data-unit="ac>ha" data-unit-ph="e.g. 1.0|e.g. 0.4" />
         </div>
       </div>
     </fieldset>
@@ -145,24 +157,24 @@ import Layout from "../../layouts/Layout.astro";
         <div>
           <label for="sprMode">Flow input</label>
           <select id="sprMode">
-            <option value="total">Total system flow (GPM)</option>
-            <option value="multi"># sprinklers × each GPM</option>
+            <option value="total">Total system flow</option>
+            <option value="multi"># sprinklers × each</option>
           </select>
         </div>
         <div id="sprTotal">
-          <label for="sprGpm">Total flow (GPM)</label>
-          <input id="sprGpm" type="number" step="0.1" placeholder="e.g. 25" />
+          <label for="sprGpm" data-unit-label="Total flow (GPM)|Total flow (L/min)">Total flow (GPM)</label>
+          <input id="sprGpm" type="number" step="0.1" placeholder="e.g. 25" data-unit="gpm>lpm" data-unit-ph="e.g. 25|e.g. 95" />
         </div>
         <div id="sprMulti" style="display:none">
-          <label># heads × GPM/head</label>
+          <label data-unit-label="# heads × GPM/head|# heads × L/min/head"># heads × GPM/head</label>
           <div style="display:flex; gap:.5rem">
             <input id="sprHeads" type="number" step="1" placeholder="# heads" style="flex:1" />
-            <input id="sprHeadGpm" type="number" step="0.1" placeholder="GPM/head" style="flex:1" />
+            <input id="sprHeadGpm" type="number" step="0.1" placeholder="GPM/head" style="flex:1" data-unit="gpm>lpm" data-unit-ph="e.g. 2.5|e.g. 9.5" />
           </div>
         </div>
         <div>
           <label>&nbsp;</label>
-          <div class="note">PR(in/hr)= (GPM×96.3)/Area(ft²)</div>
+          <div class="note" data-unit-text="PR(in/hr) = (GPM×96.3) ÷ Area(ft²)|PR(mm/hr) = (L/min×60) ÷ Area(m²)"></div>
         </div>
       </div>
     </fieldset>
@@ -173,24 +185,24 @@ import Layout from "../../layouts/Layout.astro";
         <div>
           <label for="dripMode">Flow input</label>
           <select id="dripMode">
-            <option value="total">Total system flow (GPH)</option>
-            <option value="multi"># emitters × GPH/emitter</option>
+            <option value="total">Total system flow</option>
+            <option value="multi"># emitters × each</option>
           </select>
         </div>
         <div id="dripTotal">
-          <label for="dripGph">Total flow (GPH)</label>
-          <input id="dripGph" type="number" step="0.1" placeholder="e.g. 600" />
+          <label for="dripGph" data-unit-label="Total flow (GPH)|Total flow (L/h)">Total flow (GPH)</label>
+          <input id="dripGph" type="number" step="0.1" placeholder="e.g. 600" data-unit="gph>lph" data-unit-ph="e.g. 600|e.g. 2300" />
         </div>
         <div id="dripMulti" style="display:none">
-          <label># emitters × GPH/emitter</label>
+          <label data-unit-label="# emitters × GPH/emitter|# emitters × L/h/emitter"># emitters × GPH/emitter</label>
           <div style="display:flex; gap:.5rem">
             <input id="emitters" type="number" step="1" placeholder="# emitters" style="flex:1" />
-            <input id="gphEm" type="number" step="0.1" placeholder="GPH/emitter" style="flex:1" />
+            <input id="gphEm" type="number" step="0.1" placeholder="GPH/emitter" style="flex:1" data-unit="gph>lph" data-unit-ph="e.g. 1|e.g. 3.8" />
           </div>
         </div>
         <div>
           <label>&nbsp;</label>
-          <div class="note">Convert to GPM: GPH ÷ 60</div>
+          <div class="note" data-unit-text="Convert to GPM: GPH ÷ 60|Convert to L/min: L/h ÷ 60"></div>
         </div>
       </div>
     </fieldset>
@@ -199,8 +211,8 @@ import Layout from "../../layouts/Layout.astro";
       <legend>Target / Known</legend>
       <div class="row">
         <div id="rowTargetDepth">
-          <label for="targetIn">Target depth (in)</label>
-          <input id="targetIn" type="number" step="0.01" placeholder="e.g. 0.5" />
+          <label for="targetIn" data-unit-label="Target depth (in)|Target depth (mm)">Target depth (in)</label>
+          <input id="targetIn" type="number" step="0.01" placeholder="e.g. 0.5" data-unit="in>mm" data-unit-ph="e.g. 0.5|e.g. 12" />
         </div>
         <div id="rowKnownTime" style="display:none">
           <label for="runHrs">Known run-time (hours)</label>
@@ -216,10 +228,10 @@ import Layout from "../../layouts/Layout.astro";
     <section class="result">
       <div class="note">Results</div>
       <div style="display:grid;gap:.5rem;margin-top:.4rem">
-        <div><strong>Precipitation rate (avg):</strong> <span id="pr">—</span> in/hr</div>
+        <div><strong>Precipitation rate (avg):</strong> <span id="pr">—</span> <span data-unit-text="in/hr|mm/hr"></span></div>
         <div id="outTime"><strong>Required run-time:</strong> <span id="needHrs">—</span> hr (<span id="needMin">—</span> min)</div>
-        <div id="outDepth" style="display:none"><strong>Applied depth:</strong> <span id="gotIn">—</span> in</div>
-        <div><strong>Total gallons (period):</strong> <span id="gals">—</span> gal</div>
+        <div id="outDepth" style="display:none"><strong>Applied depth:</strong> <span id="gotIn">—</span> <span data-unit-text="in|mm"></span></div>
+        <div><strong>Total volume (period):</strong> <span id="gals">—</span> <span data-unit-text="gal|L"></span></div>
       </div>
       <p class="note" style="margin-top:.6rem">Estimates assume average rate × DU; soils/infiltration may require cycling.</p>
     </section>
@@ -230,11 +242,11 @@ import Layout from "../../layouts/Layout.astro";
 
       <h3>Formulas</h3>
       <ul>
-        <li><strong>PR (in/hr)</strong> = (Total GPM × 96.3) ÷ Area(ft²)</li>
+        <li><strong>PR</strong> (US) = (Total GPM × 96.3) ÷ Area(ft²) • (Metric) = (L/min × 60) ÷ Area(m²)</li>
         <li><strong>Effective PR</strong> = PR × DU</li>
         <li><strong>Run-time (hr)</strong> = Target depth ÷ Effective PR</li>
-        <li><strong>Depth (in)</strong> = Run-time × Effective PR</li>
-        <li><strong>Gallons</strong> = Area(ft²) × Depth(in) × 0.623</li>
+        <li><strong>Depth</strong> = Run-time × Effective PR</li>
+        <li><strong>Volume</strong> (US) = Area(ft²) × Depth(in) × 0.623 • (Metric) = Area(m²) × Depth(mm)</li>
       </ul>
 
       <h3>Example</h3>
@@ -248,14 +260,82 @@ import Layout from "../../layouts/Layout.astro";
 
       <h3>Notes</h3>
       <ul>
-        <li>Drip: use total GPH, convert to GPM (÷60). Same formulas apply.</li>
+        <li>Drip: use total GPH (US) or L/h (metric); calculator converts to GPM/L/min for PR.</li>
         <li>If run-time is long, split into cycles to reduce runoff.</li>
-        <li>Adjust DU based on your catch-can test for better accuracy.</li>
+        <li>Adjust DU from a catch-can test for better accuracy.</li>
       </ul>
 
       <p class="disclaimer">Estimates only. Verify with local irrigation guidance for your soils and slopes.</p>
+      <p class="note">Prepared by AgCalculator · Last updated October 27, 2025</p>
     </section>
 
+    <!-- Units helper (page-local) -->
+    <script is:inline>
+      (function () {
+        const KEY = 'agc_units';
+        const $$ = (s) => document.querySelectorAll(s);
+        const conv = {
+          'ft2>m2':  x => x / 10.76391041671, 'm2>ft2':  x => x * 10.76391041671,
+          'ac>ha':   x => x / 2.4710538146717, 'ha>ac':   x => x * 2.4710538146717,
+          'gpm>lpm': x => x * 3.785411784,     'lpm>gpm': x => x / 3.785411784,
+          'gph>lph': x => x * 3.785411784,     'lph>gph': x => x / 3.785411784,
+          'in>mm':   x => x * 25.4,            'mm>in':   x => x / 25.4,
+          'gal>l':   x => x * 3.785411784,     'l>gal':   x => x / 3.785411784
+        };
+        window.AGCUnits = {
+          mode: () => localStorage.getItem(KEY) || 'us',
+          setMode(m){ localStorage.setItem(KEY, m); paint(m); },
+          get(el){
+            const raw = parseFloat(el.value);
+            if (!isFinite(raw)) return NaN;
+            const map = (el.dataset.unit || '').trim(); // us>metric key
+            if (!map) return raw; // already US
+            if (this.mode()==='us') return raw;
+            const [us, met] = map.split('>');
+            const fn = conv[`${met}>${us}`];
+            return fn ? fn(raw) : raw;
+          },
+          out(usNumber, map){
+            if (!isFinite(usNumber)) return NaN;
+            if (this.mode()==='us' || !map) return usNumber;
+            const fn = conv[map];
+            return fn ? fn(usNumber) : usNumber;
+          }
+        };
+        function paint(mode){
+          document.querySelectorAll('.unit-toggle .u-btn').forEach(btn => {
+            const on = btn.dataset.units === mode;
+            btn.classList.toggle('active', on);
+            btn.setAttribute('aria-pressed', String(on));
+          });
+          $$('[data-unit-label]').forEach(el => {
+            const [us, met] = el.dataset.unitLabel.split('|');
+            el.textContent = (mode==='metric' ? (met||us) : us);
+          });
+          $$('input[data-unit-ph]').forEach(el => {
+            const [us, met] = el.dataset.unitPh.split('|');
+            el.placeholder = (mode==='metric' ? (met||us) : us);
+          });
+          $$('[data-unit-text]').forEach(el => {
+            const [us, met] = el.dataset.unitText.split('|');
+            el.textContent = (mode==='metric' ? (met||us) : us);
+          });
+          // Trigger recalculation
+          document.querySelectorAll('input,select').forEach(el => {
+            el.dispatchEvent(new Event('input',{bubbles:true}));
+            el.dispatchEvent(new Event('change',{bubbles:true}));
+          });
+        }
+        document.addEventListener('click', (e)=>{
+          const btn = e.target.closest('.u-btn');
+          if (!btn) return;
+          window.AGCUnits.setMode(btn.dataset.units);
+        });
+        paint(window.AGCUnits.mode());
+      })();
+    </script>
+
+    <!-- Calculator logic -->
     <script is:inline>
       // Helpers
       const $ = (id) => document.getElementById(id);
@@ -265,35 +345,36 @@ import Layout from "../../layouts/Layout.astro";
 
       // UI wiring
       ["sys","solve","areaMode","sprMode","dripMode"].forEach(id => $(id).addEventListener("change", onMode));
-      const inputs = ["du","areaSqft","areaAc","sprGpm","sprHeads","sprHeadGpm","dripGph","emitters","gphEm","targetIn","runHrs"];
+      const inputs = ["du","areaSq","areaBig","sprGpm","sprHeads","sprHeadGpm","dripGph","emitters","gphEm","targetIn","runHrs"];
       inputs.forEach(id => $(id).addEventListener("input", compute));
       onMode(); compute();
 
-      function areaSqft(){
-        if ($("areaMode").value === "ac") {
-          const ac = val("areaAc");
-          return (ac>0) ? ac*43560 : NaN;
+      function areaFt2(){
+        if ($("areaMode").value === "big") {
+          const ac = window.AGCUnits.get($("areaBig"));  // normalized to acres
+          return (ac>0) ? ac * 43560 : NaN;
         }
-        const ft2 = val("areaSqft");
+        const ft2 = window.AGCUnits.get($("areaSq"));    // normalized to ft²
         return (ft2>0) ? ft2 : NaN;
       }
 
       function totalGPM(){
         if ($("sys").value === "sprinkler"){
           if ($("sprMode").value === "total"){
-            const gpm = val("sprGpm");
+            const gpm = window.AGCUnits.get($("sprGpm"));     // normalized to GPM
             return (gpm>0) ? gpm : NaN;
           } else {
-            const n = val("sprHeads"), g = val("sprHeadGpm");
-            return (n>0 && g>0) ? n*g : NaN;
+            const n = val("sprHeads");
+            const each = window.AGCUnits.get($("sprHeadGpm")); // GPM/head
+            return (n>0 && each>0) ? n*each : NaN;
           }
         } else {
-          // drip -> GPH -> GPM
+          // drip -> we get GPH (US), convert to GPM
           let gph = NaN;
           if ($("dripMode").value === "total"){
-            gph = val("dripGph");
+            gph = window.AGCUnits.get($("dripGph")); // GPH normalized
           } else {
-            const n = val("emitters"), e = val("gphEm");
+            const n = val("emitters"), e = window.AGCUnits.get($("gphEm"));
             gph = (n>0 && e>0) ? n*e : NaN;
           }
           return Number.isFinite(gph) ? gph/60 : NaN;
@@ -306,8 +387,8 @@ import Layout from "../../layouts/Layout.astro";
         $("dripBox").style.display       = sys==="drip"       ? "" : "none";
 
         const a = $("areaMode").value;
-        $("rowSqft").style.display = a==="sqft" ? "" : "none";
-        $("rowAc").style.display   = a==="ac"   ? "" : "none";
+        $("rowSq").style.display  = a==="sq"  ? "" : "none";
+        $("rowBig").style.display = a==="big" ? "" : "none";
 
         const sprM = $("sprMode").value;
         $("sprTotal").style.display = sprM==="total" ? "" : "none";
@@ -327,63 +408,107 @@ import Layout from "../../layouts/Layout.astro";
       }
 
       function compute(){
-        const A = areaSqft();
+        const Aft2 = areaFt2();
         const GPM = totalGPM();
         const DU = val("du");
 
-        if (!(A>0) || !(GPM>0) || !(DU>0 && DU<=1)){
+        if (!(Aft2>0) || !(GPM>0) || !(DU>0 && DU<=1)){
           show();
           $("steps").innerHTML = `<span class="note">Enter area, flow, and DU to see the step-by-step.</span>`;
           return;
         }
 
-        // Precipitation rate (in/hr)
-        const PR = (GPM * 96.3) / A;
-        const effPR = PR * DU;
+        // US-base math
+        const PR_in_hr = (GPM * 96.3) / Aft2;       // in/hr
+        const effPR_in_hr = PR_in_hr * DU;
 
-        let needHrs = NaN, needMin = NaN, gotIn = NaN, gals = NaN;
+        let needHrs = NaN, needMin = NaN, gotIn_in = NaN, gallons = NaN;
         const solve = $("solve").value;
 
         if (solve === "time"){
-          const target = val("targetIn");
-          if (target>0 && effPR>0){
-            needHrs = target / effPR;
+          const target_in = window.AGCUnits.get($("targetIn")); // inches
+          if (target_in>0 && effPR_in_hr>0){
+            needHrs = target_in / effPR_in_hr;
             needMin = needHrs * 60;
-            gals = A * target * 0.623;
+            gallons = Aft2 * target_in * 0.623;
           }
         } else {
           const hrs = val("runHrs");
           if (hrs>0){
-            gotIn = hrs * effPR;
-            gals = A * gotIn * 0.623;
+            gotIn_in = hrs * effPR_in_hr;
+            gallons = Aft2 * gotIn_in * 0.623;
           }
         }
 
-        // Steps
+        // Build steps in current units
+        const isMetric = (window.AGCUnits.mode()==='metric');
+        const PR_out = isMetric ? PR_in_hr * 25.4 : PR_in_hr; // mm/hr or in/hr
+        const effPR_out = isMetric ? effPR_in_hr * 25.4 : effPR_in_hr;
+        const needHrsOut = needHrs;
+        const needMinOut = needMin;
+        const gotDepthOut = isMetric ? (gotIn_in*25.4) : gotIn_in;
+        const volOut = isMetric ? (gallons*3.785411784) : gallons;
+
         const lines = [];
-        lines.push(`<div>PR = (${fmt2(GPM)} × 96.3) ÷ ${A.toLocaleString()} = <strong>${fmt2(PR)}</strong> in/hr</div>`);
-        lines.push(`<div>Effective PR = ${fmt2(PR)} × ${fmt2(DU)} = <strong>${fmt2(effPR)}</strong> in/hr</div>`);
-        if (solve==="time" && Number.isFinite(needHrs)){
-          lines.push(`<div>Run-time = target ÷ eff PR = ${fmt2(val("targetIn"))} ÷ ${fmt2(effPR)} = <strong>${fmt2(needHrs)}</strong> hr</div>`);
+        // Show formula step (use displayed units)
+        const A_disp = isMetric ? window.AGCUnits.out(Aft2,'ft2>m2') : Aft2;
+        const flowDisp = (() => {
+          if ($("sys").value==="sprinkler"){
+            const totalLpm = window.AGCUnits.mode()==='metric'
+              ? window.AGCUnits.out(GPM,'gpm>lpm') : GPM;
+            return totalLpm;
+          } else {
+            // For drip we originally accepted GPH; PR step displays using equivalent L/min or GPM
+            const asGpm = GPM;
+            return isMetric ? window.AGCUnits.out(asGpm,'gpm>lpm') : asGpm;
+          }
+        })();
+
+        if (isMetric) {
+          lines.push(`<div>PR = (${fmt2(flowDisp)} × 60) ÷ ${A_disp.toLocaleString()} = <strong>${fmt2(PR_out)}</strong> mm/hr</div>`);
+        } else {
+          lines.push(`<div>PR = (${fmt2(flowDisp)} × 96.3) ÷ ${A_disp.toLocaleString()} = <strong>${fmt2(PR_out)}</strong> in/hr</div>`);
         }
-        if (solve==="depth" && Number.isFinite(gotIn)){
-          lines.push(`<div>Depth = run-time × eff PR = ${fmt2(val("runHrs"))} × ${fmt2(effPR)} = <strong>${fmt2(gotIn)}</strong> in</div>`);
+        lines.push(`<div>Effective PR = ${fmt2(PR_out)} × ${fmt2(DU)} = <strong>${fmt2(effPR_out)}</strong> ${isMetric?'mm/hr':'in/hr'}</div>`);
+
+        if (solve==="time" && Number.isFinite(needHrsOut)){
+          const tgtDisp = isMetric ? window.AGCUnits.out(window.AGCUnits.get($("targetIn")),'in>mm') : window.AGCUnits.get($("targetIn"));
+          lines.push(`<div>Run-time = target ÷ eff PR = ${fmt2(tgtDisp)} ÷ ${fmt2(effPR_out)} = <strong>${fmt2(needHrsOut)}</strong> hr</div>`);
         }
-        if (Number.isFinite(gals)){
-          const depth = (solve==="time") ? val("targetIn") : gotIn;
-          lines.push(`<div>Gallons = Area × Depth × 0.623 = ${A.toLocaleString()} × ${fmt2(depth)} × 0.623 = <strong>${(A*depth*0.623).toLocaleString(undefined,{maximumFractionDigits:0})}</strong> gal</div>`);
+        if (solve==="depth" && Number.isFinite(gotDepthOut)){
+          lines.push(`<div>Depth = run-time × eff PR = ${fmt2(val("runHrs"))} × ${fmt2(effPR_out)} = <strong>${fmt2(gotDepthOut)}</strong> ${isMetric?'mm':'in'}</div>`);
+        }
+        if (Number.isFinite(volOut)){
+          const depthUsed = (solve==="time")
+            ? (isMetric ? window.AGCUnits.out(window.AGCUnits.get($("targetIn")),'in>mm') : window.AGCUnits.get($("targetIn")))
+            : gotDepthOut;
+          if (isMetric){
+            const Am2 = window.AGCUnits.out(Aft2,'ft2>m2');
+            lines.push(`<div>Liters = Area × Depth = ${Am2.toLocaleString()} × ${fmt2(depthUsed)} = <strong>${(Am2*depthUsed).toLocaleString(undefined,{maximumFractionDigits:0})}</strong> L</div>`);
+          } else {
+            lines.push(`<div>Gallons = Area × Depth × 0.623 = ${Aft2.toLocaleString()} × ${fmt2(depthUsed)} × 0.623 = <strong>${(Aft2*(depthUsed||0)*0.623).toLocaleString(undefined,{maximumFractionDigits:0})}</strong> gal</div>`);
+          }
         }
         $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
 
-        show({PR, needHrs, needMin, gotIn, gals});
+        show({
+          PR: PR_out,
+          needHrs: needHrsOut,
+          needMin: needMinOut,
+          gotDepth: gotDepthOut,
+          volume: volOut
+        });
       }
 
       function show(o={}){
         $("pr").textContent      = fmt2(o.PR);
         $("needHrs").textContent = fmt2(o.needHrs);
         $("needMin").textContent = fmt1(o.needMin);
-        $("gotIn").textContent   = fmt2(o.gotIn);
-        $("gals").textContent    = Number.isFinite(o.gals) ? o.gals.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
+        $("gotIn").textContent   = fmt2(o.gotDepth);
+        const isMetric = (window.AGCUnits.mode()==='metric');
+        $("gals").textContent    = Number.isFinite(o.volume) ? (isMetric
+          ? o.volume.toLocaleString(undefined,{maximumFractionDigits:0})
+          : o.volume.toLocaleString(undefined,{maximumFractionDigits:0})) : "—";
       }
     </script>
   </main>
