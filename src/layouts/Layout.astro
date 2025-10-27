@@ -11,12 +11,81 @@
     <!-- Favicon -->
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
-    <!-- Google AdSense -->
-    <script
-      async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4050846968323757"
-      crossorigin="anonymous">
+    <!-- Consent + AdSense loader -->
+    <script is:inline>
+      (function () {
+        const KEY = 'agc_ads_consent'; // 'granted' | 'denied'
+        const hasChoice = () => localStorage.getItem(KEY) === 'granted' || localStorage.getItem(KEY) === 'denied';
+        const grant = () => { localStorage.setItem(KEY, 'granted'); loadAdsense(); hideBanner(); };
+        const deny  = () => { localStorage.setItem(KEY, 'denied'); hideBanner(); };
+
+        function loadAdsense() {
+          if (document.getElementById('adsbygooglejs')) return;
+          const s = document.createElement('script');
+          s.id = 'adsbygooglejs';
+          s.async = true;
+          s.crossOrigin = 'anonymous';
+          s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4050846968323757';
+          document.head.appendChild(s);
+        }
+
+        function bannerEl() {
+          const el = document.createElement('div');
+          el.id = 'consent-banner';
+          el.style.cssText = "position:fixed;inset:auto 1rem 1rem 1rem;z-index:9999;background:#fff;border:1px solid #cbd5e1;border-radius:12px;max-width:680px;margin:0 auto;padding:1rem;box-shadow:0 6px 18px rgba(0,0,0,.08)";
+          el.innerHTML = `
+            <div style="display:flex;gap:.8rem;align-items:flex-start">
+              <div style="flex:1">
+                <strong>Privacy choices</strong>
+                <div style="color:#64748b;margin-top:.25rem;font-size:.95rem">
+                  We use cookies for ads (Google AdSense). Choose whether to allow advertising cookies. Analytics (Plausible) is cookie-less.
+                </div>
+              </div>
+              <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+                <button id="consent-allow" style="padding:.55rem .8rem;border:none;border-radius:10px;background:#2F855A;color:#fff;cursor:pointer">Allow ads</button>
+                <button id="consent-deny"  style="padding:.55rem .8rem;border:1px solid #cbd5e1;border-radius:10px;background:#fff;cursor:pointer">No ads</button>
+              </div>
+            </div>`;
+          document.body.appendChild(el);
+          document.getElementById('consent-allow').onclick = grant;
+          document.getElementById('consent-deny').onclick = deny;
+          return el;
+        }
+
+        function hideBanner() { document.getElementById('consent-banner')?.remove(); }
+
+        // Reopen handler (from Privacy page or footer)
+        window.addEventListener('open-consent', () => {
+          localStorage.removeItem(KEY);
+          bannerEl();
+        });
+
+        // Add a small "Privacy choices" link to the footer automatically
+        window.addEventListener('load', () => {
+          const footer = document.querySelector('footer .wrap small');
+          if (footer && !footer.querySelector('#privacy-choices-inline')) {
+            const sep = document.createTextNode(' · ');
+            const link = document.createElement('a');
+            link.id = 'privacy-choices-inline';
+            link.href = '#';
+            link.textContent = 'Privacy choices';
+            link.style.cssText = 'color:#2F855A;text-decoration:none;';
+            link.onclick = (e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('open-consent')); };
+            footer.appendChild(sep);
+            footer.appendChild(link);
+          }
+        });
+
+        // First-load behavior
+        if (hasChoice()) {
+          if (localStorage.getItem(KEY) === 'granted') loadAdsense();
+        } else {
+          // Show banner until a choice is made
+          if (document.readyState === 'complete') bannerEl(); else window.addEventListener('load', bannerEl);
+        }
+      })();
     </script>
+
 
     <!-- Plausible queue (in case the external script is slow to load) -->
     <script is:inline>
@@ -50,6 +119,29 @@
   "logo": "https://agcalculator.com/icons/icon-192.png",
   "sameAs": [
     "mailto:info@cleverhayseed.com"
+  ]
+}
+</script>
+<!-- Site entity & navigation (E-E-A-T) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "AgCalculator",
+  "url": "https://agcalculator.com"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SiteNavigationElement",
+  "name": ["Calculators", "About", "Privacy", "Terms"],
+  "url": [
+    "https://agcalculator.com/",
+    "https://agcalculator.com/about/",
+    "https://agcalculator.com/privacy/",
+    "https://agcalculator.com/terms/"
   ]
 }
 </script>
