@@ -1,11 +1,10 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 ---
-
 <Layout>
   <Fragment slot="head">
     <title>Field Capacity & Spray Rate (ac/hr, GPA) | AgCalculator</title>
-    <meta name="description" content="Figure theoretical & effective field capacity (ac/hr), hours to finish a field, and spray GPA from boom width, speed, and flow." />
+    <meta name="description" content="Figure theoretical & effective field capacity (ac/hr), hours to finish a field, and spray GPA from boom width, speed, and flow. US ↔ Metric toggle." />
     <link rel="canonical" href="https://agcalculator.com/calculators/field-capacity/" />
 
     <!-- Open Graph -->
@@ -27,7 +26,7 @@ import Layout from "../../layouts/Layout.astro";
       "applicationCategory":"Calculator",
       "operatingSystem":"Web",
       "url":"https://agcalculator.com/calculators/field-capacity/",
-      "description":"Compute theoretical and effective field capacity (ac/hr), hours to finish a field, and spray GPA from boom width, speed, and flow.",
+      "description":"Compute theoretical and effective field capacity, hours to finish a field, and spray GPA from boom width, speed, and flow.",
       "publisher":{"@type":"Organization","name":"AgCalculator","url":"https://agcalculator.com"},
       "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
     }
@@ -42,6 +41,7 @@ import Layout from "../../layouts/Layout.astro";
       ]
     }
     </script>
+    <!-- FAQ schema (matches on-page FAQ) -->
     <script type="application/ld+json">
     {
       "@context":"https://schema.org",
@@ -61,6 +61,11 @@ import Layout from "../../layouts/Layout.astro";
           "@type":"Question",
           "name":"How do I calculate spray GPA?",
           "acceptedAnswer":{"@type":"Answer","text":"GPA = (5940 × total GPM) ÷ (mph × boom width(in)). If you know a target GPA and tank size, acres per tank = tank(gal) ÷ GPA."}
+        },
+        {
+          "@type":"Question",
+          "name":"Can I use metric units?",
+          "acceptedAnswer":{"@type":"Answer","text":"Yes. Use the US↔Metric toggle. The math runs in US units and values are converted to m, km/h, L/min, L/ha, and ha for display."}
         }
       ]
     }
@@ -69,23 +74,28 @@ import Layout from "../../layouts/Layout.astro";
     <style>
       :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
       *{box-sizing:border-box}
-      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:white}
+      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:#fff}
       .wrap{max-width:960px;margin:0 auto;padding:1rem}
       a{color:var(--green);text-decoration:none}
-      fieldset{background:white;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
+      fieldset{background:#fff;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
       legend{padding:0 .4rem;color:var(--muted)}
       label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
       input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
       .row{display:grid;gap:.8rem}
       @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
-      .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+      .result{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
       .note{color:var(--muted);font-size:.9rem}
-      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
       .content h2{margin:.2rem 0 .6rem}
       .content h3{margin:.8rem 0 .3rem}
       .content ul,.content ol{margin:.2rem 0 .2rem 1rem}
       .content .disclaimer{color:#64748b;margin-top:.6rem}
       code{background:#f1f5f9;padding:0 .25rem;border-radius:4px}
+
+      /* Units toggle */
+      .unit-toggle{display:flex;align-items:center;gap:.4rem;margin:0 0 1rem;padding:.5rem 1rem;background:#fff;border:1px solid #e2e8f0;border-radius:12px}
+      .u-btn{padding:.35rem .7rem;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer}
+      .u-btn.active{background:var(--green);border-color:var(--green);color:#fff}
     </style>
   </Fragment>
 
@@ -94,16 +104,24 @@ import Layout from "../../layouts/Layout.astro";
   <main class="wrap">
     <h1 style="margin:.5rem 0 1rem">Field Capacity &amp; Spray Rate</h1>
 
+    <!-- Units toggle -->
+    <div class="unit-toggle" role="group" aria-label="Units">
+      <strong style="margin-right:.25rem">Units:</strong>
+      <button type="button" class="u-btn active" data-units="us" aria-pressed="true">US</button>
+      <button type="button" class="u-btn" data-units="metric" aria-pressed="false">Metric</button>
+      <small class="note" style="margin-left:.5rem">Saved on this device</small>
+    </div>
+
     <fieldset>
       <legend>Implement & field</legend>
       <div class="row">
         <div>
-          <label for="widthFt">Implement / boom width (ft)</label>
-          <input id="widthFt" type="number" step="0.1" placeholder="e.g. 30" />
+          <label data-unit-label="Implement / boom width (ft)|Implement / boom width (m)" for="widthFt">Implement / boom width (ft)</label>
+          <input id="widthFt" type="number" step="0.1" placeholder="e.g. 30" data-unit="ft>m" data-unit-ph="e.g. 30|e.g. 9.1" />
         </div>
         <div>
-          <label for="mph">Travel speed (mph)</label>
-          <input id="mph" type="number" step="0.1" placeholder="e.g. 6" />
+          <label data-unit-label="Travel speed (mph)|Travel speed (km/h)" for="mph">Travel speed (mph)</label>
+          <input id="mph" type="number" step="0.1" placeholder="e.g. 6" data-unit="mph>kmh" data-unit-ph="e.g. 6|e.g. 9.7" />
         </div>
         <div>
           <label for="eff">Field efficiency (%)</label>
@@ -114,17 +132,17 @@ import Layout from "../../layouts/Layout.astro";
 
       <div class="row">
         <div>
-          <label for="acres">Acres to cover (optional)</label>
-          <input id="acres" type="number" step="0.01" placeholder="e.g. 120" />
+          <label data-unit-label="Acres to cover (optional)|Hectares to cover (optional)" for="acres">Acres to cover (optional)</label>
+          <input id="acres" type="number" step="0.01" placeholder="e.g. 120" data-unit="ac>ha" data-unit-ph="e.g. 120|e.g. 48.6" />
         </div>
         <div>
           <label for="hrsDay">Hours available per day (optional)</label>
           <input id="hrsDay" type="number" step="0.1" value="10" />
         </div>
         <div>
-          <label for="fuelGph">Fuel rate (gal/hr, optional)</label>
-          <input id="fuelGph" type="number" step="0.1" placeholder="e.g. 4.5" />
-          <div class="note">We’ll show gal/acre if set.</div>
+          <label data-unit-label="Fuel rate (gal/hr, optional)|Fuel rate (L/hr, optional)" for="fuelGph">Fuel rate (gal/hr, optional)</label>
+          <input id="fuelGph" type="number" step="0.1" placeholder="e.g. 4.5" data-unit="gph>lph" data-unit-ph="e.g. 4.5|e.g. 17.0" />
+          <div class="note">We’ll show <span data-unit-text="gal/acre|L/ha"></span> if set.</div>
         </div>
       </div>
     </fieldset>
@@ -140,23 +158,23 @@ import Layout from "../../layouts/Layout.astro";
           </select>
         </div>
         <div id="sprFlowA">
-          <label for="totalGpm">Total flow (GPM)</label>
-          <input id="totalGpm" type="number" step="0.01" placeholder="e.g. 20" />
+          <label data-unit-label="Total flow (GPM)|Total flow (L/min)" for="totalGpm">Total flow (GPM)</label>
+          <input id="totalGpm" type="number" step="0.01" placeholder="e.g. 20" data-unit="gpm>lmin" data-unit-ph="e.g. 20|e.g. 76" />
         </div>
         <div id="sprTargetA" style="display:none">
-          <label for="targetGpa">Target GPA</label>
-          <input id="targetGpa" type="number" step="0.1" placeholder="e.g. 15" />
+          <label data-unit-label="Target GPA (gal/acre)|Target rate (L/ha)" for="targetGpa">Target GPA</label>
+          <input id="targetGpa" type="number" step="0.1" placeholder="e.g. 15" data-unit="gpa>l/ha" data-unit-ph="e.g. 15|e.g. 140" />
         </div>
       </div>
 
       <div class="row">
         <div>
-          <label for="tankGal">Tank size (gal, optional)</label>
-          <input id="tankGal" type="number" step="1" placeholder="e.g. 500" />
+          <label data-unit-label="Tank size (gal, optional)|Tank size (L, optional)" for="tankGal">Tank size (gal, optional)</label>
+          <input id="tankGal" type="number" step="1" placeholder="e.g. 500" data-unit="gal>l" data-unit-ph="e.g. 500|e.g. 1893" />
         </div>
         <div>
           <label>&nbsp;</label>
-          <div class="note">Acres per tank = tank ÷ GPA</div>
+          <div class="note"><span data-unit-text="Acres per tank|Hectares per tank"></span> = tank ÷ <span data-unit-text="GPA|L/ha"></span></div>
         </div>
         <div></div>
       </div>
@@ -165,22 +183,26 @@ import Layout from "../../layouts/Layout.astro";
     <section class="result">
       <div class="note">Results</div>
       <div style="display:grid;gap:.5rem;margin-top:.4rem">
-        <div><strong>Theoretical capacity:</strong> <span id="tfc">—</span> ac/hr</div>
-        <div><strong>Effective capacity:</strong> <span id="efc">—</span> ac/hr</div>
+        <div><strong>Theoretical capacity:</strong> <span id="tfc">—</span> <span data-unit-text="ac/hr|ha/hr"></span></div>
+        <div><strong>Effective capacity:</strong> <span id="efc">—</span> <span data-unit-text="ac/hr|ha/hr"></span></div>
         <div><strong>Hours to finish field:</strong> <span id="hrs">—</span> hr</div>
-        <div><strong>Acres/day (at hours/day):</strong> <span id="acDay">—</span> ac/day</div>
-        <div><strong>Fuel use (if given):</strong> <span id="fuelPerAc">—</span> gal/acre</div>
-        <div><strong>Spray rate (GPA):</strong> <span id="gpa">—</span> gal/acre</div>
-        <div><strong>Acres per tank:</strong> <span id="acPerTank">—</span></div>
+        <div><strong><span data-unit-text="Acres/day|Hectares/day"></span> (at hours/day):</strong> <span id="acDay">—</span> <span data-unit-text="ac/day|ha/day"></span></div>
+        <div><strong>Fuel use (if given):</strong> <span id="fuelPerAc">—</span> <span data-unit-text="gal/acre|L/ha"></span></div>
+        <div><strong>Spray rate:</strong> <span id="gpa">—</span> <span data-unit-text="GPA|L/ha"></span></div>
+        <div><strong><span data-unit-text="Acres per tank|Hectares per tank"></span>:</strong> <span id="acPerTank">—</span></div>
         <div><strong>Tank fills for field:</strong> <span id="tankFills">—</span></div>
       </div>
       <p class="note" style="margin-top:.6rem">Estimates only. Verify with in-field calibration and speed check.</p>
     </section>
 
-    <section class="content" id="explain">
-      <h2>How we got these numbers</h2>
-      <div id="steps" class="note">Enter width, speed, and efficiency to see step-by-step.</div>
+    <!-- Publisher content -->
+    <section class="content" id="how-it-works">
+      <h2>How this calculator works</h2>
+      <p>Enter boom width and travel speed to compute <em>theoretical</em> acres/hour, then apply field efficiency to get <em>effective</em> acres/hour. Add acres to cover and hours/day to plan time. For spraying, either compute GPA from total flow or enter a target GPA and tank size to plan acres per tank and fills.</p>
+      <p class="note">Rounding: capacities to 1 decimal; hours to 2 decimals; GPA and fuel/acre to 2 decimals.</p>
+    </section>
 
+    <section class="content" id="explain">
       <h3>Formulas</h3>
       <ul>
         <li><strong>Theoretical ac/hr</strong> = <code>(width(ft) × mph) ÷ 8.25</code></li>
@@ -191,7 +213,7 @@ import Layout from "../../layouts/Layout.astro";
         <li><strong>Acres per tank</strong> = <code>tank(gal) ÷ GPA</code></li>
       </ul>
 
-      <h3>Example</h3>
+      <h3>Worked example</h3>
       <p>30 ft, 6 mph, 80% efficiency; total flow 20 GPM; 500 gal tank:</p>
       <ol>
         <li>Theoretical = (30×6)/8.25 = <strong>21.8 ac/hr</strong></li>
@@ -200,93 +222,206 @@ import Layout from "../../layouts/Layout.astro";
         <li>Acres/tank = 500/5.5 ≈ <strong>90.9 ac</strong></li>
       </ol>
 
-      <p class="disclaimer">Estimates only. Adjust for overlap, skips, pressure, nozzle wear, and field shape.</p>
+      <h3>Assumptions & notes</h3>
+      <ul>
+        <li>Efficiency represents headland turns, overlap, refill, obstacles, and non-productive time.</li>
+        <li>GPA formula assumes even nozzle spacing and calibrated speed/pressure; always field-calibrate.</li>
+        <li>Metric display converts seamlessly (m, km/h, L/min, L/ha, ha); internal math stays in US units for consistency.</li>
+      </ul>
+
+      <p class="disclaimer">Prepared by AgCalculator · Last updated October 27, 2025</p>
     </section>
 
-    <script is:inline>
-      // Helpers
-      const $ = (id) => document.getElementById(id);
-      const val = (id) => parseFloat(($(id)?.value ?? "").trim());
-      const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
-      const fmt2 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:2}) : "—";
+    <section class="content" id="faq">
+      <h3>FAQ</h3>
+      <h4>What is field efficiency?</h4>
+      <p>It captures real-world losses: turns, overlap, refill, and delays. Typical ranges: tillage 70–85%, planting 60–80%, spraying 65–90%.</p>
 
-      // Wire UI
-      ["sprMode"].forEach(id => $(id).addEventListener("change", onSprMode));
-      const fields = ["widthFt","mph","eff","acres","hrsDay","fuelGph","totalGpm","targetGpa","tankGal"];
-      fields.forEach(id => $(id).addEventListener("input", compute));
-      onSprMode(); compute();
+      <h4>What’s the formula for acres per hour?</h4>
+      <p>Theoretical = (width(ft) × mph) ÷ 8.25. Effective = theoretical × efficiency%.</p>
 
-      function onSprMode(){
-        const m = $("sprMode").value;
-        $("sprFlowA").style.display   = m==="flow" ? "" : "none";
-        $("sprTargetA").style.display = m==="target" ? "" : "none";
-        compute();
-      }
+      <h4>How do I calculate spray GPA?</h4>
+      <p>GPA = (5940 × total GPM) ÷ (mph × boom width(in)). Or enter a target GPA to get acres per tank and fills.</p>
 
-      function compute(){
-        const widthFt = val("widthFt");
-        const mph = val("mph");
-        const effPct = Math.max(0, Math.min(100, val("eff") || 0));
+      <h4>Can I use metric units?</h4>
+      <p>Yes — toggle at the top. Outputs switch to ha/hr, L/ha, etc.</p>
+    </section>
 
-        let tfc = NaN, efc = NaN;
-        if (widthFt>0 && mph>0){
-          tfc = (widthFt * mph) / 8.25;
-          efc = tfc * (effPct/100);
-        }
-
-        const acres = val("acres");
-        const hrsDay = val("hrsDay");
-        let hrs = NaN, acDay = NaN;
-        if (efc>0 && acres>0) hrs = acres / efc;
-        if (efc>0 && hrsDay>0) acDay = efc * hrsDay;
-
-        const gph = val("fuelGph");
-        let fuelPerAc = NaN;
-        if (efc>0 && gph>0) fuelPerAc = gph / efc;
-
-        // Spray
-        const sprMode = $("sprMode").value;
-        const widthIn = widthFt>0 ? widthFt*12 : NaN;
-        let gpa = NaN;
-        if (sprMode==="flow"){
-          const totalGpm = val("totalGpm");
-          if (totalGpm>0 && mph>0 && widthIn>0){
-            gpa = (5940 * totalGpm) / (mph * widthIn);
-          }
-        } else {
-          const targetGpa = val("targetGpa");
-          if (targetGpa>0) gpa = targetGpa;
-        }
-
-        const tank = val("tankGal");
-        let acPerTank = NaN, tankFills = NaN;
-        if (tank>0 && gpa>0){
-          acPerTank = tank / gpa;
-          if (acres>0) tankFills = Math.ceil(acres / acPerTank);
-        }
-
-        // Steps
-        const lines = [];
-        if (Number.isFinite(tfc)) lines.push(`<div>Theoretical = (width × mph) ÷ 8.25 = (${widthFt} × ${mph}) ÷ 8.25 = <strong>${fmt1(tfc)}</strong> ac/hr</div>`);
-        if (Number.isFinite(efc)) lines.push(`<div>Effective = theoretical × efficiency = ${fmt1(tfc)} × ${(effPct/100).toFixed(2)} = <strong>${fmt1(efc)}</strong> ac/hr</div>`);
-        if (Number.isFinite(hrs)) lines.push(`<div>Hours to finish = acres ÷ effective = ${acres} ÷ ${fmt1(efc)} = <strong>${fmt2(hrs)}</strong> hr</div>`);
-        if (Number.isFinite(fuelPerAc)) lines.push(`<div>Fuel/acre = gph ÷ effective = ${gph} ÷ ${fmt1(efc)} = <strong>${fmt2(fuelPerAc)}</strong> gal/ac</div>`);
-        if (sprMode==="flow" && Number.isFinite(gpa)) lines.push(`<div>GPA(flow) = (5940 × GPM) ÷ (mph × width(in)) = (5940×${val("totalGpm")}) ÷ (${mph}×${fmt1(widthIn)}) = <strong>${fmt2(gpa)}</strong></div>`);
-        if (sprMode==="target" && Number.isFinite(gpa)) lines.push(`<div>GPA(target) = <strong>${fmt2(gpa)}</strong></div>`);
-        if (Number.isFinite(acPerTank)) lines.push(`<div>Acres/tank = tank ÷ GPA = ${tank} ÷ ${fmt2(gpa)} = <strong>${fmt2(acPerTank)}</strong> ac</div>`);
-        if (Number.isFinite(tankFills)) lines.push(`<div>Tank fills = field acres ÷ acres/tank = ${acres} ÷ ${fmt2(acPerTank)} = <strong>${tankFills}</strong></div>`);
-        $("steps").innerHTML = lines.length ? `<div style="display:grid;gap:.35rem">${lines.join("")}</div>` : `Enter inputs to see the math.`;
-
-        // Show
-        $("tfc").textContent = fmt1(tfc);
-        $("efc").textContent = fmt1(efc);
-        $("hrs").textContent = fmt2(hrs);
-        $("acDay").textContent = fmt1(acDay);
-        $("fuelPerAc").textContent = fmt2(fuelPerAc);
-        $("gpa").textContent = fmt2(gpa);
-        $("acPerTank").textContent = fmt2(acPerTank);
-        $("tankFills").textContent = Number.isFinite(tankFills) ? tankFills.toString() : "—";
-      }
-    </script>
+    <section class="content">
+      <h3>Also try…</h3>
+      <ul>
+        <li><a href="/calculators/irrigation-runtime/">Irrigation Runtime (Depth from Flow &amp; Area)</a></li>
+        <li><a href="/calculators/seed-rate-density/">Seed Rate &amp; Plant Density</a></li>
+      </ul>
+    </section>
   </main>
+
+  <!-- Units helper (page-local) -->
+  <script is:inline>
+    (function () {
+      const KEY = 'agc_units';
+      const $$ = (s) => document.querySelectorAll(s);
+
+      const conv = {
+        'ft>m': x => x * 0.3048,        'm>ft': x => x / 0.3048,
+        'mph>kmh': x => x * 1.609344,   'kmh>mph': x => x / 1.609344,
+        'gpm>lmin': x => x * 3.785411784, 'lmin>gpm': x => x / 3.785411784,
+        'gal>l': x => x * 3.785411784,  'l>gal': x => x / 3.785411784,
+        'ac>ha': x => x * 0.4046856422, 'ha>ac': x => x / 0.4046856422,
+        'gph>lph': x => x * 3.785411784, 'lph>gph': x => x / 3.785411784,
+        // Spray rate
+        'gpa>l/ha': x => x * 9.353941,  'l/ha>gpa': x => x / 9.353941
+      };
+
+      window.AGCUnits = {
+        mode: () => localStorage.getItem(KEY) || 'us',
+        setMode(m){ localStorage.setItem(KEY, m); paint(m); },
+        get(el){ // normalize to US units for math
+          const raw = parseFloat(el.value);
+          if (!isFinite(raw)) return NaN;
+          const map = (el.dataset.unit || '').trim();
+          if (!map) return raw;
+          const [us, metric] = map.split('>');
+          if (this.mode() === 'us') return raw;
+          const fn = conv[`${metric}>${us}`];
+          return fn ? fn(raw) : raw;
+        },
+        out(usNumber, map){
+          if (!isFinite(usNumber)) return NaN;
+          if (this.mode() === 'us' || !map) return usNumber;
+          const fn = conv[map];
+          return fn ? fn(usNumber) : usNumber;
+        }
+      };
+
+      function paint(mode){
+        document.querySelectorAll('.unit-toggle .u-btn').forEach(btn => {
+          const on = btn.dataset.units === mode;
+          btn.classList.toggle('active', on);
+          btn.setAttribute('aria-pressed', String(on));
+        });
+        $$('[data-unit-label]').forEach(el => {
+          const [us, met] = el.dataset.unitLabel.split('|');
+          el.innerHTML = (mode === 'metric' ? met : us);
+        });
+        $$('input[data-unit-ph]').forEach(el => {
+          const [us, met] = el.dataset.unitPh.split('|');
+          el.placeholder = (mode === 'metric' ? met : us);
+        });
+        $$('[data-unit-text]').forEach(el => {
+          const [us, met] = el.dataset.unitText.split('|');
+          el.textContent = (mode === 'metric' ? met : us);
+        });
+
+        // Trigger recalculation
+        document.querySelectorAll('input,select').forEach(el => {
+          el.dispatchEvent(new Event('input', {bubbles:true}));
+          el.dispatchEvent(new Event('change', {bubbles:true}));
+        });
+      }
+
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.u-btn');
+        if (!btn) return;
+        window.AGCUnits.setMode(btn.dataset.units);
+      });
+
+      // Init
+      paint(window.AGCUnits.mode());
+    })();
+  </script>
+
+  <!-- Calculator logic (page-local) -->
+  <script is:inline>
+    // Helpers
+    const $ = (id) => document.getElementById(id);
+    const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
+    const fmt2 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:2}) : "—";
+
+    // UI handlers
+    ["sprMode"].forEach(id => $(id).addEventListener("change", onSprMode));
+    const fields = ["widthFt","mph","eff","acres","hrsDay","fuelGph","totalGpm","targetGpa","tankGal"];
+    fields.forEach(id => $(id).addEventListener("input", compute));
+    onSprMode(); compute();
+
+    function onSprMode(){
+      const m = $("sprMode").value;
+      $("sprFlowA").style.display   = m==="flow" ? "" : "none";
+      $("sprTargetA").style.display = m==="target" ? "" : "none";
+      compute();
+    }
+
+    function compute(){
+      const widthFt = AGCUnits.get($("widthFt"));     // ft
+      const mph     = AGCUnits.get($("mph"));         // mph
+      const effPct  = Math.max(0, Math.min(100, parseFloat($("eff").value)||0));
+
+      let tfcUS = NaN, efcUS = NaN;
+      if (widthFt>0 && mph>0){
+        tfcUS = (widthFt * mph) / 8.25;       // ac/hr
+        efcUS = tfcUS * (effPct/100);         // ac/hr
+      }
+
+      const acresUS = AGCUnits.get($("acres"));       // ac
+      const hrsDay  = parseFloat($("hrsDay").value);  // hr/day
+      let hrs = NaN, acDayUS = NaN;
+      if (efcUS>0 && acresUS>0) hrs = acresUS / efcUS;
+      if (efcUS>0 && hrsDay>0)  acDayUS = efcUS * hrsDay;
+
+      const gphUS = AGCUnits.get($("fuelGph"));       // gal/hr
+      let fuelPerAcUS = NaN;
+      if (efcUS>0 && gphUS>0) fuelPerAcUS = gphUS / efcUS; // gal/ac
+
+      // Spray
+      const sprMode = $("sprMode").value;
+      const widthIn = widthFt>0 ? widthFt*12 : NaN;   // in
+      let gpaUS = NaN;
+      if (sprMode==="flow"){
+        const totalGpmUS = AGCUnits.get($("totalGpm")); // GPM
+        if (totalGpmUS>0 && mph>0 && widthIn>0){
+          gpaUS = (5940 * totalGpmUS) / (mph * widthIn); // gal/ac
+        }
+      } else {
+        const targetGpaUS = AGCUnits.get($("targetGpa")); // gal/ac
+        if (targetGpaUS>0) gpaUS = targetGpaUS;
+      }
+
+      const tankGalUS = AGCUnits.get($("tankGal"));   // gal
+      let acPerTankUS = NaN, tankFills = NaN;
+      if (tankGalUS>0 && gpaUS>0){
+        acPerTankUS = tankGalUS / gpaUS;              // acres
+        if (acresUS>0) tankFills = Math.ceil(acresUS / acPerTankUS);
+      }
+
+      // Steps (show math in current unit system where reasonable)
+      const lines = [];
+      if (Number.isFinite(tfcUS)) lines.push(`<div>Theoretical = (width × mph) ÷ 8.25 = (${fmt2(widthFt)} ft × ${fmt2(mph)} mph) ÷ 8.25 = <strong>${fmt1(tfcUS)}</strong> ac/hr</div>`);
+      if (Number.isFinite(efcUS)) lines.push(`<div>Effective = theoretical × efficiency = ${fmt1(tfcUS)} × ${(effPct/100).toFixed(2)} = <strong>${fmt1(efcUS)}</strong> ac/hr</div>`);
+      if (Number.isFinite(hrs))   lines.push(`<div>Hours to finish = acres ÷ effective = ${fmt2(acresUS)} ÷ ${fmt1(efcUS)} = <strong>${fmt2(hrs)}</strong> hr</div>`);
+      if (Number.isFinite(fuelPerAcUS)) lines.push(`<div>Fuel/acre = gph ÷ effective = ${fmt2(gphUS)} ÷ ${fmt1(efcUS)} = <strong>${fmt2(fuelPerAcUS)}</strong> gal/ac</div>`);
+      if (sprMode==="flow" && Number.isFinite(gpaUS)) lines.push(`<div>GPA(flow) = (5940 × GPM) ÷ (mph × width(in)) = (5940×${fmt2(AGCUnits.get($("totalGpm")))}) ÷ (${fmt2(mph)}×${fmt2(widthIn)}) = <strong>${fmt2(gpaUS)}</strong> gal/ac</div>`);
+      if (sprMode==="target" && Number.isFinite(gpaUS)) lines.push(`<div>GPA(target) = <strong>${fmt2(gpaUS)}</strong> gal/ac</div>`);
+      if (Number.isFinite(acPerTankUS)) lines.push(`<div>Acres/tank = tank ÷ GPA = ${fmt2(tankGalUS)} ÷ ${fmt2(gpaUS)} = <strong>${fmt2(acPerTankUS)}</strong> ac</div>`);
+      if (Number.isFinite(tankFills)) lines.push(`<div>Tank fills = field acres ÷ acres/tank = ${fmt2(acresUS)} ÷ ${fmt2(acPerTankUS)} = <strong>${tankFills}</strong></div>`);
+      $("steps").innerHTML = lines.length ? `<div style="display:grid;gap:.35rem">${lines.join("")}</div>` : `Enter width, speed, and efficiency to see the math.`;
+
+      // Display with unit conversion
+      const tfcDisp     = AGCUnits.out(tfcUS, 'ac>ha');
+      const efcDisp     = AGCUnits.out(efcUS, 'ac>ha');
+      const acDayDisp   = AGCUnits.out(acDayUS, 'ac>ha');
+      const fuelPerDisp = AGCUnits.out(fuelPerAcUS, 'gpa>l/ha');
+      const gpaDisp     = AGCUnits.out(gpaUS, 'gpa>l/ha');
+      const acPerTankDisp = AGCUnits.out(acPerTankUS, 'ac>ha');
+
+      const metric = (AGCUnits.mode() === 'metric');
+      $("tfc").textContent      = metric ? fmt1(tfcDisp) : fmt1(tfcUS);
+      $("efc").textContent      = metric ? fmt1(efcDisp) : fmt1(efcUS);
+      $("hrs").textContent      = fmt2(hrs);
+      $("acDay").textContent    = metric ? fmt1(acDayDisp) : fmt1(acDayUS);
+      $("fuelPerAc").textContent= metric ? fmt2(fuelPerDisp) : fmt2(fuelPerAcUS);
+      $("gpa").textContent      = metric ? fmt2(gpaDisp) : fmt2(gpaUS);
+      $("acPerTank").textContent= metric ? fmt2(acPerTankDisp) : fmt2(acPerTankUS);
+      $("tankFills").textContent= Number.isFinite(tankFills) ? tankFills.toString() : "—";
+    }
+  </script>
 </Layout>
