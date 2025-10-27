@@ -5,13 +5,13 @@ import Layout from "../../layouts/Layout.astro";
 <Layout>
   <Fragment slot="head">
     <title>Rainwater Catchment & Tank Sizing Calculator | AgCalculator</title>
-    <meta name="description" content="Estimate harvestable rainwater from a roof and size a storage tank for days of supply. Simple, fast, offline-friendly." />
+    <meta name="description" content="Estimate harvestable rainwater from a roof and size a storage tank for days of supply. Works in US/metric, supports rectangle area, and first-flush losses." />
     <link rel="canonical" href="https://agcalculator.com/calculators/rainwater-catchment/" />
 
     <!-- Open Graph -->
     <meta property="og:site_name" content="AgCalculator" />
     <meta property="og:title" content="Rainwater Catchment & Tank Sizing Calculator" />
-    <meta property="og:description" content="Estimate gallons captured and recommended tank size from roof area, rainfall, runoff coefficient, and daily demand." />
+    <meta property="og:description" content="Estimate gallons or liters captured and recommended tank size from roof area, rainfall, runoff coefficient, and daily demand." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://agcalculator.com/calculators/rainwater-catchment/" />
     <meta property="og:image" content="https://agcalculator.com/og-hay-bale.png" />
@@ -50,21 +50,24 @@ import Layout from "../../layouts/Layout.astro";
         {
           "@type":"Question",
           "name":"What runoff coefficient should I use?",
-          "acceptedAnswer":{"@type":"Answer","text":"Metal or sealed roofs often use 0.9; asphalt shingle around 0.8; concrete ~0.85–0.9; gravel/dirt surfaces 0.5–0.7. Start conservative; local debris and first-flush diverters reduce yield."}
+          "acceptedAnswer":{"@type":"Answer","text":"Metal or sealed roofs often use 0.9; asphalt shingle around 0.8; concrete ~0.85–0.9; gravel/dirt 0.5–0.7. Start conservative; first-flush diverters and debris reduce yield."}
         },
         {
           "@type":"Question",
           "name":"Is rainfall 'per storm' or 'per month'?",
-          "acceptedAnswer":{"@type":"Answer","text":"Enter rain depth for the period you care about (single event, month, or year). The calculator converts inches over the roof area to gallons, then applies the runoff coefficient."}
+          "acceptedAnswer":{"@type":"Answer","text":"Enter rain depth for the period you care about (single event, month, or year). The calculator converts depth over the roof area to gallons or liters, then applies the runoff coefficient and optional first-flush."}
         },
         {
           "@type":"Question",
           "name":"How big should my tank be?",
-          "acceptedAnswer":{"@type":"Answer","text":"A quick rule is tank size = daily demand × desired days of supply. You may also compare that to typical harvest from a design storm or season so you don't greatly oversize storage."}
+          "acceptedAnswer":{"@type":"Answer","text":"Rule of thumb: tank size = daily demand × desired days of supply. Compare with typical harvest from a design storm or season so you don’t oversize storage."}
         }
       ]
     }
     </script>
+
+    <!-- AdSense (replace ca-pub-xxxxxxxxxxxxxxxx with your publisher ID) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxxxxxxxxxxxxxxx" crossorigin="anonymous"></script>
 
     <style>
       :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
@@ -85,24 +88,71 @@ import Layout from "../../layouts/Layout.astro";
       .content h3{margin:.8rem 0 .3rem}
       .content ul,.content ol{margin:.2rem 0 .2rem 1rem}
       .content .disclaimer{color:#64748b;margin-top:.6rem}
+      .ads{margin:.75rem 0}
+      .adwrap{display:block;min-height:90px}
     </style>
   </Fragment>
 
   <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
 
   <main class="wrap">
-    <h1 style="margin:.5rem 0 1rem">Rainwater Catchment &amp; Tank Sizing</h1>
+    <h1 style="margin:.5rem 0 0.25rem">Rainwater Catchment &amp; Tank Sizing</h1>
+
+    <!-- Ad slot #1 (top, responsive) -->
+    <div class="ads">
+      <ins class="adsbygoogle adwrap"
+           style="display:block"
+           data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
+           data-ad-slot="1111111111"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script is:inline>(window.adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    </div>
 
     <fieldset>
-      <legend>Inputs</legend>
-
+      <legend>Units & area</legend>
       <div class="row">
         <div>
-          <label for="roof">Roof catchment area (ft²)</label>
-          <input id="roof" type="number" step="1" placeholder="e.g. 1800" />
+          <label for="uSys">Units</label>
+          <select id="uSys">
+            <option value="imp" selected>US (ft², inches, gallons)</option>
+            <option value="met">Metric (m², mm, liters)</option>
+          </select>
         </div>
         <div>
-          <label for="rain">Rainfall for period (in)</label>
+          <label for="areaMode">Area input</label>
+          <select id="areaMode">
+            <option value="total">Total roof area</option>
+            <option value="rect">Rectangle (L × W)</option>
+          </select>
+        </div>
+        <div id="rowAreaTotal">
+          <label id="labelArea" for="area">Roof area (ft²)</label>
+          <input id="area" type="number" step="0.01" placeholder="e.g. 1800" />
+        </div>
+      </div>
+
+      <div class="row" id="rowAreaRect" style="display:none">
+        <div>
+          <label id="labelLen" for="len">Roof length (ft)</label>
+          <input id="len" type="number" step="0.01" placeholder="e.g. 60" />
+        </div>
+        <div>
+          <label id="labelWid" for="wid">Roof width (ft)</label>
+          <input id="wid" type="number" step="0.01" placeholder="e.g. 30" />
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <div class="note">Area = L × W</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Rainfall, runoff & demand</legend>
+      <div class="row">
+        <div>
+          <label id="labelRain" for="rain">Rainfall for period (in)</label>
           <input id="rain" type="number" step="0.01" placeholder="e.g. 1.2" />
         </div>
         <div>
@@ -114,36 +164,52 @@ import Layout from "../../layouts/Layout.astro";
             <option value="0.70">Gravel/dirt (0.70)</option>
           </select>
         </div>
+        <div>
+          <label id="labelFlush" for="flush">First-flush loss (optional)</label>
+          <input id="flush" type="number" step="0.01" placeholder="e.g. 20" />
+          <div class="note" id="noteFlush">Subtracts once from harvest (gal)</div>
+        </div>
       </div>
 
       <div class="row">
         <div>
-          <label for="demand">Daily demand (gal/day)</label>
-          <input id="demand" type="number" step="1" placeholder="e.g. 200" />
+          <label id="labelDemand" for="demand">Daily demand (gal/day)</label>
+          <input id="demand" type="number" step="0.01" placeholder="e.g. 200" />
         </div>
         <div>
           <label for="days">Desired days of supply</label>
           <input id="days" type="number" step="1" placeholder="e.g. 7" />
         </div>
         <div>
-          <label for="tank">Existing tank size (gal, optional)</label>
+          <label id="labelTank" for="tank">Existing tank (gal, optional)</label>
           <input id="tank" type="number" step="1" placeholder="e.g. 2500" />
         </div>
       </div>
 
-      <p class="note">Tip: Enter rainfall for the time window you care about (storm, month, or season). We’ll compute harvest for that period.</p>
+      <p class="note">Enter rainfall for the time window you care about (storm, month, or season). We’ll compute harvest for that period.</p>
     </fieldset>
 
     <section class="result">
       <div class="note">Results</div>
       <div style="display:grid;gap:.5rem;margin-top:.4rem">
-        <div><strong>Harvestable water (this period):</strong> <span id="harv">—</span> gal</div>
-        <div><strong>Suggested tank size:</strong> <span id="tankSuggest">—</span> gal</div>
-        <div><strong>Days of supply from harvest:</strong> <span id="daysFromHarv">—</span> days</div>
-        <div><strong>Days of supply from existing tank:</strong> <span id="daysFromTank">—</span> days</div>
+        <div><strong>Harvestable water (this period):</strong> <span id="harv">—</span></div>
+        <div><strong>Suggested tank size:</strong> <span id="tankSuggest">—</span></div>
+        <div><strong>Days of supply from harvest:</strong> <span id="daysFromHarv">—</span></div>
+        <div><strong>Days of supply from existing tank:</strong> <span id="daysFromTank">—</span></div>
       </div>
-      <p class="note" style="margin-top:.6rem">Estimates only. First-flush, debris, and losses reduce real capture; use conservative numbers.</p>
+      <p class="note" style="margin-top:.6rem">Estimates only. First-flush, debris, and losses reduce real capture—use conservative numbers.</p>
     </section>
+
+    <!-- Ad slot #2 (mid-page) -->
+    <div class="ads">
+      <ins class="adsbygoogle adwrap"
+           style="display:block"
+           data-ad-client="ca-pub-xxxxxxxxxxxxxxxx"
+           data-ad-slot="2222222222"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script is:inline>(window.adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    </div>
 
     <section class="content" id="explain">
       <h2>How we got these numbers</h2>
@@ -151,9 +217,10 @@ import Layout from "../../layouts/Layout.astro";
 
       <h3>Formulas</h3>
       <ul>
-        <li><strong>Gross volume (gal)</strong> = area(ft²) × rain(in) × 0.623</li>
-        <li><strong>Harvestable (gal)</strong> = gross × runoff coefficient</li>
-        <li><strong>Suggested tank size</strong> = daily demand × desired days</li>
+        <li><strong>Gross volume</strong> (US) = area(ft²) × rain(in) × 0.623</li>
+        <li><strong>Gross volume</strong> (metric) = area(m²) × rain(mm) <em>(liters)</em></li>
+        <li><strong>Harvestable</strong> = gross × runoff coefficient − first-flush (≥ 0)</li>
+        <li><strong>Suggested tank</strong> = daily demand × desired days</li>
         <li><strong>Days from harvest</strong> = harvestable ÷ daily demand</li>
         <li><strong>Days from existing tank</strong> = tank ÷ daily demand</li>
       </ul>
@@ -162,72 +229,184 @@ import Layout from "../../layouts/Layout.astro";
       <p>1,800 ft² metal roof, 1.2 in rain, coeff 0.9; demand 200 gal/day, 7 days target, 2,500 gal tank:</p>
       <ol>
         <li>Gross = 1,800 × 1.2 × 0.623 ≈ <strong>1,346 gal</strong></li>
-        <li>Harvestable = 1,346 × 0.9 ≈ <strong>1,211 gal</strong></li>
+        <li>Harvestable ≈ 1,346 × 0.9 = <strong>1,211 gal</strong></li>
         <li>Tank suggestion = 200 × 7 = <strong>1,400 gal</strong></li>
-        <li>Days from harvest = 1,211 ÷ 200 ≈ <strong>6.1 days</strong></li>
+        <li>Days from harvest ≈ 1,211 ÷ 200 = <strong>6.1 days</strong></li>
         <li>Days from existing tank = 2,500 ÷ 200 = <strong>12.5 days</strong></li>
       </ol>
 
       <h3>Notes</h3>
       <ul>
-        <li>First-flush diverters and debris reduce yield—coefficient helps account for this, but actual results vary.</li>
-        <li>For annual planning, use typical monthly rainfall and sum across months, or plan against a design storm.</li>
-        <li>Consider roof contamination risks (lead paint, bird droppings) if using for livestock or household uses.</li>
+        <li>Metric shortcut: liters = area(m²) × rain(mm).</li>
+        <li>Consider roof contamination risks if water is for livestock or potable uses.</li>
       </ul>
 
       <p class="disclaimer">Estimates only. Verify with local code and water quality guidance for potable uses.</p>
     </section>
 
     <script is:inline>
+      // Helpers
       const $ = (id) => document.getElementById(id);
       const num = (id) => parseFloat(($(id)?.value ?? "").trim());
       const fmt0 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
       const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
 
-      const inputs = ["roof","rain","coeff","demand","days","tank"];
-      inputs.forEach(id => $(id).addEventListener("input", compute));
+      // Constants
+      const FT2_PER_M2 = 10.7639;
+      const IN_PER_MM = 1/25.4;
+      const GAL_PER_L = 0.264172;
+      const L_PER_GAL = 3.78541;
+      const GAL_PER_IN_FT2 = 0.623;
+
+      // Wire UI
+      ["uSys","areaMode"].forEach(id => $(id).addEventListener("change", onMode));
+      ["area","len","wid","rain","coeff","flush","demand","days","tank"].forEach(id => $(id).addEventListener("input", compute));
+      onMode(); compute();
+
+      function onMode(){
+        const sys = $("uSys").value;
+        const areaMode = $("areaMode").value;
+
+        $("rowAreaTotal").style.display = areaMode==="total" ? "" : "none";
+        $("rowAreaRect").style.display  = areaMode==="rect"  ? "" : "none";
+
+        // Relabel based on units
+        $("labelArea").textContent  = sys==="imp" ? "Roof area (ft²)" : "Roof area (m²)";
+        $("labelLen").textContent   = sys==="imp" ? "Roof length (ft)" : "Roof length (m)";
+        $("labelWid").textContent   = sys==="imp" ? "Roof width (ft)"  : "Roof width (m)";
+        $("labelRain").textContent  = sys==="imp" ? "Rainfall for period (in)" : "Rainfall for period (mm)";
+        $("labelDemand").textContent= sys==="imp" ? "Daily demand (gal/day)" : "Daily demand (L/day)";
+        $("labelTank").textContent  = sys==="imp" ? "Existing tank (gal, optional)" : "Existing tank (L, optional)";
+        $("labelFlush").textContent = sys==="imp" ? "First-flush loss (optional, gal)" : "First-flush loss (optional, L)";
+        $("noteFlush").textContent  = sys==="imp" ? "Subtracts once from harvest (gal)" : "Subtracts once from harvest (L)";
+
+        compute();
+      }
+
+      function areaSqft(){
+        const sys = $("uSys").value;
+        const mode = $("areaMode").value;
+        let A = NaN;
+        if (mode==="total"){
+          const v = num("area");
+          if (sys==="imp") A = v;
+          else A = v * FT2_PER_M2; // m² -> ft²
+        } else {
+          let L = num("len"), W = num("wid");
+          if (!(L>0 && W>0)) return NaN;
+          if (sys==="met"){ L *= FT2_PER_M2**0.5; W *= FT2_PER_M2**0.5; } // m -> ft (sqrt conversion)
+          else { /* already ft */ }
+          A = L * W;
+        }
+        return (A>0) ? A : NaN;
+      }
+
+      function rainInches(){
+        const sys = $("uSys").value;
+        const r = num("rain");
+        if (!(r>=0)) return NaN;
+        return sys==="imp" ? r : r * IN_PER_MM; // mm -> in
+      }
+
+      function demandGPD(){
+        const sys = $("uSys").value;
+        const d = num("demand");
+        if (!(d>0)) return NaN;
+        return sys==="imp" ? d : d * GAL_PER_L; // L/day -> gal/day
+      }
+
+      function tankGallons(){
+        const sys = $("uSys").value;
+        const t = num("tank");
+        if (!(t>0)) return 0;
+        return sys==="imp" ? t : t * GAL_PER_L; // L -> gal
+      }
+
+      function flushGallons(){
+        const sys = $("uSys").value;
+        const f = num("flush");
+        if (!(f>0)) return 0;
+        return sys==="imp" ? f : f * GAL_PER_L; // L -> gal
+      }
 
       function compute(){
-        const roof = num("roof");
-        const rain = num("rain");
-        const coeff = parseFloat($("coeff").value);
-        const demand = num("demand");
+        const Aft2 = areaSqft();
+        const Rin  = rainInches();
+        const k    = parseFloat($("coeff").value);
+        const dGPD = demandGPD();
         const days = num("days");
-        const tank = num("tank");
+        const tankG = tankGallons();
+        const flushG = flushGallons();
 
-        if(!(roof>0) || !(rain>=0) || !(coeff>0)){
+        if (!(Aft2>0) || !(Rin>=0) || !(k>0)){
           show();
           $("steps").innerHTML = `<span class="note">Enter roof, rainfall, and demand to see the step-by-step.</span>`;
           return;
         }
 
-        const gross = roof * rain * 0.623;      // gallons
-        const harv = gross * coeff;
+        // Base (compute in US gallons)
+        const grossGal = Aft2 * Rin * GAL_PER_IN_FT2;           // gal
+        let harvGal = Math.max(0, grossGal * k - flushG);       // gal (≥0)
 
-        const tankSuggest = (demand>0 && days>0) ? demand * days : NaN;
-        const daysFromHarv = (demand>0) ? (harv / demand) : NaN;
-        const daysFromTank = (demand>0 && tank>0) ? (tank / demand) : NaN;
+        // Suggested tank
+        const tankSuggestGal = (dGPD>0 && days>0) ? (dGPD * days) : NaN;
+        const daysFromHarv   = (dGPD>0) ? (harvGal / dGPD) : NaN;
+        const daysFromTank   = (dGPD>0 && tankG>0) ? (tankG / dGPD) : NaN;
+
+        // Show in selected units
+        const sys = $("uSys").value;
+        if (sys==="imp"){
+          $("harv").textContent        = Number.isFinite(harvGal) ? fmt0(harvGal) + " gal" : "—";
+          $("tankSuggest").textContent = Number.isFinite(tankSuggestGal) ? fmt0(tankSuggestGal) + " gal" : "—";
+          $("daysFromHarv").textContent= Number.isFinite(daysFromHarv) ? fmt1(daysFromHarv) + " days" : "—";
+          $("daysFromTank").textContent= Number.isFinite(daysFromTank) ? fmt1(daysFromTank) + " days" : "—";
+        } else {
+          const harvL = harvGal * L_PER_GAL;
+          const tankSuggestL = Number.isFinite(tankSuggestGal) ? tankSuggestGal * L_PER_GAL : NaN;
+          $("harv").textContent        = Number.isFinite(harvL) ? fmt0(harvL) + " L" : "—";
+          $("tankSuggest").textContent = Number.isFinite(tankSuggestL) ? fmt0(tankSuggestL) + " L" : "—";
+          $("daysFromHarv").textContent= Number.isFinite(daysFromHarv) ? fmt1(daysFromHarv) + " days" : "—";
+          $("daysFromTank").textContent= Number.isFinite(daysFromTank) ? fmt1(daysFromTank) + " days" : "—";
+        }
+
+        // Steps (always show both math and units clarity)
+        const sysLbl = sys==="imp" ? {a:"ft²", r:"in", v:"gal"} : {a:"m²", r:"mm", v:"L"};
+        const Ashow = sys==="imp" ? Aft2 : (Aft2/FT2_PER_M2);
+        const Rshow = sys==="imp" ? Rin : (Rin/IN_PER_MM);
+        const grossShow = sys==="imp" ? grossGal : grossGal*L_PER_GAL;
+        const flushShow = sys==="imp" ? flushG : flushG*L_PER_GAL;
+        const harvShow  = sys==="imp" ? harvGal : harvGal*L_PER_GAL;
 
         const lines = [];
-        lines.push(`<div>Gross = ${fmt0(roof)} × ${rain ?? "—"} × 0.623 = <strong>${fmt0(gross)}</strong> gal</div>`);
-        lines.push(`<div>Harvestable = ${fmt0(gross)} × ${coeff} = <strong>${fmt0(harv)}</strong> gal</div>`);
-        if (Number.isFinite(tankSuggest)) lines.push(`<div>Tank suggestion = ${fmt0(demand)} × ${fmt0(days)} = <strong>${fmt0(tankSuggest)}</strong> gal</div>`);
-        if (Number.isFinite(daysFromHarv)) lines.push(`<div>Days from harvest = ${fmt0(harv)} ÷ ${fmt0(demand)} = <strong>${fmt1(daysFromHarv)}</strong> days</div>`);
-        if (Number.isFinite(daysFromTank)) lines.push(`<div>Days from existing tank = ${fmt0(tank)} ÷ ${fmt0(demand)} = <strong>${fmt1(daysFromTank)}</strong> days</div>`);
-
+        if (sys==="imp"){
+          lines.push(`<div>Gross = area × rain × 0.623 = ${fmt0(Ashow)} ${sysLbl.a} × ${fmt1(Rshow)} ${sysLbl.r} × 0.623 = <strong>${fmt0(grossShow)}</strong> ${sysLbl.v}</div>`);
+        } else {
+          lines.push(`<div>Gross = area × rain (metric) = ${fmt0(Ashow)} ${sysLbl.a} × ${fmt1(Rshow)} ${sysLbl.r} = <strong>${fmt0(grossShow)}</strong> ${sysLbl.v}</div>`);
+        }
+        lines.push(`<div>Harvestable = gross × coeff − first-flush = ${fmt0(grossShow)} × ${k} − ${fmt0(flushShow)} = <strong>${fmt0(harvShow)}</strong> ${sysLbl.v}</div>`);
+        if (Number.isFinite(tankSuggestGal)){
+          const tsShow = sys==="imp" ? tankSuggestGal : tankSuggestGal*L_PER_GAL;
+          const dShow  = sys==="imp" ? dGPD : dGPD*L_PER_GAL;
+          lines.push(`<div>Tank suggestion = daily × days = ${fmt0(dShow)} ${sysLbl.v}/day × ${fmt0(days)} = <strong>${fmt0(tsShow)}</strong> ${sysLbl.v}</div>`);
+        }
+        if (Number.isFinite(daysFromHarv)){
+          const dShow  = sys==="imp" ? dGPD : dGPD*L_PER_GAL;
+          lines.push(`<div>Days from harvest = harvest ÷ daily = ${fmt0(harvShow)} ÷ ${fmt0(dShow)} = <strong>${fmt1(daysFromHarv)}</strong> days</div>`);
+        }
+        if (Number.isFinite(daysFromTank)){
+          const tShow = sys==="imp" ? tankG : tankG*L_PER_GAL;
+          const dShow = sys==="imp" ? dGPD : dGPD*L_PER_GAL;
+          lines.push(`<div>Days from existing tank = ${fmt0(tShow)} ÷ ${fmt0(dShow)} = <strong>${fmt1(daysFromTank)}</strong> days</div>`);
+        }
         $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
-
-        show({harv, tankSuggest, daysFromHarv, daysFromTank});
       }
 
-      function show(o={}){
-        $("harv").textContent = fmt0(o.harv);
-        $("tankSuggest").textContent = fmt0(o.tankSuggest);
-        $("daysFromHarv").textContent = fmt1(o.daysFromHarv);
-        $("daysFromTank").textContent = fmt1(o.daysFromTank);
+      function show(){
+        $("harv").textContent = "—";
+        $("tankSuggest").textContent = "—";
+        $("daysFromHarv").textContent = "—";
+        $("daysFromTank").textContent = "—";
       }
-
-      compute();
     </script>
   </main>
 </Layout>
