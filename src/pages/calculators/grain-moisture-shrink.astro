@@ -1,17 +1,16 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 ---
-
 <Layout>
   <Fragment slot="head">
-    <title>Grain Moisture Shrink & Drying Cost Calculator | AgCalculator</title>
-    <meta name="description" content="Estimate moisture shrink, net bushels, weight loss, and drying cost from start to target moisture for corn, soybeans, wheat, and more." />
+    <title>Grain Moisture Shrink &amp; Drying Cost Calculator | AgCalculator</title>
+    <meta name="description" content="Estimate moisture shrink, net bushels, weight removed, final weight, and drying cost from start to target moisture. US ↔ Metric toggle." />
     <link rel="canonical" href="https://agcalculator.com/calculators/grain-moisture-shrink/" />
 
     <!-- Open Graph -->
     <meta property="og:site_name" content="AgCalculator" />
-    <meta property="og:title" content="Grain Moisture Shrink & Drying Cost Calculator" />
-    <meta property="og:description" content="Estimate moisture shrink, net bushels, weight loss, and drying cost quickly." />
+    <meta property="og:title" content="Grain Moisture Shrink &amp; Drying Cost Calculator" />
+    <meta property="og:description" content="Estimate moisture shrink, net bushels, weight removed, and drying cost quickly." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://agcalculator.com/calculators/grain-moisture-shrink/" />
     <meta property="og:image" content="https://agcalculator.com/og-grain-bin.png" />
@@ -27,7 +26,7 @@ import Layout from "../../layouts/Layout.astro";
       "applicationCategory":"Calculator",
       "operatingSystem":"Web",
       "url":"https://agcalculator.com/calculators/grain-moisture-shrink/",
-      "description":"Estimate moisture shrink, net bushels, weight loss, and drying cost from start to target moisture.",
+      "description":"Estimate moisture shrink, net bushels, weight removed, final weight, and drying cost from start to target moisture.",
       "publisher":{"@type":"Organization","name":"AgCalculator","url":"https://agcalculator.com"},
       "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
     }
@@ -42,6 +41,7 @@ import Layout from "../../layouts/Layout.astro";
       ]
     }
     </script>
+    <!-- FAQ schema (matches on-page FAQ) -->
     <script type="application/ld+json">
     {
       "@context":"https://schema.org",
@@ -50,17 +50,22 @@ import Layout from "../../layouts/Layout.astro";
         {
           "@type":"Question",
           "name":"What shrink factor does this use?",
-          "acceptedAnswer":{"@type":"Answer","text":"Base shrink factor uses Dry Matter basis: net bushels = wet bushels × (100 − target%)/(100 − start%). You can add an elevator policy shrink on top as a percent of wet bushels."}
+          "acceptedAnswer":{"@type":"Answer","text":"Dry Matter basis: net = wet × (100 − start%) ⁄ (100 − target%). This yields fewer bushels when drying from a higher to a lower moisture."}
         },
         {
           "@type":"Question",
           "name":"How is drying cost estimated?",
-          "acceptedAnswer":{"@type":"Answer","text":"If you enter a rate in $ per percentage point per bushel, cost = bushels × max(start% − target%, 0) × rate. This is a simple estimate; check your local schedule."}
+          "acceptedAnswer":{"@type":"Answer","text":"Enter a rate in $ per percentage point per bushel. Cost = wet bushels × max(start% − target%, 0) × rate. Check your local schedule."}
+        },
+        {
+          "@type":"Question",
+          "name":"Can I use metric units?",
+          "acceptedAnswer":{"@type":"Answer","text":"Yes. Use the US↔Metric toggle. Bushels stay in U.S. bu; weights show in lb/tons or kg/t, and test weight switches between lb/bu and kg/hl."}
         },
         {
           "@type":"Question",
           "name":"What test weight should I use?",
-          "acceptedAnswer":{"@type":"Answer","text":"Use your measured test weight for best accuracy (e.g., corn 56 lb/bu, soybeans 60 lb/bu)."}
+          "acceptedAnswer":{"@type":"Answer","text":"Use your measured test weight for best accuracy (e.g., corn commonly 56 lb/bu, soybeans 60 lb/bu)."}
         }
       ]
     }
@@ -69,22 +74,26 @@ import Layout from "../../layouts/Layout.astro";
     <style>
       :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
       *{box-sizing:border-box}
-      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:white}
+      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:#fff}
       .wrap{max-width:960px;margin:0 auto;padding:1rem}
       a{color:var(--green);text-decoration:none}
-      fieldset{background:white;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
+      fieldset{background:#fff;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
       legend{padding:0 .4rem;color:var(--muted)}
       label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
       input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
       .row{display:grid;gap:.8rem}
       @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
-      .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+      .result{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
       .note{color:var(--muted);font-size:.9rem}
-      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
       .content h2{margin:.2rem 0 .6rem}
       .content h3{margin:.8rem 0 .3rem}
       .content ul,.content ol{margin:.2rem 0 .2rem .9rem}
       .content .disclaimer{color:#64748b;margin-top:.6rem}
+      /* Units toggle */
+      .unit-toggle{display:flex;align-items:center;gap:.4rem;margin:0 0 1rem;padding:.5rem 1rem;background:#fff;border:1px solid #e2e8f0;border-radius:12px}
+      .u-btn{padding:.35rem .7rem;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer}
+      .u-btn.active{background:var(--green);border-color:var(--green);color:#fff}
     </style>
   </Fragment>
 
@@ -92,6 +101,14 @@ import Layout from "../../layouts/Layout.astro";
 
   <main class="wrap">
     <h1 style="margin:.5rem 0 1rem">Grain Moisture Shrink &amp; Drying Cost</h1>
+
+    <!-- Units toggle -->
+    <div class="unit-toggle" role="group" aria-label="Units">
+      <strong style="margin-right:.25rem">Units:</strong>
+      <button type="button" class="u-btn active" data-units="us" aria-pressed="true">US</button>
+      <button type="button" class="u-btn" data-units="metric" aria-pressed="false">Metric</button>
+      <small class="note" style="margin-left:.5rem">Saved on this device</small>
+    </div>
 
     <fieldset>
       <legend>Inputs</legend>
@@ -112,8 +129,8 @@ import Layout from "../../layouts/Layout.astro";
 
       <div class="row">
         <div>
-          <label for="tw">Test weight (lb/bu)</label>
-          <input id="tw" type="number" step="0.1" value="56" />
+          <label data-unit-label="Test weight (lb/bu)|Test weight (kg/hl)" for="tw">Test weight (lb/bu)</label>
+          <input id="tw" type="number" step="0.1" value="56" data-unit="lbbu>kghl" data-unit-ph="e.g. 56|e.g. 72.1" />
         </div>
         <div>
           <label for="elevShrink">Elevator policy shrink (% of wet bu, optional)</label>
@@ -125,17 +142,18 @@ import Layout from "../../layouts/Layout.astro";
         </div>
       </div>
 
-      <p class="note">Tip: If you don’t want elevator policy or drying cost, leave those blank.</p>
+      <p class="note">Tip: If you don’t want elevator policy or drying cost, leave those blank. Bushels are U.S. bushels even in metric mode.</p>
     </fieldset>
 
     <section class="result">
       <div class="note">Results</div>
       <div style="display:grid;gap:.5rem;margin-top:.4rem">
-        <div><strong>Base shrink factor:</strong> <span id="shrinkFactor">—</span></div>
-        <div><strong>Net bushels (base shrink):</strong> <span id="netBu">—</span> bu</div>
+        <div><strong>Base shrink factor (DM):</strong> <span id="shrinkFactor">—</span></div>
+        <div><strong>Net bushels (base):</strong> <span id="netBu">—</span> bu</div>
         <div><strong>Elevator policy shrink:</strong> <span id="elevBu">—</span> bu</div>
         <div><strong>Final net bushels:</strong> <span id="finalBu">—</span> bu</div>
-        <div><strong>Weight loss:</strong> <span id="lostLb">—</span> lb (<span id="lostT">—</span> tons)</div>
+        <div><strong>Final net weight:</strong> <span id="finalLb">—</span> <span data-unit-text="lb|kg"></span> (<span id="finalT">—</span> <span data-unit-text="tons|t"></span>)</div>
+        <div><strong>Weight removed (water + fines):</strong> <span id="lostLb">—</span> <span data-unit-text="lb|kg"></span> (<span id="lostT">—</span> <span data-unit-text="tons|t"></span>)</div>
         <div><strong>Estimated drying cost:</strong> <span id="dryCost">—</span></div>
       </div>
       <p class="note" style="margin-top:.6rem">Estimates only. Policies vary—confirm with your elevator or dryer.</p>
@@ -147,109 +165,202 @@ import Layout from "../../layouts/Layout.astro";
 
       <h3>Formulas</h3>
       <ul>
-        <li><strong>Base shrink factor</strong> = (100 − target%) ÷ (100 − start%)</li>
+        <li><strong>Base shrink factor</strong> = (100 − start%) ÷ (100 − target%)</li>
         <li><strong>Net bu (base)</strong> = wet bu × base shrink factor</li>
         <li><strong>Elevator policy shrink</strong> (optional) = wet bu × policy%</li>
         <li><strong>Final net bu</strong> = max(0, net bu (base) − policy bu)</li>
-        <li><strong>Weight loss</strong> (lb) = (wet bu − final net bu) × test weight</li>
+        <li><strong>Final weight (lb)</strong> = final net bu × test weight</li>
+        <li><strong>Weight removed (lb)</strong> = (wet bu − final net bu) × test weight</li>
         <li><strong>Drying cost</strong> (optional) = wet bu × max(start − target, 0) × $/pt/bu</li>
       </ul>
 
-      <h3>Example</h3>
-      <p>12,000 wet bu, 19%→15%, corn 56 lb/bu, 1.5% policy, $0.04/pt/bu:</p>
+      <h3>Worked example</h3>
+      <p>12,000 wet bu, 19% → 15%, corn 56 lb/bu, 1.5% policy, $0.04/pt/bu:</p>
       <ol>
-        <li>Base shrink = (100−15)/(100−19) ≈ <strong>1.0494</strong></li>
-        <li>Net bu (base) = 12,000 × 1.0494 ≈ <strong>12,593 bu</strong></li>
+        <li>Base shrink = (100−19)/(100−15) = 81/85 ≈ <strong>0.9529</strong></li>
+        <li>Net bu (base) = 12,000 × 0.9529 ≈ <strong>11,435 bu</strong></li>
         <li>Policy bu = 12,000 × 0.015 = <strong>180 bu</strong></li>
-        <li>Final net bu ≈ 12,593 − 180 = <strong>12,413 bu</strong></li>
-        <li>Weight loss ≈ (12,000 − 12,413) × 56 ≈ <strong>−23,128 lb</strong> (negative indicates gain from drying math vs. policy—always check local rules)</li>
-        <li>Drying cost ≈ 12,000 × 4 × 0.04 = <strong>$1,920</strong></li>
+        <li>Final net bu ≈ 11,435 − 180 = <strong>11,255 bu</strong></li>
+        <li>Final weight ≈ 11,255 × 56 = <strong>630,280 lb</strong> (~<strong>315.1 tons</strong>)</li>
+        <li>Weight removed ≈ (12,000 − 11,255) × 56 = <strong>41,720 lb</strong> (~<strong>20.86 tons</strong>)</li>
+        <li>Drying cost ≈ 12,000 × (19−15) × 0.04 = <strong>$1,920</strong></li>
       </ol>
 
-      <h3>Notes</h3>
+      <h3>Assumptions &amp; notes</h3>
       <ul>
-        <li>Some elevators compute shrink differently; use this as a planning estimate.</li>
-        <li>Negative “weight loss” can appear when base shrink increases net bu but policy shrink subtracts—this reflects differing methods. Use your elevator’s statements as source of truth.</li>
+        <li>Uses the Dry Matter (DM) method; elevators may have additional shrink or handling rules.</li>
+        <li>Bushels are volumetric but this method treats conversions on a weight basis using your test weight.</li>
+        <li>Entering a higher start% than target% is required for positive shrink; equal or lower values yield zero shrink.</li>
+        <li>Metric display converts lb ↔ kg and tons ↔ t; bushels remain U.S. bu. Test weight flips lb/bu ↔ kg/hl.</li>
       </ul>
 
-      <p class="disclaimer">Estimates only. Verify with your elevator, dryer schedule, and local policies.</p>
+      <p class="disclaimer">Prepared by AgCalculator · Last updated October 27, 2025</p>
     </section>
 
-    <script is:inline>
-      // Small helpers (inline—no shared deps)
-      const $ = (id) => document.getElementById(id);
-      const num = (id) => parseFloat(($(id)?.value ?? "").trim());
-      const fmt0 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
-      const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
-      const money = (n) => Number.isFinite(n) ? "$"+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) : "—";
+    <section class="content">
+      <h3>Also try…</h3>
+      <ul>
+        <li><a href="/calculators/grain-bin-capacity/">Grain Bin Capacity (Bushels &amp; Weight)</a></li>
+      </ul>
+    </section>
+  </main>
 
-      const inputs = ["wetBu","startM","targetM","tw","elevShrink","dryRate"];
-      inputs.forEach(id => $(id).addEventListener("input", compute));
-
-      function compute(){
-        const wetBu = num("wetBu");
-        const s = num("startM");
-        const t = num("targetM");
-        const tw = num("tw") || 56;
-        const policyPct = num("elevShrink");     // %
-        const dryRate = num("dryRate");          // $/pt/bu
-
-        if(!(wetBu>0) || !(s>=0) || !(t>=0) || !(s !== undefined && t !== undefined)){
-          show(); return;
-        }
-
-        // Base shrink factor on dry matter basis
-        const denom = (100 - s);
-        const shrinkFactor = denom>0 ? ((100 - t) / denom) : NaN;
-
-        let netBase = Number.isFinite(shrinkFactor) ? wetBu * shrinkFactor : NaN;
-
-        // Elevator policy shrink (optional) as % of wet bu
-        const policyBu = (policyPct>0 && wetBu>0) ? wetBu * (policyPct/100) : 0;
-
-        const finalBu = Number.isFinite(netBase) ? Math.max(0, netBase - policyBu) : NaN;
-
-        // Weight loss from wet to final (simple)
-        const lostBu = Number.isFinite(finalBu) ? (wetBu - finalBu) : NaN;
-        const lostLb = Number.isFinite(lostBu) ? lostBu * tw : NaN;
-        const lostT  = Number.isFinite(lostLb) ? (lostLb/2000) : NaN;
-
-        // Drying cost estimate
-        const points = Math.max(0, s - t);
-        const cost = (dryRate>0 && wetBu>0 && points>0) ? wetBu * points * dryRate : NaN;
-
-        // Step-by-step
-        const lines = [];
-        if (Number.isFinite(shrinkFactor)) lines.push(`<div>Base shrink factor = (100 − ${t}) ÷ (100 − ${s}) = <strong>${shrinkFactor.toFixed(4)}</strong></div>`);
-        if (Number.isFinite(netBase)) lines.push(`<div>Net bu (base) = ${fmt0(wetBu)} × ${shrinkFactor?.toFixed(4) ?? "—"} = <strong>${fmt0(netBase)}</strong> bu</div>`);
-        if (policyPct>0) lines.push(`<div>Policy shrink = ${fmt0(wetBu)} × ${policyPct}% = <strong>${fmt0(policyBu)}</strong> bu</div>`);
-        if (Number.isFinite(finalBu)) lines.push(`<div>Final net bu = ${fmt0(netBase)} − ${fmt0(policyBu)} = <strong>${fmt0(finalBu)}</strong> bu</div>`);
-        if (Number.isFinite(lostLb)) lines.push(`<div>Weight loss = (wet − final) × TW = (${fmt0(wetBu)} − ${fmt0(finalBu)}) × ${tw} = <strong>${fmt0(lostLb)}</strong> lb (${fmt1(lostT)} tons)</div>`);
-        if (Number.isFinite(cost)) lines.push(`<div>Drying cost = ${fmt0(wetBu)} × ${points} pt × ${money(dryRate)} = <strong>${money(cost)}</strong></div>`);
-        $("steps").innerHTML = lines.length ? `<div style="display:grid;gap:.35rem">${lines.join("")}</div>` : `<span class="note">Enter values to see the step-by-step.</span>`;
-
-        show({
-          shrinkFactor,
-          netBase,
-          policyBu,
-          finalBu,
-          lostLb,
-          lostT,
-          cost
+  <!-- Units helper (page-local) -->
+  <script is:inline>
+    (function () {
+      const KEY = 'agc_units';
+      const $$ = (s) => document.querySelectorAll(s);
+      const conv = {
+        // Test weight lb/bu ↔ kg/hl
+        'lbbu>kghl': x => x * 1.287185997, 'kghl>lbbu': x => x / 1.287185997,
+        // Weights
+        'lb>kg': x => x * 0.45359237,  'kg>lb': x => x / 0.45359237,
+        'lb>t':  x => x * 0.00045359237,'t>lb': x => x / 0.00045359237
+      };
+      window.AGCUnits = {
+        mode: () => localStorage.getItem(KEY) || 'us',
+        setMode(m){ localStorage.setItem(KEY, m); paint(m); },
+        get(el){ // normalize to US units for math
+          const raw = parseFloat(el.value);
+          if (!isFinite(raw)) return NaN;
+          const map = (el.dataset.unit || '').trim();
+          if (!map) return raw;
+          const [us, met] = map.split('>');
+          if (this.mode()==='us') return raw;
+          const fn = conv[`${met}>${us}`];
+          return fn ? fn(raw) : raw;
+        },
+        out(usNumber, map){
+          if (!isFinite(usNumber)) return NaN;
+          if (this.mode()==='us' || !map) return usNumber;
+          const fn = conv[map];
+          return fn ? fn(usNumber) : usNumber;
+        },
+        conv
+      };
+      function paint(mode){
+        document.querySelectorAll('.unit-toggle .u-btn').forEach(btn => {
+          const on = btn.dataset.units === mode;
+          btn.classList.toggle('active', on);
+          btn.setAttribute('aria-pressed', String(on));
+        });
+        $$('[data-unit-label]').forEach(el => {
+          const [us, met] = el.dataset.unitLabel.split('|');
+          el.textContent = (mode==='metric' ? met : us);
+        });
+        $$('input[data-unit-ph]').forEach(el => {
+          const [us, met] = el.dataset.unitPh.split('|');
+          el.placeholder = (mode==='metric' ? met : us);
+        });
+        $$('[data-unit-text]').forEach(el => {
+          const [us, met] = el.dataset.unitText.split('|');
+          el.textContent = (mode==='metric' ? met : us);
+        });
+        // Recompute with current values
+        document.querySelectorAll('input,select').forEach(el => {
+          el.dispatchEvent(new Event('input',{bubbles:true}));
+          el.dispatchEvent(new Event('change',{bubbles:true}));
         });
       }
+      document.addEventListener('click', (e)=>{
+        const btn = e.target.closest('.u-btn');
+        if (!btn) return;
+        window.AGCUnits.setMode(btn.dataset.units);
+      });
+      // Init
+      paint(window.AGCUnits.mode());
+    })();
+  </script>
 
-      function show(o={}){
-        $("shrinkFactor").textContent = Number.isFinite(o.shrinkFactor) ? o.shrinkFactor.toFixed(4) : "—";
-        $("netBu").textContent  = fmt0(o.netBase);
-        $("elevBu").textContent = fmt0(o.policyBu);
-        $("finalBu").textContent = fmt0(o.finalBu);
-        $("lostLb").textContent  = fmt0(o.lostLb);
-        $("lostT").textContent   = fmt1(o.lostT);
-        $("dryCost").textContent = money(o.cost);
+  <!-- Calculator logic (page-local) -->
+  <script is:inline>
+    // Helpers
+    const $ = (id) => document.getElementById(id);
+    const num = (id) => parseFloat(($(id)?.value ?? "").trim());
+    const fmt0 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
+    const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
+    const money = (n) => Number.isFinite(n) ? "$"+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) : "—";
+
+    const inputs = ["wetBu","startM","targetM","tw","elevShrink","dryRate"];
+    inputs.forEach(id => $(id).addEventListener("input", compute));
+
+    function compute(){
+      const wetBu = num("wetBu");
+      const s = num("startM");
+      const t = num("targetM");
+      const tw_lbb = window.AGCUnits.get($("tw")) || 56; // normalize to lb/bu
+      const policyPct = num("elevShrink");     // %
+      const dryRate = num("dryRate");          // $/pt/bu
+
+      if(!(wetBu>0) || !(s>=0) || !(t>=0)){
+        show(); $("steps").innerHTML = `<span class="note">Enter wet bushels and moistures to see the step-by-step.</span>`; return;
       }
 
-      compute();
-    </script>
-  </main>
+      // Base shrink (Dry Matter basis): net = wet × (100 - s) / (100 - t)
+      const denom = (100 - t);
+      const shrinkFactor = denom>0 ? ((100 - s) / denom) : NaN;
+
+      const netBase = Number.isFinite(shrinkFactor) ? (wetBu * shrinkFactor) : NaN;
+
+      // Elevator policy shrink as % of wet bu
+      const policyBu = (policyPct>0 && wetBu>0) ? wetBu * (policyPct/100) : 0;
+
+      const finalBu = Number.isFinite(netBase) ? Math.max(0, netBase - policyBu) : NaN;
+
+      // Weights (US)
+      const finalLbUS = Number.isFinite(finalBu) ? finalBu * tw_lbb : NaN;
+      const lostBu = Number.isFinite(finalBu) ? Math.max(0, wetBu - finalBu) : NaN;
+      const lostLbUS = Number.isFinite(lostBu) ? lostBu * tw_lbb : NaN;
+      const finalTUS = Number.isFinite(finalLbUS) ? (finalLbUS/2000) : NaN;
+      const lostTUS  = Number.isFinite(lostLbUS)  ? (lostLbUS/2000)  : NaN;
+
+      // Drying cost
+      const points = Math.max(0, s - t);
+      const cost = (dryRate>0 && wetBu>0 && points>0) ? wetBu * points * dryRate : NaN;
+
+      // Steps
+      const lines = [];
+      if (Number.isFinite(shrinkFactor)) lines.push(`<div>Base shrink factor = (100 − ${s}) ÷ (100 − ${t}) = <strong>${shrinkFactor.toFixed(4)}</strong></div>`);
+      if (Number.isFinite(netBase))      lines.push(`<div>Net bu (base) = ${fmt0(wetBu)} × ${shrinkFactor.toFixed(4)} = <strong>${fmt0(netBase)}</strong> bu</div>`);
+      if (policyPct>0)                   lines.push(`<div>Policy shrink = ${fmt0(wetBu)} × ${policyPct}% = <strong>${fmt0(policyBu)}</strong> bu</div>`);
+      if (Number.isFinite(finalBu))      lines.push(`<div>Final net bu = ${fmt0(netBase)} − ${fmt0(policyBu)} = <strong>${fmt0(finalBu)}</strong> bu</div>`);
+      if (Number.isFinite(finalLbUS))    lines.push(`<div>Final weight = ${fmt0(finalBu)} × ${tw_lbb.toFixed(1)} = <strong>${fmt0(finalLbUS)}</strong> lb</div>`);
+      if (Number.isFinite(lostLbUS))     lines.push(`<div>Weight removed = (${fmt0(wetBu)} − ${fmt0(finalBu)}) × ${tw_lbb.toFixed(1)} = <strong>${fmt0(lostLbUS)}</strong> lb</div>`);
+      if (Number.isFinite(cost))         lines.push(`<div>Drying cost = ${fmt0(wetBu)} × ${points} pt × ${money(dryRate)} = <strong>${money(cost)}</strong></div>`);
+      $("steps").innerHTML = lines.length ? `<div style="display:grid;gap:.35rem">${lines.join("")}</div>` : `<span class="note">Enter values to see the step-by-step.</span>`;
+
+      // Display with unit conversion
+      const metric = (window.AGCUnits.mode()==='metric');
+      const finalKg = window.AGCUnits.out(finalLbUS, 'lb>kg');
+      const finalT  = window.AGCUnits.out(finalLbUS, 'lb>t');
+      const lostKg  = window.AGCUnits.out(lostLbUS, 'lb>kg');
+      const lostT   = window.AGCUnits.out(lostLbUS, 'lb>t');
+
+      show({
+        shrinkFactor,
+        netBase,
+        policyBu,
+        finalBu,
+        finalLb: metric ? finalKg : finalLbUS,
+        finalT:  metric ? finalT  : finalTUS,
+        lostLb:  metric ? lostKg  : lostLbUS,
+        lostT:   metric ? lostT   : lostTUS,
+        cost
+      });
+    }
+
+    function show(o={}){
+      $("shrinkFactor").textContent = Number.isFinite(o.shrinkFactor) ? o.shrinkFactor.toFixed(4) : "—";
+      $("netBu").textContent  = fmt0(o.netBase);
+      $("elevBu").textContent = fmt0(o.policyBu);
+      $("finalBu").textContent = fmt0(o.finalBu);
+      $("finalLb").textContent  = fmt0(o.finalLb);
+      $("finalT").textContent   = fmt1(o.finalT);
+      $("lostLb").textContent  = fmt0(o.lostLb);
+      $("lostT").textContent   = fmt1(o.lostT);
+      $("dryCost").textContent = money(o.cost);
+    }
+
+    compute();
+  </script>
 </Layout>
