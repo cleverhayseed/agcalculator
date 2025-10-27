@@ -23,7 +23,7 @@ const tools = [
   { title: "Stocking Rate & AUM", href: "/calculators/stocking-rate-aum/", status: "Live" },
   { title: "Pasture Stocking Planner (Head/Acre)", href: "/calculators/pasture-stocking/", status: "Live" },
 
-  // ====== COMING SOON ======
+  // ====== COMING SOON (not linked) ======
   { title: "Pasture Rotation & Paddock Planner", status: "Coming soon" },
   { title: "Bale Count & Storage Planner", status: "Coming soon" },
   { title: "Fuel Use & Haul Weight (Truck/Trailer)", status: "Coming soon" },
@@ -36,96 +36,153 @@ const tools = [
 ---
 
 <Layout>
+  <Fragment slot="head">
+    <title>AgCalculator — Do the farm math.</title>
+    <meta name="description" content="Quick, reliable farm & homestead calculators for grain, hay, fence, field capacity, irrigation, livestock water, rain catchment, seeding, stocking rate & more." />
+    <link rel="canonical" href="https://agcalculator.com/" />
 
-<Fragment slot="head">
-  <title>AgCalculator — Do the farm math.</title>
-  <meta name="description" content="Fast, offline-friendly tools for farm & homestead jobs: grain bin capacity, moisture shrink, hay & bale planning, fence planning & energizer sizing, field capacity & spray GPA, livestock water, irrigation runtime, rain catchment, seed rate, stocking rate & AUM, and more." />
-  <link rel="canonical" href="https://agcalculator.com/" />
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="AgCalculator" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="AgCalculator — Do the farm math." />
+    <meta property="og:description" content="Fast, offline-friendly tools with clear formulas, examples, and practical defaults." />
+    <meta property="og:url" content="https://agcalculator.com/" />
+    <meta property="og:image" content="https://agcalculator.com/og-home.png?v=1" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
-  <!-- Open Graph -->
-  <meta property="og:site_name" content="AgCalculator" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="AgCalculator — Do the farm math." />
-  <meta property="og:description" content="Fast, offline-friendly tools for farm & homestead jobs." />
-  <meta property="og:url" content="https://agcalculator.com/" />
-  <meta property="og:image" content="https://agcalculator.com/og-home.png?v=1" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="AgCalculator — Do the farm math." />
+    <meta name="twitter:description" content="Fast, offline-friendly tools with clear formulas, examples, and practical defaults." />
+    <meta name="twitter:image" content="https://agcalculator.com/og-home.png?v=1" />
 
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="AgCalculator — Do the farm math." />
-  <meta name="twitter:description" content="Fast, offline-friendly tools for farm & homestead jobs." />
-  <meta name="twitter:image" content="https://agcalculator.com/og-home.png?v=1" />
-</Fragment>
+    <!-- FAQPage JSON-LD (site-level questions) -->
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"FAQPage",
+      "mainEntity":[
+        {
+          "@type":"Question",
+          "name":"What is AgCalculator?",
+          "acceptedAnswer":{"@type":"Answer","text":"AgCalculator is a collection of lightweight, offline-friendly farm and homestead calculators. Each tool shows the formulas, units, and assumptions used so you can validate the math."}
+        },
+        {
+          "@type":"Question",
+          "name":"Are your calculators accurate?",
+          "acceptedAnswer":{"@type":"Answer","text":"Calculators use standard ag formulas and unit conversions. Accuracy depends on your inputs and local conditions (soil, moisture, equipment). We include rounding notes and industry defaults, and recommend verifying critical numbers in the field."}
+        },
+        {
+          "@type":"Question",
+          "name":"Do I need cookies to use the site?",
+          "acceptedAnswer":{"@type":"Answer","text":"No. Calculators run in your browser and work offline after first load. Analytics is cookie-free (Plausible). Ads (Google AdSense) only load if you grant consent in the banner or footer link (“Privacy choices”)."}
+        },
+        {
+          "@type":"Question",
+          "name":"Can I use the tools on a phone in the field?",
+          "acceptedAnswer":{"@type":"Answer","text":"Yes. The pages are mobile-friendly, fast on slow connections, and usable offline after they load once. You can also install the site as an app via your browser’s “Add to Home Screen.”"}
+        },
+        {
+          "@type":"Question",
+          "name":"Who prepares these calculators?",
+          "acceptedAnswer":{"@type":"Answer","text":"Prepared by AgCalculator. We focus on transparent math and practical defaults. Each calculator page lists formulas, assumptions, and a worked example to support review and accuracy."}
+        }
+      ]
+    }
+    </script>
+  </Fragment>
 
-  <header>
+  <header aria-labelledby="site-title" style="padding:2rem 1rem;border-bottom:1px solid #e5e7eb;background:#fff">
     <div class="wrap">
-      <h1>AgCalculator</h1>
-      <p>Do the farm math. Fast, offline-friendly tools for common farm &amp; homestead jobs.</p>
-      <p style="margin:.5rem 0 0">
-        <button id="install-btn" style="display:none;padding:.4rem .7rem;border:1px solid #cbd5e1;border-radius:10px;background:white;cursor:pointer">
-          Add to Home Screen
-        </button>
+      <h1 id="site-title" style="margin:0;font-size:clamp(1.6rem,2.6vw,2.2rem);color:var(--green)">AgCalculator</h1>
+      <p style="margin:.4rem 0 0">Do the farm math. Fast, offline-friendly tools with clear formulas, examples, and practical defaults.</p>
+      <p style="margin:.6rem 0 0">
+        <button id="install-btn" style="display:none;padding:.4rem .7rem;border:1px solid #cbd5e1;border-radius:10px;background:#fff;cursor:pointer">Add to Home Screen</button>
       </p>
     </div>
   </header>
 
-  <main class="wrap">
-    <section class="grid">
+  <main class="wrap" aria-label="Tools and information">
+    <!-- Tool grid -->
+    <section class="grid" aria-label="All calculators">
       {tools.map((t) =>
         t.href ? (
           <a class="card" href={t.href}>
             <strong>{t.title}</strong>
-            <div class="status live">{t.status}</div>
+            <div class="status live" aria-label="status live">{t.status}</div>
           </a>
         ) : (
-          <div class="card">
+          <div class="card" aria-disabled="true">
             <strong>{t.title}</strong>
-            <div class="status soon">{t.status}</div>
+            <div class="status soon" aria-label="status coming soon">{t.status}</div>
           </div>
         )
       )}
     </section>
 
-    <section class="how">
-      <h2>How it works</h2>
-      <p>Each tool runs entirely in your browser for speed and offline use. No logins — just the math with clear formulas and step-by-step explanations so you can validate numbers quickly.</p>
+    <!-- Publisher content: what, how, accuracy -->
+    <section class="how card" aria-labelledby="how-it-works">
+      <h2 id="how-it-works" style="margin:.25rem 0 .5rem;color:var(--green)">How AgCalculator works</h2>
+      <p>Each calculator runs entirely in your browser for speed and offline use. We show the exact equations behind the results, with units and rounding notes, so you can check the math and adjust inputs to match your operation.</p>
       <ul>
         <li>Works on slow rural internet (and offline after first load)</li>
-        <li>Clear formulas &amp; units, with practical defaults you can change</li>
-        <li>Privacy-friendly analytics (Plausible) to keep improving</li>
+        <li>Transparent formulas, assumptions, and step-by-step examples</li>
+        <li>Privacy-friendly analytics (Plausible); AdSense loads only after consent</li>
       </ul>
-      <p style="margin:.5rem 0 0"><a href="/about/">Learn more</a></p>
+      <p style="margin:.5rem 0 0"><a href="/about/">Learn more about our approach</a></p>
     </section>
 
+    <!-- Site FAQ (helps with “publisher content” on the homepage) -->
+    <section class="faq card" aria-labelledby="faq-heading">
+      <h2 id="faq-heading" style="margin:.25rem 0 .5rem;color:var(--green)">FAQ</h2>
+
+      <h3>Is this really offline?</h3>
+      <p>Yes. After a page loads once, your browser can reuse it without a connection. For the newest version, refresh when you’re back online.</p>
+
+      <h3>Where do the formulas come from?</h3>
+      <p>We use widely accepted ag math and unit conversions. Each calculator lists its equations and assumptions directly on the page.</p>
+
+      <h3>How precise are the results?</h3>
+      <p>We round to practical increments and show units (e.g., acres, gallons, bushels). Real-world factors like moisture, slope, implement wear, and soil type can affect outcomes—treat results as estimates.</p>
+
+      <h3>Can I suggest a new calculator?</h3>
+      <p>Yes. Send ideas to <a href="mailto:info@cleverhayseed.com">info@cleverhayseed.com</a>. We prioritize tools that save time in the field.</p>
+
+      <h3>Why might I not see ads?</h3>
+      <p>Ads only load if you choose “Allow ads” in the footer’s <em>Privacy choices</em> or in the consent banner. You’ll still get full functionality without ads.</p>
+    </section>
+
+    <p class="tiny-note">Prepared by AgCalculator · Last updated October 27, 2025</p>
+
+    <!-- Small A2HS helper (page-local, no external deps) -->
     <script is:inline>
-      let deferredPrompt;
-      const btn = document.getElementById('install-btn');
+      (function () {
+        let deferredPrompt;
+        const btn = document.getElementById('install-btn');
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 
-      const isStandalone =
-        window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          deferredPrompt = e;
+          if (!isStandalone) btn.style.display = 'inline-block';
+        });
 
-      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        if (isIOS && !isStandalone) btn.style.display = 'inline-block';
 
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        if (!isStandalone) btn.style.display = 'inline-block';
-      });
-
-      if (isIOS && !isStandalone) btn.style.display = 'inline-block';
-
-      btn?.addEventListener('click', async () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          deferredPrompt = null;
-          btn.textContent = outcome === 'accepted' ? 'Installed' : 'Add to Home Screen';
-        } else if (isIOS) {
-          alert('On iPhone/iPad: tap the Share icon → “Add to Home Screen”.');
-        }
-      });
+        btn?.addEventListener('click', async () => {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            try { await deferredPrompt.userChoice; } catch {}
+            deferredPrompt = null;
+            btn.textContent = 'Installed';
+            setTimeout(() => (btn.textContent = 'Add to Home Screen'), 2500);
+          } else if (isIOS) {
+            alert('On iPhone/iPad: tap the Share icon → “Add to Home Screen”.');
+          }
+        });
+      })();
     </script>
   </main>
 
@@ -134,22 +191,20 @@ const tools = [
   </footer>
 
   <style>
-    :root{--green:#2F855A;--slate:#334155;--bg:#F8FAFC}
+    :root{--green:#2F855A;--slate:#334155;--muted:#64748B;--bg:#F8FAFC}
     *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Inter,Arial,sans-serif;background:var(--bg);color:var(--slate)}
     a{color:inherit;text-decoration:none}
-    header{padding:2rem 1rem;border-bottom:1px solid #e5e7eb;background:white}
     .wrap{max-width:960px;margin:0 auto}
-    h1{margin:0;font-size:clamp(1.6rem,2.6vw,2.2rem);color:var(--green)}
-    p{margin:.5rem 0 0}
     .grid{display:grid;gap:1rem;padding:1.25rem 1rem}
     @media(min-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
-    .card{padding:1rem;border:1px solid #e5e7eb;border-radius:14px;background:white;display:block}
-    .status{display:inline-block;margin-top:.4rem;padding:.15rem .5rem;border-radius:999px;font-size:.8rem;color:white}
+    .card{padding:1rem;border:1px solid #e5e7eb;border-radius:14px;background:#fff}
+    .card + .card{margin-top:0}
+    .status{display:inline-block;margin-top:.4rem;padding:.15rem .5rem;border-radius:999px;font-size:.8rem;color:#fff}
     .status.live{background:#22c55e}
     .status.soon{background:#94a3b8}
-    .how{background:white;border:1px solid #e5e7eb;border-radius:14px;margin:0 1rem 1.5rem;padding:1rem}
-    .how h2{margin:.25rem 0 .5rem;color:var(--green)}
+    .how, .faq{margin:0 1rem 1.25rem}
+    .faq h3{margin:.6rem 0 .25rem;font-size:1rem}
+    .tiny-note{margin:0 1rem 1.5rem;color:var(--muted);font-size:.9rem}
     footer{padding:2rem 1rem;color:#64748b}
   </style>
 </Layout>
