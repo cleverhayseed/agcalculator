@@ -2,17 +2,17 @@
 import Layout from "../../layouts/Layout.astro";
 
 const CROPS = [
-  { key:"grass",  name:"Grass hay", density: 10 },
-  { key:"alfalfa",name:"Alfalfa",   density: 12 },
-  { key:"straw",  name:"Straw",     density: 8  },
-  { key:"custom", name:"Custom",    density: 10 }
+  { key:"grass",   name:"Grass hay", density: 10 },   // lb/ft³
+  { key:"alfalfa", name:"Alfalfa",   density: 12 },
+  { key:"straw",   name:"Straw",     density: 8  },
+  { key:"custom",  name:"Custom",    density: 10 }
 ];
 ---
 
 <Layout>
   <Fragment slot="head">
-    <title>Hay Bale Weight & Load Planner | AgCalculator</title>
-    <meta name="description" content="Estimate hay bale weight from size and density, then see how many bales you can haul by weight." />
+    <title>Hay Bale Weight &amp; Load Planner | AgCalculator</title>
+    <meta name="description" content="Estimate hay bale weight from size and density, then see how many bales you can haul by weight. US ↔ Metric toggle." />
     <link rel="canonical" href="https://agcalculator.com/calculators/hay-bale-planner/" />
 
     <!-- OG -->
@@ -44,18 +44,20 @@ const CROPS = [
     }
     </script>
 
-    <!-- FAQ -->
+    <!-- FAQ schema (matches on-page FAQ) -->
     <script type="application/ld+json">
     {
       "@context":"https://schema.org",
       "@type":"FAQPage",
       "mainEntity":[
         {"@type":"Question","name":"How is bale weight estimated?",
-         "acceptedAnswer":{"@type":"Answer","text":"We compute volume (round: π·(D/2)²·W; square: L·W·H — in feet) times density (lb/ft³), then optionally adjust for moisture."}},
-        {"@type":"Question","name":"Why does the density vary?",
-         "acceptedAnswer":{"@type":"Answer","text":"Field densities vary by crop, moisture, baler, and storage. Use the crop preset as a starting point, or enter a measured value if you have it."}},
-        {"@type":"Question","name":"Why are bales by weight only?",
-         "acceptedAnswer":{"@type":"Answer","text":"This tool checks payload by weight only. Space, stacking, and tie-down rules aren’t considered—verify those separately."}}
+         "acceptedAnswer":{"@type":"Answer","text":"We compute volume (round: π·(D/2)²·W; square: L·W·H — convert inches/centimeters to feet/meters) times density, then optionally apply the moisture adjustment."}},
+        {"@type":"Question","name":"What density should I use?",
+         "acceptedAnswer":{"@type":"Answer","text":"Use a scale-based weight if you have it. Otherwise start with typical dry hay: grass ~10 lb/ft³ (160 kg/m³), alfalfa ~12 lb/ft³ (192 kg/m³), straw ~8 lb/ft³ (128 kg/m³) and adjust for your bales."}},
+        {"@type":"Question","name":"Does this consider trailer space or legal limits?",
+         "acceptedAnswer":{"@type":"Answer","text":"No. This tool computes bales by payload weight only. Always check deck space, stacking, tie-down, axle limits, and local regulations."}},
+        {"@type":"Question","name":"Can I switch to metric units?",
+         "acceptedAnswer":{"@type":"Answer","text":"Yes—use the US↔Metric toggle. Inputs and results flip between inches/feet & lb/ft³ & lb and centimeters/meters & kg/m³ & kg (and t)."}}
       ]
     }
     </script>
@@ -77,16 +79,28 @@ const CROPS = [
       .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
       .content h2{margin:.2rem 0 .6rem}
       .content h3{margin:.8rem 0 .3rem}
-      .content ul{margin:.2rem 0 .2rem 1rem}
+      .content ul,.content ol{margin:.2rem 0 .2rem 1rem}
+      /* Units toggle */
+      .unit-toggle{display:flex;align-items:center;gap:.4rem;margin:0 0 1rem;padding:.5rem 1rem;background:#fff;border:1px solid #e2e8f0;border-radius:12px}
+      .u-btn{padding:.35rem .7rem;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer}
+      .u-btn.active{background:var(--green);border-color:var(--green);color:#fff}
     </style>
   </Fragment>
 
   <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
   <main class="wrap">
-    <h1 style="margin:.5rem 0 1rem">Hay Bale Weight & Load Planner</h1>
+    <h1 style="margin:.5rem 0 1rem">Hay Bale Weight &amp; Load Planner</h1>
+
+    <!-- Units toggle -->
+    <div class="unit-toggle" role="group" aria-label="Units">
+      <strong style="margin-right:.25rem">Units:</strong>
+      <button type="button" class="u-btn active" data-units="us" aria-pressed="true">US</button>
+      <button type="button" class="u-btn" data-units="metric" aria-pressed="false">Metric</button>
+      <small class="note" style="margin-left:.5rem">Saved on this device</small>
+    </div>
 
     <fieldset>
-      <legend>Bale & material</legend>
+      <legend>Bale &amp; material</legend>
       <div class="row">
         <div>
           <label for="bType">Bale type</label>
@@ -102,19 +116,19 @@ const CROPS = [
           </select>
         </div>
         <div>
-          <label for="density">Density (lb/ft³)</label>
-          <input id="density" type="number" step="0.1" value="10" />
+          <label data-unit-label="Density (lb/ft³)|Density (kg/m³)" for="density">Density (lb/ft³)</label>
+          <input id="density" type="number" step="0.1" value="10" data-unit="lbft3>kgm3" data-unit-ph="e.g. 10|e.g. 160" />
         </div>
       </div>
 
       <div class="row" id="roundRow">
         <div>
-          <label for="dia">Round bale diameter (in)</label>
-          <input id="dia" type="number" step="0.1" value="60" />
+          <label data-unit-label="Round bale diameter (in)|Round bale diameter (cm)" for="dia">Round bale diameter (in)</label>
+          <input id="dia" type="number" step="0.1" value="60" data-unit="in>cm" data-unit-ph="e.g. 60|e.g. 152" />
         </div>
         <div>
-          <label for="width">Round bale width (in)</label>
-          <input id="width" type="number" step="0.1" value="60" />
+          <label data-unit-label="Round bale width (in)|Round bale width (cm)" for="width">Round bale width (in)</label>
+          <input id="width" type="number" step="0.1" value="60" data-unit="in>cm" data-unit-ph="e.g. 60|e.g. 152" />
         </div>
         <div>
           <label>&nbsp;</label>
@@ -124,16 +138,16 @@ const CROPS = [
 
       <div class="row" id="squareRow" style="display:none">
         <div>
-          <label for="sL">Square length (in)</label>
-          <input id="sL" type="number" step="0.1" value="36" />
+          <label data-unit-label="Square length (in)|Square length (cm)" for="sL">Square length (in)</label>
+          <input id="sL" type="number" step="0.1" value="36" data-unit="in>cm" data-unit-ph="e.g. 36|e.g. 91" />
         </div>
         <div>
-          <label for="sW">Square width (in)</label>
-          <input id="sW" type="number" step="0.1" value="18" />
+          <label data-unit-label="Square width (in)|Square width (cm)" for="sW">Square width (in)</label>
+          <input id="sW" type="number" step="0.1" value="18" data-unit="in>cm" data-unit-ph="e.g. 18|e.g. 46" />
         </div>
         <div>
-          <label for="sH">Square height (in)</label>
-          <input id="sH" type="number" step="0.1" value="14" />
+          <label data-unit-label="Square height (in)|Square height (cm)" for="sH">Square height (in)</label>
+          <input id="sH" type="number" step="0.1" value="14" data-unit="in>cm" data-unit-ph="e.g. 14|e.g. 36" />
         </div>
       </div>
 
@@ -141,14 +155,15 @@ const CROPS = [
         <div>
           <label for="moist">Moisture adjustment (%)</label>
           <input id="moist" type="number" step="0.1" value="0" />
+          <div class="note">Enter +5 for 5% heavier than dry baseline.</div>
         </div>
         <div>
-          <label for="payload">Haul capacity (lb)</label>
-          <input id="payload" type="number" step="1" placeholder="e.g. 10000" />
+          <label data-unit-label="Haul capacity (lb)|Haul capacity (kg)" for="payload">Haul capacity (lb)</label>
+          <input id="payload" type="number" step="1" placeholder="e.g. 10000" data-unit="lb>kg" data-unit-ph="e.g. 10000|e.g. 4500" />
         </div>
         <div>
           <label>&nbsp;</label>
-          <div class="note">Bales by weight only (not volume/space)</div>
+          <div class="note">Bales-by-weight only (not space/axle limits)</div>
         </div>
       </div>
     </fieldset>
@@ -156,32 +171,129 @@ const CROPS = [
     <section class="result" id="out">
       <div class="note">Results</div>
       <div style="display:grid;gap:.5rem;margin-top:.4rem">
-        <div><strong>Volume:</strong> <span id="vol">—</span> ft³</div>
-        <div><strong>Bale weight:</strong> <span id="wt">—</span> lb (<span id="tons">—</span> tons)</div>
+        <div><strong>Volume:</strong> <span id="vol">—</span> <span data-unit-text="ft³|m³"></span></div>
+        <div><strong>Bale weight:</strong> <span id="wt">—</span> <span data-unit-text="lb|kg"></span> (<span id="tons">—</span> <span data-unit-text="tons|t"></span>)</div>
         <div><strong>Max bales by weight:</strong> <span id="maxBales">—</span></div>
       </div>
       <p class="note" style="margin-top:.6rem">Estimates only. Verify before purchasing materials or operating equipment.</p>
     </section>
 
+    <section class="content" id="explain">
+      <h2>How we got these numbers</h2>
+      <div id="steps" class="note">Enter bale size, density, and (optionally) payload to see the step-by-step.</div>
+    </section>
+
     <section class="content">
       <h2>How this calculator works</h2>
+      <p>We compute bale <em>volume</em> from size, multiply by <em>density</em> to estimate weight, then compare to your payload to show bales by weight.</p>
+
+      <h3>Formulas</h3>
       <ul>
-        <li><strong>Round volume (ft³)</strong> = π·(D/2)²·W (inches ÷ 12 → feet)</li>
-        <li><strong>Square volume (ft³)</strong> = L·W·H (inches ÷ 12 → feet)</li>
-        <li><strong>Bale weight</strong> = volume × density (lb/ft³) × moisture adjustment</li>
-        <li><strong>Max bales by weight</strong> = floor(payload ÷ bale weight)</li>
+        <li><strong>Round volume</strong> = π·(D/2)²·W (convert in/cm → ft/m)</li>
+        <li><strong>Square volume</strong> = L·W·H (convert in/cm → ft/m)</li>
+        <li><strong>Bale weight</strong> = volume × density × (1 + moisture%/100)</li>
+        <li><strong>Max bales by weight</strong> = ⌊ payload ÷ bale weight ⌋</li>
       </ul>
-      <h3>Tips</h3>
+
+      <h3>Assumptions &amp; notes</h3>
       <ul>
-        <li>Densities vary by crop, moisture, baler, and storage—use your measured density if available.</li>
-        <li>Payload check is weight only; verify trailer space and tie-down rules separately.</li>
+        <li>Densities vary by crop, baler tension, and moisture—use scale weights when available.</li>
+        <li>Payload check is <em>weight only</em>; deck space, stacking, tie-down, and legal axle limits are not evaluated.</li>
+        <li>Rounding: volumes to 0.1, weights to whole lb (or kg), tons to 2 decimals.</li>
+      </ul>
+
+      <h3>Worked example</h3>
+      <p>5×5 round (60×60 in), density 10 lb/ft³, moisture 0%, payload 10,000 lb:</p>
+      <ol>
+        <li>Volume = π·(5/2)²·5 ≈ <strong>98.2 ft³</strong></li>
+        <li>Weight = 98.2 × 10 ≈ <strong>982 lb</strong> (~<strong>0.49 tons</strong>)</li>
+        <li>Max bales by weight = ⌊10,000 ÷ 982⌋ = <strong>10 bales</strong></li>
+      </ol>
+
+      <h3>FAQ</h3>
+      <p><strong>How is bale weight estimated?</strong> Volume × density, with an optional moisture % adjustment.</p>
+      <p><strong>What density should I use?</strong> Start with: grass ~10 lb/ft³ (160 kg/m³), alfalfa ~12 lb/ft³ (192 kg/m³), straw ~8 lb/ft³ (128 kg/m³), then refine.</p>
+      <p><strong>Does this include trailer space or axle limits?</strong> No—weight only. Verify space and legal requirements.</p>
+
+      <p class="note">Prepared by AgCalculator · Last updated October 27, 2025</p>
+    </section>
+
+    <section class="content">
+      <h3>Also try…</h3>
+      <ul>
+        <li><a href="/calculators/bale-yield-planner/">Bale Count from Field Yield</a></li>
+        <li><a href="/calculators/fence-planner/">Fence Planner</a></li>
       </ul>
     </section>
   </main>
 
-  <!-- Single script; helpers inlined to avoid any import path issues -->
+  <!-- Units helper (page-local) -->
+  <script is:inline>
+    (function () {
+      const KEY = 'agc_units';
+      const $$ = (s) => document.querySelectorAll(s);
+      const conv = {
+        'in>cm': x => x * 2.54,        'cm>in': x => x / 2.54,
+        'lbft3>kgm3': x => x * 16.01846337, 'kgm3>lbft3': x => x / 16.01846337,
+        'lb>kg': x => x * 0.45359237,  'kg>lb': x => x / 0.45359237,
+        'ft3>m3': x => x * 0.028316846592, 'm3>ft3': x => x / 0.028316846592
+      };
+      window.AGCUnits = {
+        mode: () => localStorage.getItem(KEY) || 'us',
+        setMode(m){ localStorage.setItem(KEY, m); paint(m); },
+        get(el){ // normalize to US for math
+          const raw = parseFloat(el.value);
+          if (!isFinite(raw)) return NaN;
+          const map = (el.dataset.unit || '').trim();
+          if (!map) return raw;
+          const [us, met] = map.split('>');
+          if (this.mode()==='us') return raw;
+          const fn = conv[`${met}>${us}`];
+          return fn ? fn(raw) : raw;
+        },
+        out(usNumber, map){
+          if (!isFinite(usNumber)) return NaN;
+          if (this.mode()==='us' || !map) return usNumber;
+          const fn = conv[map];
+          return fn ? fn(usNumber) : usNumber;
+        }
+      };
+      function paint(mode){
+        document.querySelectorAll('.unit-toggle .u-btn').forEach(btn => {
+          const on = btn.dataset.units === mode;
+          btn.classList.toggle('active', on);
+          btn.setAttribute('aria-pressed', String(on));
+        });
+        $$('[data-unit-label]').forEach(el => {
+          const [us, met] = el.dataset.unitLabel.split('|');
+          el.textContent = (mode==='metric' ? met : us);
+        });
+        $$('input[data-unit-ph]').forEach(el => {
+          const [us, met] = el.dataset.unitPh.split('|');
+          el.placeholder = (mode==='metric' ? met : us);
+        });
+        $$('[data-unit-text]').forEach(el => {
+          const [us, met] = el.dataset.unitText.split('|');
+          el.textContent = (mode==='metric' ? met : us);
+        });
+        // Recompute with current values
+        document.querySelectorAll('input,select').forEach(el => {
+          el.dispatchEvent(new Event('input',{bubbles:true}));
+          el.dispatchEvent(new Event('change',{bubbles:true}));
+        });
+      }
+      document.addEventListener('click', (e)=>{
+        const btn = e.target.closest('.u-btn');
+        if (!btn) return;
+        window.AGCUnits.setMode(btn.dataset.units);
+      });
+      // Init
+      paint(window.AGCUnits.mode());
+    })();
+  </script>
+
+  <!-- Calculator logic (page-local) -->
   <script type="module">
-    // helpers (inlined)
     const $ = (id) => document.getElementById(id);
     const num = (id) => parseFloat(($(id)?.value ?? "").trim());
     const fmt = (n, d=0) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d}) : "—";
@@ -198,35 +310,51 @@ const CROPS = [
     });
 
     $("crop").addEventListener("change", () => {
-      const den = parseFloat($("crop").selectedOptions[0].dataset.den || "10");
-      $("density").value = den;
+      const denUS = parseFloat($("crop").selectedOptions[0].dataset.den || "10");
+      // display density in current unit mode
+      const metric = (window.AGCUnits.mode()==='metric');
+      $("density").value = metric ? (denUS * 16.01846337).toFixed(0) : denUS;
       compute();
     });
 
     function compute(){
       const round = $("bType").value === "round";
-      const dens = Math.max(0, num("density") || 0);
+
+      // Normalize all inputs to US units for math:
+      const dens = window.AGCUnits.get($("density"));             // lb/ft³
+      const D_in  = round ? window.AGCUnits.get($("dia"))   : NaN; // inches
+      const W_in  = round ? window.AGCUnits.get($("width")) : NaN; // inches
+      const L_in  = !round ? window.AGCUnits.get($("sL"))   : NaN;
+      const WW_in = !round ? window.AGCUnits.get($("sW"))   : NaN;
+      const H_in  = !round ? window.AGCUnits.get($("sH"))   : NaN;
+      const payload_lb = window.AGCUnits.get($("payload"));       // lb (US)
 
       // inches -> feet
-      let vol = NaN;
+      let vol_ft3 = NaN;
       if (round){
-        const D = num("dia")/12, W = num("width")/12;
-        if (D>0 && W>0) vol = Math.PI * Math.pow(D/2,2) * W;
+        const D = D_in/12, W = W_in/12;
+        if (D>0 && W>0) vol_ft3 = Math.PI * Math.pow(D/2,2) * W;
       } else {
-        const L = num("sL")/12, W = num("sW")/12, H = num("sH")/12;
-        if (L>0 && W>0 && H>0) vol = L*W*H;
+        const L = L_in/12, W = WW_in/12, H = H_in/12;
+        if (L>0 && W>0 && H>0) vol_ft3 = L*W*H;
       }
-      if (!Number.isFinite(vol)) return show();
+      if (!Number.isFinite(vol_ft3) || !(dens>0)) { render(); setSteps(); return; }
 
-      let wt = vol * dens;
+      let wt_lb = vol_ft3 * dens;
       const moist = num("moist") || 0;
-      if (moist !== 0) wt *= (1 + moist/100);
+      if (moist !== 0) wt_lb *= (1 + moist/100);
 
-      const tons = wt/2000;
-      const payload = num("payload");
-      const maxBales = (payload>0 && wt>0) ? Math.floor(payload / wt) : NaN;
+      const tons_short = wt_lb/2000;
+      const maxBales = (payload_lb>0 && wt_lb>0) ? Math.floor(payload_lb / wt_lb) : NaN;
 
-      show({ vol, wt, tons, maxBales });
+      // Unit-converted displays
+      const vol_out = window.AGCUnits.out(vol_ft3, 'ft3>m3');
+      const wt_out  = window.AGCUnits.out(wt_lb, 'lb>kg');
+      const tons_out= window.AGCUnits.mode()==='metric' ? (wt_out/1000) : tons_short;
+
+      render({ vol: vol_out, wt: wt_out, tons: tons_out, maxBales });
+
+      setSteps({ round, vol_ft3, dens, wt_lb, moist, payload_lb, maxBales });
 
       if (!window.__pl_hay_used){
         window.__pl_hay_used = true;
@@ -234,16 +362,40 @@ const CROPS = [
       }
     }
 
-    function show(o={}){
-      $("vol").textContent  = fmt(o.vol,1);
-      $("wt").textContent   = fmt(o.wt,0);
-      $("tons").textContent = fmt(o.tons,2);
+    function render(o={}){
+      $("vol").textContent      = fmt(o.vol, window.AGCUnits.mode()==='metric' ? 3 : 1);
+      $("wt").textContent       = fmt(o.wt, 0);
+      $("tons").textContent     = fmt(o.tons, 2);
       $("maxBales").textContent = fmt(o.maxBales,0);
     }
 
+    function setSteps(ctx){
+      const el = document.getElementById("steps");
+      if (!ctx){ el.textContent = "Enter bale size and density to see the math."; return; }
+      const { round, vol_ft3, dens, wt_lb, moist, payload_lb, maxBales } = ctx;
+      const lines = [];
+      if (round){
+        const Dft = (window.AGCUnits.get($("dia"))/12);
+        const Wft = (window.AGCUnits.get($("width"))/12);
+        lines.push(`<div>Volume = π·(D/2)²·W = π·(${(Dft/2).toFixed(2)})²·${Wft.toFixed(2)} = <strong>${fmt(vol_ft3,1)}</strong> ft³</div>`);
+      } else {
+        const Lft = (window.AGCUnits.get($("sL"))/12);
+        const WWft= (window.AGCUnits.get($("sW"))/12);
+        const Hft = (window.AGCUnits.get($("sH"))/12);
+        lines.push(`<div>Volume = L·W·H = ${Lft.toFixed(2)}·${WWft.toFixed(2)}·${Hft.toFixed(2)} = <strong>${fmt(vol_ft3,1)}</strong> ft³</div>`);
+      }
+      lines.push(`<div>Weight = volume × density × moisture = ${fmt(vol_ft3,1)} × ${fmt(dens,1)} × ${moist?`(1+${moist}% )`:"1"} = <strong>${fmt(wt_lb,0)}</strong> lb</div>`);
+      if (payload_lb>0) lines.push(`<div>Max bales by weight = ⌊ ${fmt(payload_lb,0)} ÷ ${fmt(wt_lb,0)} ⌋ = <strong>${fmt(maxBales,0)}</strong></div>`);
+      el.innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
+    }
+
     // initialize defaults
-    $("bType").dispatchEvent(new Event("change"));
-    $("crop").dispatchEvent(new Event("change"));
-    compute();
+    (function init(){
+      // honor current units on initial crop density
+      const denUS = parseFloat($("crop").selectedOptions[0].dataset.den || "10");
+      $("density").value = (window.AGCUnits.mode()==='metric') ? Math.round(denUS*16.01846337) : denUS;
+      $("bType").dispatchEvent(new Event("change"));
+      compute();
+    })();
   </script>
 </Layout>
