@@ -2,22 +2,21 @@
 import Layout from "../../layouts/Layout.astro";
 
 const WIRE_TYPES = [
-  { key: "barbed", name: "Barbed wire (1320 ft/roll)", roll: 1320, usesStrands: true,  defaultStrands: 4 },
+  { key: "barbed", name: "Barbed wire (1320 ft/roll)",       roll: 1320, usesStrands: true,  defaultStrands: 4 },
   { key: "ht",     name: "High-tensile smooth (4000 ft/roll)", roll: 4000, usesStrands: true,  defaultStrands: 5 },
-  { key: "mesh",   name: "Field/mesh fence (330 ft/roll)", roll: 330, usesStrands: false, defaultStrands: 1 },
+  { key: "mesh",   name: "Field/mesh fence (330 ft/roll)",     roll: 330,  usesStrands: false, defaultStrands: 1 },
 ];
 ---
-
 <Layout>
   <Fragment slot="head">
     <title>Fence Planner (Perimeter, Posts, Wire) | AgCalculator</title>
-    <meta name="description" content="Plan farm & homestead fence: total length, post count, wire length & rolls. Supports barbed, high-tensile, and mesh fence." />
+    <meta name="description" content="Plan farm & homestead fence: total length, post count, wire length & rolls. Supports barbed, high-tensile, and mesh fence. US ↔ Metric toggle." />
     <link rel="canonical" href="https://agcalculator.com/calculators/fence-planner/" />
 
     <!-- Open Graph -->
     <meta property="og:site_name" content="AgCalculator" />
     <meta property="og:title" content="Fence Planner (Perimeter, Posts, Wire)" />
-    <meta property="og:description" content="Quickly estimate fence length, posts, and wire rolls. Barbed, high-tensile, or mesh." />
+    <meta property="og:description" content="Quickly estimate fence length, posts, and wire rolls with clear formulas. Barbed, high-tensile, or mesh." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://agcalculator.com/calculators/fence-planner/" />
     <meta property="og:image" content="https://agcalculator.com/og-fence-planner.png" />
@@ -28,7 +27,7 @@ const WIRE_TYPES = [
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Fence Planner (Perimeter, Posts, Wire)" />
-    <meta name="twitter:description" content="Plan fence length, posts, wire length & rolls." />
+    <meta name="twitter:description" content="Plan fence length, posts, wire length & rolls with transparent math." />
     <meta name="twitter:image" content="https://agcalculator.com/og-fence-planner.png" />
 
     <!-- Breadcrumbs -->
@@ -43,35 +42,31 @@ const WIRE_TYPES = [
     }
     </script>
 
-    <!-- FAQ schema to reinforce helpful content -->
+    <!-- FAQ schema (matches on-page FAQ below) -->
     <script type="application/ld+json">
     {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
+      "@context":"https://schema.org",
+      "@type":"FAQPage",
+      "mainEntity":[
         {
-          "@type": "Question",
-          "name": "How do you count line posts vs. corner/gate posts?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Line posts are placed along the effective wire run at your chosen spacing. Corner posts are entered directly. Each gate adds two gate posts. Total posts = line posts + corner posts + gate posts."
-          }
+          "@type":"Question",
+          "name":"How do you count line posts vs. corner/gate posts?",
+          "acceptedAnswer":{"@type":"Answer","text":"Line posts are placed along the effective wire run at your chosen spacing. Corner posts are entered directly. Each gate adds two gate posts. Total posts = line posts + corner posts + gate posts."}
         },
         {
-          "@type": "Question",
-          "name": "Do strands apply to mesh/field fence?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "No. Mesh/field fence is treated as a single run of fabric; the strands control is disabled. For barbed or high-tensile smooth wire, strands multiplies the effective wire length."
-          }
+          "@type":"Question",
+          "name":"Do strands apply to mesh/field fence?",
+          "acceptedAnswer":{"@type":"Answer","text":"No. Mesh/field fence is treated as a single run of fabric; the strands control is disabled. For barbed or high-tensile smooth wire, strands multiply the effective wire length."}
         },
         {
-          "@type": "Question",
-          "name": "Are material cost estimates exact?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "They are rough estimates. Roll lengths and prices vary by supplier, and field conditions may require extra posts or splices. Always check with your supplier before purchasing."
-          }
+          "@type":"Question",
+          "name":"Are material cost estimates exact?",
+          "acceptedAnswer":{"@type":"Answer","text":"They are estimates. Roll lengths and prices vary by supplier, and field conditions may require extra posts or splices. Always check with your supplier before purchasing."}
+        },
+        {
+          "@type":"Question",
+          "name":"Can I plan in meters?",
+          "acceptedAnswer":{"@type":"Answer","text":"Yes. Use the US↔Metric toggle. Internally, math runs in feet and values are converted for display without accuracy loss."}
         }
       ]
     }
@@ -79,29 +74,43 @@ const WIRE_TYPES = [
 
     <style>
       :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
-      *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Inter,Arial,sans-serif;background:var(--bg);color:var(--slate)}
+      *{box-sizing:border-box}
+      body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Inter,Arial,sans-serif;background:var(--bg);color:var(--slate)}
       a{color:var(--green);text-decoration:none}
-      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:white}
+      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:#fff}
       .wrap{max-width:960px;margin:0 auto;padding:1rem}
-      fieldset{background:white;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
+      fieldset{background:#fff;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
       legend{padding:0 .4rem;color:var(--muted)}
       label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
       input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
       .row{display:grid;gap:.8rem}
       @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
-      .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+      .result{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
       .note{color:#64748b;font-size:.9rem}
-      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
       .content h2{margin:.2rem 0 .6rem}
       .content h3{margin:.8rem 0 .3rem}
-      .content ul, .content ol{margin:.2rem 0 .2rem 1rem}
+      .content ul,.content ol{margin:.2rem 0 .2rem 1rem}
       .disclaimer{color:#64748b;margin-top:.6rem}
+      /* Units toggle */
+      .unit-toggle{display:flex;align-items:center;gap:.4rem;margin:0 0 1rem;padding:.5rem 1rem;background:#fff;border:1px solid #e2e8f0;border-radius:12px}
+      .u-btn{padding:.35rem .7rem;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer}
+      .u-btn.active{background:var(--green);border-color:var(--green);color:#fff}
     </style>
   </Fragment>
 
   <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
+
   <main class="wrap">
     <h1 style="margin:.5rem 0 1rem">Fence Planner</h1>
+
+    <!-- Units toggle -->
+    <div class="unit-toggle" role="group" aria-label="Units">
+      <strong style="margin-right:.25rem">Units:</strong>
+      <button type="button" class="u-btn active" data-units="us" aria-pressed="true">US</button>
+      <button type="button" class="u-btn" data-units="metric" aria-pressed="false">Metric</button>
+      <small class="note" style="margin-left:.5rem">Saved on this device</small>
+    </div>
 
     <fieldset>
       <legend>Fence layout</legend>
@@ -110,7 +119,7 @@ const WIRE_TYPES = [
           <label for="mode">Layout</label>
           <select id="mode">
             <option value="total">I know total fence length</option>
-            <option value="rect">Rectangle: length × width</option>
+            <option value="rect" selected>Rectangle: length × width</option>
           </select>
         </div>
         <div>
@@ -118,19 +127,19 @@ const WIRE_TYPES = [
           <input id="corners" type="number" step="1" value="4" />
         </div>
         <div>
-          <label for="postSpacing">Line post spacing (ft)</label>
-          <input id="postSpacing" type="number" step="0.1" value="8" />
+          <label data-unit-label="Line post spacing (ft)|Line post spacing (m)" for="postSpacing">Line post spacing (ft)</label>
+          <input id="postSpacing" type="number" step="0.1" value="8" data-unit="ft>m" data-unit-ph="e.g. 8|e.g. 2.4" />
         </div>
       </div>
 
       <div class="row" id="rectRow">
         <div>
-          <label for="len">Rectangle length (ft)</label>
-          <input id="len" type="number" step="0.1" placeholder="e.g. 660" />
+          <label for="len">Rectangle length (<span data-unit-text="ft|m"></span>)</label>
+          <input id="len" type="number" step="0.1" placeholder="e.g. 660" data-unit="ft>m" data-unit-ph="e.g. 660|e.g. 200" />
         </div>
         <div>
-          <label for="wid">Rectangle width (ft)</label>
-          <input id="wid" type="number" step="0.1" placeholder="e.g. 330" />
+          <label for="wid">Rectangle width (<span data-unit-text="ft|m"></span>)</label>
+          <input id="wid" type="number" step="0.1" placeholder="e.g. 330" data-unit="ft>m" data-unit-ph="e.g. 330|e.g. 100" />
         </div>
         <div>
           <label>&nbsp;</label>
@@ -140,8 +149,8 @@ const WIRE_TYPES = [
 
       <div class="row" id="totalRow" style="display:none">
         <div>
-          <label for="totalLength">Total fence length (ft)</label>
-          <input id="totalLength" type="number" step="0.1" placeholder="e.g. 1320" />
+          <label for="totalLength">Total fence length (<span data-unit-text="ft|m"></span>)</label>
+          <input id="totalLength" type="number" step="0.1" placeholder="e.g. 1320" data-unit="ft>m" data-unit-ph="e.g. 1320|e.g. 400" />
         </div>
         <div>
           <label>&nbsp;</label>
@@ -162,8 +171,8 @@ const WIRE_TYPES = [
           <div class="note" id="strandNote">Used for barbed/high-tensile only</div>
         </div>
         <div>
-          <label for="rollLen">Roll length (ft)</label>
-          <input id="rollLen" type="number" step="1" value="1320" />
+          <label data-unit-label="Roll length (ft)|Roll length (m)" for="rollLen">Roll length (ft)</label>
+          <input id="rollLen" type="number" step="1" value="1320" data-unit="ft>m" data-unit-ph="e.g. 1320|e.g. 400" />
         </div>
       </div>
 
@@ -173,8 +182,8 @@ const WIRE_TYPES = [
           <input id="gates" type="number" step="1" value="1" />
         </div>
         <div>
-          <label for="gateWidth">Gate width (ft)</label>
-          <input id="gateWidth" type="number" step="0.1" value="16" />
+          <label data-unit-label="Gate width (ft)|Gate width (m)" for="gateWidth">Gate width (ft)</label>
+          <input id="gateWidth" type="number" step="0.1" value="16" data-unit="ft>m" data-unit-ph="e.g. 16|e.g. 4.9" />
         </div>
         <div>
           <label>&nbsp;</label>
@@ -201,9 +210,9 @@ const WIRE_TYPES = [
     <section class="result" id="out">
       <div class="note">Results</div>
       <div style="display:grid;gap:.5rem;margin-top:.4rem">
-        <div><strong>Total fence length:</strong> <span id="fLen">—</span> ft</div>
-        <div><strong>Gate openings:</strong> <span id="gOpen">—</span> ft</div>
-        <div><strong>Effective wire run:</strong> <span id="wireLen">—</span> ft</div>
+        <div><strong>Total fence length:</strong> <span id="fLen">—</span> <span data-unit-text="ft|m"></span></div>
+        <div><strong>Gate openings:</strong> <span id="gOpen">—</span> <span data-unit-text="ft|m"></span></div>
+        <div><strong>Effective wire run:</strong> <span id="wireLen">—</span> <span data-unit-text="ft|m"></span></div>
         <div><strong>Line posts:</strong> <span id="linePosts">—</span></div>
         <div><strong>Corner posts:</strong> <span id="cornerPosts">—</span></div>
         <div><strong>Gate posts:</strong> <span id="gatePosts">—</span></div>
@@ -214,56 +223,128 @@ const WIRE_TYPES = [
       <p class="note" style="margin-top:.6rem">Estimates only. Verify before purchasing materials or operating equipment.</p>
     </section>
 
-    <!-- Publisher content: deeper explanations + example + mini FAQ -->
+    <!-- Publisher content -->
     <section class="content">
       <h2>How this calculator works</h2>
-      <p>This tool estimates fence materials from your layout, post spacing, and wire type. It supports either a known total length or a rectangle (perimeter), optional gates, and strand-based fences.</p>
+      <p>Enter a total fence length or a rectangle (<em>perimeter</em>), then add corners, post spacing, gates, and fence type. We compute effective wire run (subtracting gates), post counts, wire feet, rolls, and optional material cost using clear formulas.</p>
+      <p class="note">Rounding: post & roll counts are rounded up; lengths are shown to whole units.</p>
 
       <h3>Formulas</h3>
       <ul>
         <li><strong>Perimeter (rect)</strong> = 2 × (L + W)</li>
-        <li><strong>Effective wire run</strong> = total length − (gates × gate width)</li>
+        <li><strong>Gate openings</strong> = gates × gate width</li>
+        <li><strong>Effective wire run</strong> = total length − gate openings</li>
         <li><strong>Line posts</strong> = ceil(effective run ÷ post spacing)</li>
         <li><strong>Gate posts</strong> = gates × 2</li>
         <li><strong>Total posts</strong> = line posts + corner posts + gate posts</li>
-        <li><strong>Wire feet</strong> = effective run × (strands if barbed/HT else 1)</li>
-        <li><strong>Wire rolls</strong> = ceil(wire feet ÷ roll length)</li>
+        <li><strong>Wire length</strong> = effective run × (strands if barbed/HT else 1)</li>
+        <li><strong>Wire rolls</strong> = ceil(wire length ÷ roll length)</li>
         <li><strong>Materials cost (optional)</strong> = (total posts × post cost) + (rolls × roll cost)</li>
       </ul>
 
       <h3>Assumptions & notes</h3>
       <ul>
-        <li>Post spacing is uniform along straight runs; corners/gates get their own posts.</li>
-        <li>Mesh/field fence is treated as a single “strand” (no strands multiplier).</li>
-        <li>Roll lengths are typical defaults; replace with what your supplier carries.</li>
+        <li>Post spacing is uniform along straight runs; corners/gates use their own posts.</li>
+        <li>Mesh/field fence is treated as a single “strand”; the strands control is disabled.</li>
+        <li>Roll lengths are typical defaults — replace with what your supplier carries.</li>
+        <li>Lengths shown in your chosen units (US or metric); internal math uses feet for consistency.</li>
       </ul>
 
-      <h3>Example</h3>
-      <p>Rectangle 660 ft × 330 ft, 4 corners, post spacing 8 ft, barbed 4 strands, two 16 ft gates, 1320 ft rolls:</p>
+      <h3>Worked example</h3>
+      <p>Rectangle 660 × 330 <span data-unit-text="ft|m"></span>; 4 corners; spacing 8 <span data-unit-text="ft|m"></span>; barbed 4 strands; two 16 <span data-unit-text="ft|m"></span> gates; 1320 <span data-unit-text="ft|m"></span> rolls.</p>
       <ol>
-        <li>Perimeter = 2×(660+330) = <strong>1,980 ft</strong></li>
-        <li>Gate openings = 2×16 = <strong>32 ft</strong> → Effective run = 1,980 − 32 = <strong>1,948 ft</strong></li>
+        <li>Perimeter = 2×(660+330) = <strong>1,980</strong> <span data-unit-text="ft|m"></span></li>
+        <li>Gate openings = 2×16 = <strong>32</strong> <span data-unit-text="ft|m"></span> → Effective run = 1,980 − 32 = <strong>1,948</strong> <span data-unit-text="ft|m"></span></li>
         <li>Line posts = ceil(1,948 ÷ 8) = <strong>244</strong></li>
         <li>Gate posts = 2×2 = 4; Total posts = 244 + 4 corners + 4 = <strong>252</strong></li>
-        <li>Wire feet = 1,948 × 4 = <strong>7,792 ft</strong> → Rolls = ceil(7,792 ÷ 1,320) = <strong>6 rolls</strong></li>
+        <li>Wire length = 1,948 × 4 = <strong>7,792</strong> <span data-unit-text="ft|m"></span> → Rolls = ceil(7,792 ÷ 1,320) = <strong>6</strong> rolls</li>
       </ol>
 
       <h3>FAQ</h3>
-      <p><strong>How do you count line posts vs. corner/gate posts?</strong> Line posts use your spacing along the effective run. Corner posts are entered directly. Each gate adds two posts.</p>
-      <p><strong>Do strands apply to mesh/field fence?</strong> No—mesh is treated as a single run (strands disabled).</p>
-      <p><strong>Are material cost estimates exact?</strong> They’re estimates only; verify lengths and prices with your supplier.</p>
+      <p><strong>How do you count line posts vs. corner/gate posts?</strong> Line posts follow your spacing along the effective run. Corner posts are entered directly. Each gate adds two posts. Total = line + corner + gate posts.</p>
+      <p><strong>Do strands apply to mesh/field fence?</strong> No. Mesh is treated as a single run; the strands input is disabled.</p>
+      <p><strong>Are material cost estimates exact?</strong> No — they’re planning estimates. Confirm lengths, SKU roll lengths, and pricing with your supplier.</p>
+      <p><strong>Can I plan in meters?</strong> Yes — use the US↔Metric toggle. The UI switches labels/placeholders and converts display values.</p>
 
-      <p class="disclaimer">Estimates only. Verify before purchasing materials or operating equipment.</p>
+      <p class="disclaimer">Prepared by AgCalculator · Last updated October 27, 2025</p>
+    </section>
+
+    <section class="content">
+      <h3>Also try…</h3>
+      <ul>
+        <li><a href="/calculators/fence-energizer-sizing/">Fence Energizer Sizing (Joules &amp; Range)</a></li>
+        <li><a href="/calculators/pasture-stocking/">Pasture Stocking Planner (Head/Acre)</a></li>
+      </ul>
     </section>
   </main>
 
-  <!-- Single script with inlined helpers (no imports) -->
-  <script type="module">
+  <!-- Units helper (page-local) -->
+  <script is:inline>
+    (function () {
+      const KEY = 'agc_units';
+      const $$ = (s) => document.querySelectorAll(s);
+
+      const conv = { 'ft>m': x => x * 0.3048, 'm>ft': x => x / 0.3048 };
+
+      window.AGCUnits = {
+        mode: () => localStorage.getItem(KEY) || 'us',
+        setMode(m){ localStorage.setItem(KEY, m); paint(m); },
+        get(el){ // normalize to feet for math
+          const raw = parseFloat(el.value);
+          if (!isFinite(raw)) return NaN;
+          const map = (el.dataset.unit || '').trim();
+          if (!map) return raw;
+          const [us, metric] = map.split('>');
+          if (this.mode() === 'us') return raw;
+          const fn = conv[`${metric}>${us}`];
+          return fn ? fn(raw) : raw;
+        },
+        outFeet(ft){ return this.mode()==='metric' ? conv['ft>m'](ft) : ft; }
+      };
+
+      function paint(mode){
+        document.querySelectorAll('.unit-toggle .u-btn').forEach(btn => {
+          const on = btn.dataset.units === mode;
+          btn.classList.toggle('active', on);
+          btn.setAttribute('aria-pressed', String(on));
+        });
+        $$('[data-unit-label]').forEach(el => {
+          const [us, met] = el.dataset.unitLabel.split('|');
+          el.textContent = (mode === 'metric' ? met : us);
+        });
+        $$('input[data-unit-ph]').forEach(el => {
+          const [us, met] = el.dataset.unitPh.split('|');
+          el.placeholder = (mode === 'metric' ? met : us);
+        });
+        $$('[data-unit-text]').forEach(el => {
+          const [us, met] = el.dataset.unitText.split('|');
+          el.textContent = (mode === 'metric' ? met : us);
+        });
+
+        // Trigger recalculation
+        document.querySelectorAll('input,select').forEach(el => {
+          el.dispatchEvent(new Event('input', {bubbles:true}));
+          el.dispatchEvent(new Event('change', {bubbles:true}));
+        });
+      }
+
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.u-btn');
+        if (!btn) return;
+        window.AGCUnits.setMode(btn.dataset.units);
+      });
+
+      // Init
+      paint(window.AGCUnits.mode());
+    })();
+  </script>
+
+  <!-- Calculator logic (page-local) -->
+  <script is:inline>
     const $ = (id) => document.getElementById(id);
-    const num = (id) => parseFloat(($(id)?.value ?? "").trim());
-    const fmt = (n, d=0) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d}) : "—";
+    const fmt0 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
     const ceil = (n) => Math.ceil(n);
-    const onInputs = (ids, handler) => ids.forEach((id)=> $(id).addEventListener("input", handler));
+    const onInputs = (ids, fn) => ids.forEach(id => $(id).addEventListener("input", fn));
 
     const fields = ["mode","corners","postSpacing","len","wid","totalLength","wireType","strands","rollLen","gates","gateWidth","postCost","rollCost"];
     onInputs(fields, compute);
@@ -289,20 +370,24 @@ const WIRE_TYPES = [
 
     function compute(){
       const mode = $("mode").value;
+
+      // Perimeter or known total, normalized to feet
       let per = 0;
       if (mode === "rect"){
-        const L = num("len"), W = num("wid");
-        if(!(L>0 && W>0)) return show();
-        per = 2*(L+W);
+        const Lft = AGCUnits.get($("len"));
+        const Wft = AGCUnits.get($("wid"));
+        if(!(Lft>0 && Wft>0)) return show();
+        per = 2*(Lft+Wft);
       } else {
-        per = num("totalLength");
-        if(!(per>0)) return show();
+        const totalFt = AGCUnits.get($("totalLength"));
+        if(!(totalFt>0)) return show();
+        per = totalFt;
       }
 
-      const corners = Math.max(0, Math.floor(num("corners") || 0));
-      const postSpacing = Math.max(0.1, num("postSpacing") || 8);
-      const gates = Math.max(0, Math.floor(num("gates") || 0));
-      const gateWidth = Math.max(0, num("gateWidth") || 0);
+      const corners = Math.max(0, Math.floor(parseFloat($("corners").value) || 0));
+      const postSpacing = Math.max(0.1, AGCUnits.get($("postSpacing")) || 8);
+      const gates = Math.max(0, Math.floor(parseFloat($("gates").value) || 0));
+      const gateWidth = Math.max(0, AGCUnits.get($("gateWidth")) || 0);
       const gateOpen = gates * gateWidth;
 
       const effWireRun = Math.max(0, per - gateOpen);
@@ -311,15 +396,15 @@ const WIRE_TYPES = [
       const gatePosts = gates * 2;
       const totalPosts = linePosts + corners + gatePosts;
 
-      const strands = Math.max(1, Math.floor(num("strands") || 1));
-      const rollLen  = Math.max(1, num("rollLen") || 1320);
+      const strands = Math.max(1, Math.floor(parseFloat($("strands").value) || 1));
+      const rollLen  = Math.max(1, AGCUnits.get($("rollLen")) || 1320);
       const usesStrands = !$("strands").disabled;
 
       const wireFeet = effWireRun * (usesStrands ? strands : 1);
       const rolls = ceil(wireFeet / rollLen);
 
-      const postCost = num("postCost");
-      const rollCost = num("rollCost");
+      const postCost = parseFloat($("postCost").value);
+      const rollCost = parseFloat($("rollCost").value);
       let matCost = NaN;
       if (postCost>0 || rollCost>0){
         const pc = (postCost>0 ? totalPosts*postCost : 0);
@@ -340,15 +425,20 @@ const WIRE_TYPES = [
     }
 
     function show(o={}){
-      $("fLen").textContent        = fmt(o.per,0);
-      $("gOpen").textContent       = fmt(o.gateOpen,0);
-      $("wireLen").textContent     = fmt(o.effWireRun,0);
-      $("linePosts").textContent   = fmt(o.linePosts,0);
-      $("cornerPosts").textContent = fmt(o.corners,0);
-      $("gatePosts").textContent   = fmt(o.gatePosts,0);
-      $("totalPosts").textContent  = fmt(o.totalPosts,0);
-      $("rolls").textContent       = fmt(o.rolls,0);
-      $("matCost").textContent     = Number.isFinite(o.matCost) ? "$" + fmt(o.matCost,2) : "—";
+      const mode = AGCUnits.mode();
+      const fLenDisp   = mode==='metric' ? AGCUnits.outFeet(o.per)        : o.per;
+      const gOpenDisp  = mode==='metric' ? AGCUnits.outFeet(o.gateOpen)   : o.gateOpen;
+      const wireLenDisp= mode==='metric' ? AGCUnits.outFeet(o.effWireRun) : o.effWireRun;
+
+      $("fLen").textContent        = fmt0(fLenDisp);
+      $("gOpen").textContent       = fmt0(gOpenDisp);
+      $("wireLen").textContent     = fmt0(wireLenDisp);
+      $("linePosts").textContent   = fmt0(o.linePosts);
+      $("cornerPosts").textContent = fmt0(o.corners);
+      $("gatePosts").textContent   = fmt0(o.gatePosts);
+      $("totalPosts").textContent  = fmt0(o.totalPosts);
+      $("rolls").textContent       = fmt0(o.rolls);
+      $("matCost").textContent     = Number.isFinite(o.matCost) ? "$" + o.matCost.toLocaleString(undefined,{maximumFractionDigits:2,minimumFractionDigits:2}) : "—";
     }
 
     onModeChange();   // init layout
