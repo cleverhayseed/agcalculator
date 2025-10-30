@@ -5,7 +5,7 @@ import Layout from "../../layouts/Layout.astro";
 <Layout>
   <Fragment slot="head">
     <title>Pasture Stocking Rate & Grazing Days Calculator | AgCalculator</title>
-    <meta name="description" content="Estimate grazing days or head capacity from acres, forage production, utilization, and animal intake. Includes AUM conversion." />
+    <meta name="description" content="Estimate grazing days or head capacity from area, forage production, utilization, and animal intake. Includes AUM conversion and metric toggle." />
     <link rel="canonical" href="https://agcalculator.com/calculators/pasture-stocking/" />
 
     <!-- Open Graph -->
@@ -27,7 +27,7 @@ import Layout from "../../layouts/Layout.astro";
       "applicationCategory":"Calculator",
       "operatingSystem":"Web",
       "url":"https://agcalculator.com/calculators/pasture-stocking/",
-      "description":"Estimate grazing days or head capacity from acres, forage production, utilization, and animal intake. Includes AUM conversion.",
+      "description":"Estimate grazing days or head capacity from acres/hectares, forage production, utilization, and animal intake. Includes AUM conversion.",
       "publisher":{"@type":"Organization","name":"AgCalculator","url":"https://agcalculator.com"},
       "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
     }
@@ -66,6 +66,11 @@ import Layout from "../../layouts/Layout.astro";
     }
     </script>
 
+    <!-- AdSense (client = your publisher ID) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4050846968323757" crossorigin="anonymous"></script>
+    <!-- Ensure /ads.txt includes:
+         google.com, pub-4050846968323757, DIRECT, f08c47fec0942fa0 -->
+
     <style>
       :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
       *{box-sizing:border-box}
@@ -85,8 +90,8 @@ import Layout from "../../layouts/Layout.astro";
       .content h3{margin:.8rem 0 .3rem}
       .content ul,.content ol{margin:.2rem 0 .2rem .9rem}
       .content .disclaimer{color:#64748b;margin-top:.6rem}
-      .ad-slot{display:none;margin:1rem 0}
-      .ad-slot.loaded{display:block}
+      .ads{margin:.75rem 0}
+      .adwrap{display:block;min-height:90px}
       .unit{font-variant-numeric:tabular-nums}
     </style>
   </Fragment>
@@ -96,8 +101,16 @@ import Layout from "../../layouts/Layout.astro";
   <main class="wrap">
     <h1 style="margin:.5rem 0 1rem">Pasture Stocking Rate &amp; Grazing Days</h1>
 
-    <!-- AdSense-safe top slot (hidden unless ad library present) -->
-    <div class="ad-slot" id="ad-top"></div>
+    <!-- Ad slot #1 (top, responsive) -->
+    <div class="ads">
+      <ins class="adsbygoogle adwrap"
+           style="display:block"
+           data-ad-client="ca-pub-4050846968323757"
+           data-ad-slot="1111111111"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script is:inline>(window.adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    </div>
 
     <fieldset>
       <legend>Inputs</legend>
@@ -113,7 +126,7 @@ import Layout from "../../layouts/Layout.astro";
         <div>
           <label for="unitSel">Units</label>
           <select id="unitSel">
-            <option value="imp">Imperial (acres, lb)</option>
+            <option value="imp" selected>Imperial (acres, lb)</option>
             <option value="met">Metric (hectares, kg)</option>
           </select>
         </div>
@@ -170,7 +183,15 @@ import Layout from "../../layouts/Layout.astro";
     </section>
 
     <!-- Mid-article ad slot -->
-    <div class="ad-slot" id="ad-mid"></div>
+    <div class="ads">
+      <ins class="adsbygoogle adwrap"
+           style="display:block"
+           data-ad-client="ca-pub-4050846968323757"
+           data-ad-slot="2222222222"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script is:inline>(window.adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    </div>
 
     <section class="content" id="explain">
       <h2>How we got these numbers</h2>
@@ -215,25 +236,22 @@ import Layout from "../../layouts/Layout.astro";
     const fmt2 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:2}) : "—";
 
     const LB_TO_KG = 0.45359237;
-    const KG_TO_LB = 1 / LB_TO_KG;                 // 2.20462262
+    const KG_TO_LB = 1 / LB_TO_KG;
     const AC_TO_HA = 0.404685642;
-    const HA_TO_AC = 1 / AC_TO_HA;                 // 2.47105381
-    const LBPAC_TO_KGHA = LB_TO_KG / AC_TO_HA;     // ~1.120849
+    const HA_TO_AC = 1 / AC_TO_HA;
+    const LBPAC_TO_KGHA = LB_TO_KG / AC_TO_HA;   // ~1.120849
     const KGHA_TO_LBPAC = 1 / LBPAC_TO_KGHA;
     const AUM_LB = 780;
 
     // ===== Wire UI =====
     const fields = ["mode","unitSel","acres","forage","util","wt","intake","head","days"];
-    fields.forEach(id => $(id).addEventListener("input", onAny));
+    fields.forEach(id => $(id).addEventListener("input", compute));
     $("mode").addEventListener("change", onMode);
     $("unitSel").addEventListener("change", onUnitToggle);
 
-    // initialize
+    // init
     onMode();
-    onUnitToggle(true);
     compute();
-
-    function onAny(){ compute(); }
 
     function onMode(){
       const m = $("mode").value;
@@ -243,40 +261,34 @@ import Layout from "../../layouts/Layout.astro";
       $("outHead").style.display = m==="head" ? "" : "none";
     }
 
-    function onUnitToggle(first=false){
+    function onUnitToggle(){
       const metric = $("unitSel").value === "met";
-      // Update labels
-      $("labArea").textContent = metric ? "Pasture size (hectares)" : "Pasture size (acres)";
-      $("labForage").textContent = metric ? "Forage production (kg DM/ha)" : "Forage production (lb DM/acre)";
-      $("labWt").textContent = metric ? "Avg animal weight (kg)" : "Avg animal weight (lb)";
 
-      // Convert current inputs (preserve meaning across toggle)
-      if (!first){
-        if (metric){
-          const ac = num("acres"); if (ac>0) $("acres").value = (ac*AC_TO_HA).toString();
-          const f  = num("forage"); if (f>0) $("forage").value = (f*LBPAC_TO_KGHA).toString();
-          const w  = num("wt"); if (w>0) $("wt").value = (w*LB_TO_KG).toString();
-        } else {
-          const ha = num("acres"); if (ha>0) $("acres").value = (ha*HA_TO_AC).toString();
-          const f2 = num("forage"); if (f2>0) $("forage").value = (f2*KGHA_TO_LBPAC).toString();
-          const w2 = num("wt"); if (w2>0) $("wt").value = (w2*KG_TO_LB).toString();
-        }
-      }
+      // Relabel
+      $("labArea").textContent   = metric ? "Pasture size (hectares)" : "Pasture size (acres)";
+      $("labForage").textContent = metric ? "Forage production (kg DM/ha)" : "Forage production (lb DM/acre)";
+      $("labWt").textContent     = metric ? "Avg animal weight (kg)" : "Avg animal weight (lb)";
+
+      // Convert existing values so meaning is preserved
+      let ac = num("acres"); if (ac>0) $("acres").value = (metric ? ac*AC_TO_HA : ac*HA_TO_AC).toString();
+      let f  = num("forage"); if (f>0) $("forage").value = (metric ? f*LBPAC_TO_KGHA : f*KGHA_TO_LBPAC).toString();
+      let w  = num("wt");     if (w>0) $("wt").value     = (metric ? w*LB_TO_KG : w*KG_TO_LB).toString();
+
       compute();
     }
 
-    // ===== Core compute (internals in Imperial for consistency) =====
+    // ===== Core compute (internal math in Imperial) =====
     function getInputsImperial(){
       const metric = $("unitSel").value === "met";
 
       let acres = num("acres");
-      let forage = num("forage"); // per area
+      let forage = num("forage");
       let wt = num("wt");
 
       if (metric){
-        acres = acres>0 ? acres*HA_TO_AC : NaN;                    // ha -> ac
-        forage = forage>0 ? forage*KGHA_TO_LBPAC : NaN;            // kg/ha -> lb/ac
-        wt = wt>0 ? wt*KG_TO_LB : NaN;                             // kg -> lb
+        acres  = acres>0  ? acres*HA_TO_AC       : NaN;  // ha -> ac
+        forage = forage>0 ? forage*KGHA_TO_LBPAC : NaN;  // kg/ha -> lb/ac
+        wt     = wt>0     ? wt*KG_TO_LB          : NaN;  // kg -> lb
       }
 
       return {
@@ -287,8 +299,7 @@ import Layout from "../../layouts/Layout.astro";
         intake_pct: num("intake"),
         mode: $("mode").value,
         head: num("head"),
-        days: num("days"),
-        metric
+        days: num("days")
       };
     }
 
@@ -299,18 +310,17 @@ import Layout from "../../layouts/Layout.astro";
         show(); $("steps").innerHTML = `<span class="note">Enter pasture, forage, and animal details to see the step-by-step.</span>`; return;
       }
 
-      const avail_lb = I.acres * I.forage_lbpac * (I.util_pct/100);
-      const intake_lb = I.wt_lb * (I.intake_pct/100);
-
-      const aums = avail_lb / AUM_LB;
-      const aumPerAc = I.acres>0 ? (aums / I.acres) : NaN;
-      const aumPerHa = (I.acres*AC_TO_HA)>0 ? (aums / (I.acres*AC_TO_HA)) : NaN;
+      const avail_lb   = I.acres * I.forage_lbpac * (I.util_pct/100);
+      const intake_lb  = I.wt_lb * (I.intake_pct/100);
+      const aums       = avail_lb / AUM_LB;
+      const aumPerAc   = I.acres>0 ? (aums / I.acres) : NaN;
+      const aumPerHa   = (I.acres*AC_TO_HA)>0 ? (aums / (I.acres*AC_TO_HA)) : NaN;
 
       let resDays = NaN, resHead = NaN;
       const lines = [];
 
       lines.push(`<div>Available forage = ${fmt0(I.acres)} ac × ${fmt0(I.forage_lbpac)} lb/ac × ${fmt1(I.util_pct)}% = <strong>${fmt0(avail_lb)}</strong> lb</div>`);
-      lines.push(`<div>Intake/head/day = ${fmt0(I.wt_lb)} lb × ${fmt2(I.intake_pct/100)} = <strong>${fmt0(intake_lb)}</strong> lb/day</div>`);
+      lines.push(`<div>Intake/head/day = ${fmt0(I.wt_lb)} lb × ${(I.intake_pct/100).toFixed(2)} = <strong>${fmt0(intake_lb)}</strong> lb/day</div>`);
 
       if (intake_lb>0){
         if (I.mode === "days"){
@@ -334,23 +344,22 @@ import Layout from "../../layouts/Layout.astro";
 
       lines.push(`<div>AUMs = ${fmt0(avail_lb)} ÷ 780 = <strong>${fmt1(aums)}</strong> AUM</div>`);
       lines.push(`<div>Stocking rate = <strong>${fmt2(aumPerAc)}</strong> AUM/ac (<strong>${fmt2(aumPerHa)}</strong> AUM/ha)</div>`);
-
       $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
 
-      // Show results (dual units where helpful)
-      const availKg = avail_lb * LB_TO_KG;
-      const intakeKg = intake_lb * LB_TO_KG;
-
       show({
-        avail_lb, availKg, intake_lb, intakeKg,
-        resDays, resHead, aums, aumPerAc, aumPerHa
+        avail_lb,
+        availKg: avail_lb * LB_TO_KG,
+        intake_lb,
+        intakeKg: intake_lb * LB_TO_KG,
+        resDays,
+        resHead,
+        aums,
+        aumPerAc,
+        aumPerHa
       });
 
-      // Light analytics hook (no-op if not present)
-      if (!window.__pl_pasture_used){
-        window.__pl_pasture_used = true;
-        try { window.plausible && window.plausible("Used Pasture Stocking"); } catch {}
-      }
+      // Optional simple analytics (safe no-op)
+      try { window.plausible && window.plausible("Used Pasture Stocking"); } catch {}
     }
 
     function show(o={}){
@@ -364,12 +373,5 @@ import Layout from "../../layouts/Layout.astro";
       $("aumPerAc").textContent = fmt2(o.aumPerAc);
       $("aumPerHa").textContent = fmt2(o.aumPerHa);
     }
-
-    // Ad slots: reveal only when an ad library exists
-    (function(){
-      if (window.adsbygoogle || window.googletag) {
-        document.querySelectorAll(".ad-slot").forEach(el => el.classList.add("loaded"));
-      }
-    })();
   </script>
 </Layout>
