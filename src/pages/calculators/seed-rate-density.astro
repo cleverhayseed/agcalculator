@@ -4,14 +4,14 @@ import Layout from "../../layouts/Layout.astro";
 
 <Layout>
   <Fragment slot="head">
-    <title>Seed Rate & Planting Density Calculator | AgCalculator</title>
-    <meta name="description" content="Figure seeds per acre (or ft²), pounds of seed, and plants per row from spacing, germination, and purity. Works for row crop or broadcast." />
+    <title>Seed Rate &amp; Planting Density Calculator | AgCalculator</title>
+    <meta name="description" content="Figure seeds per acre (or hectare), pounds or kilograms of seed, and plants per row from spacing, germination, and purity. Works for row crop or broadcast." />
     <link rel="canonical" href="https://agcalculator.com/calculators/seed-rate-density/" />
 
-    <!-- Open Graph -->
+    <!-- Social -->
     <meta property="og:site_name" content="AgCalculator" />
-    <meta property="og:title" content="Seed Rate & Planting Density Calculator" />
-    <meta property="og:description" content="Compute seed needed from spacing, target population, germination, purity, and seeds-per-pound." />
+    <meta property="og:title" content="Seed Rate &amp; Planting Density Calculator" />
+    <meta property="og:description" content="Compute seed needed from spacing, target population, germination, purity, and seeds-per-pound or seeds-per-kg." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://agcalculator.com/calculators/seed-rate-density/" />
     <meta property="og:image" content="https://agcalculator.com/og-hay-bale.png" />
@@ -27,7 +27,7 @@ import Layout from "../../layouts/Layout.astro";
       "applicationCategory":"Calculator",
       "operatingSystem":"Web",
       "url":"https://agcalculator.com/calculators/seed-rate-density/",
-      "description":"Figure seeds per acre (or ft²), pounds of seed, and plants per row from spacing, germination, and purity. Works for row crop or broadcast.",
+      "description":"Figure seeds per acre (or hectare), pounds or kilograms of seed, and plants per row from spacing, germination, and purity.",
       "publisher":{"@type":"Organization","name":"AgCalculator","url":"https://agcalculator.com"},
       "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
     }
@@ -47,45 +47,45 @@ import Layout from "../../layouts/Layout.astro";
       "@context":"https://schema.org",
       "@type":"FAQPage",
       "mainEntity":[
-        {
-          "@type":"Question",
-          "name":"How do germination and purity affect seed needed?",
-          "acceptedAnswer":{"@type":"Answer","text":"You must plant extra seed to overcome non-germinating seed (germ %) and inert/other matter (purity %). Required seed = target plants ÷ (germ×purity)."}
-        },
-        {
-          "@type":"Question",
-          "name":"What if I don't know seeds per pound?",
-          "acceptedAnswer":{"@type":"Answer","text":"Leave it blank—you’ll still get seeds per acre (or ft²). Enter seeds/lb later to see pounds of seed required."}
-        },
-        {
-          "@type":"Question",
-          "name":"Does this consider field loss after emergence?",
-          "acceptedAnswer":{"@type":"Answer","text":"Not directly. Add a small reserve % to cover in-field loss, pests, or uneven depth."}
-        }
+        {"@type":"Question","name":"How do germination and purity affect seed needed?","acceptedAnswer":{"@type":"Answer","text":"You must plant extra seed to overcome non-germinating seed (germ %) and inert/other matter (purity %). Required seed = target plants ÷ (germ×purity)."}},
+        {"@type":"Question","name":"What if I don't know seeds per pound?","acceptedAnswer":{"@type":"Answer","text":"Leave it blank—you’ll still get seeds per acre (or hectare). Enter seeds/lb or seeds/kg later to see pounds or kilograms required."}},
+        {"@type":"Question","name":"Does this consider field loss after emergence?","acceptedAnswer":{"@type":"Answer","text":"Not directly. Add a small reserve % to cover in-field loss, pests, or uneven depth."}}
       ]
     }
     </script>
 
+    <!-- AdSense -->
+    <meta name="google-adsense-account" content="ca-pub-4050846968323757" />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4050846968323757" crossorigin="anonymous"></script>
+
     <style>
       :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
       *{box-sizing:border-box}
-      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:white}
-      .wrap{max-width:960px;margin:0 auto;padding:1rem}
       a{color:var(--green);text-decoration:none}
-      fieldset{background:white;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
+      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:#fff}
+      .wrap{max-width:960px;margin:0 auto;padding:1rem}
+      fieldset{background:#fff;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
       legend{padding:0 .4rem;color:var(--muted)}
       label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
       input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
       .row{display:grid;gap:.8rem}
       @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
-      .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+      .result{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
       .note{color:var(--muted);font-size:.9rem}
-      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
       .content h2{margin:.2rem 0 .6rem}
       .content h3{margin:.8rem 0 .3rem}
       .content ul,.content ol{margin:.2rem 0 .2rem 1rem}
       .content .disclaimer{color:#64748b;margin-top:.6rem}
       code{background:#f1f5f9;padding:0 .25rem;border-radius:4px}
+
+      /* Units toggle (identical site-wide) */
+      .unit-toggle{display:flex;align-items:center;gap:.4rem;margin:.5rem 0 1rem;padding:.5rem 1rem;background:#fff;border:1px solid #e2e8f0;border-radius:12px}
+      .u-btn{padding:.35rem .7rem;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer}
+      .u-btn.active{background:var(--green);border-color:var(--green);color:#fff}
+
+      .ads{margin:.75rem 0}
+      .adwrap{display:block;min-height:90px}
     </style>
   </Fragment>
 
@@ -94,27 +94,47 @@ import Layout from "../../layouts/Layout.astro";
   <main class="wrap">
     <h1 style="margin:.5rem 0 1rem">Seed Rate &amp; Planting Density</h1>
 
+    <!-- Units toggle -->
+    <div class="unit-toggle" role="group" aria-label="Units">
+      <strong style="margin-right:.25rem">Units:</strong>
+      <button type="button" class="u-btn" data-units="us" aria-pressed="false">US</button>
+      <button type="button" class="u-btn" data-units="metric" aria-pressed="false">Metric</button>
+      <small class="note" style="margin-left:.5rem">Saved on this device</small>
+    </div>
+
+    <!-- Ad #1 -->
+    <div class="ads">
+      <ins class="adsbygoogle adwrap"
+           style="display:block"
+           data-ad-client="ca-pub-4050846968323757"
+           data-ad-slot="0000000201"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script is:inline>(window.adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    </div>
+
     <fieldset>
       <legend>Method</legend>
       <div class="row">
         <div>
           <label for="mode">Choose calculator</label>
           <select id="mode">
-            <option value="row">Row crop (row & in-row spacing)</option>
+            <option value="row">Row crop (row &amp; in-row spacing)</option>
             <option value="area">Broadcast / target population</option>
           </select>
         </div>
         <div>
           <label for="areaMode">Area input</label>
           <select id="areaMode">
-            <option value="ac">Acres</option>
-            <option value="ft2">Square feet</option>
+            <!-- values stay 'ac' and 'ft2'; labels switch to ha/m² in metric -->
+            <option value="ac" data-unit-text="Acres|Hectares">Acres</option>
+            <option value="ft2" data-unit-text="Square feet|Square meters">Square feet</option>
           </select>
         </div>
         <div>
           <label for="areaVal">Area</label>
           <input id="areaVal" type="number" step="0.01" placeholder="e.g. 1.0" />
-          <div class="note">1 acre = 43,560 ft²</div>
+          <div class="note"><span data-unit-text="1 acre = 43,560 ft²|1 ha = 10,000 m²"></span></div>
         </div>
       </div>
     </fieldset>
@@ -123,16 +143,16 @@ import Layout from "../../layouts/Layout.astro";
       <legend>Row spacing</legend>
       <div class="row">
         <div>
-          <label for="rowIn">Row spacing (in)</label>
-          <input id="rowIn" type="number" step="0.1" placeholder="e.g. 30" />
+          <label for="rowIn">Row spacing (<span data-unit-text="in|cm"></span>)</label>
+          <input id="rowIn" type="number" step="0.1" placeholder="e.g. 30" data-unit="in>cm" data-unit-ph="e.g. 30|e.g. 76" />
         </div>
         <div>
-          <label for="inRowIn">In-row spacing (in)</label>
-          <input id="inRowIn" type="number" step="0.1" placeholder="e.g. 6" />
+          <label for="inRowIn">In-row spacing (<span data-unit-text="in|cm"></span>)</label>
+          <input id="inRowIn" type="number" step="0.1" placeholder="e.g. 6" data-unit="in>cm" data-unit-ph="e.g. 6|e.g. 15" />
         </div>
         <div>
           <label>&nbsp;</label>
-          <div class="note">Plants/ft² = 144 ÷ (row × in-row)</div>
+          <div class="note" data-unit-text="Plants/ft² = 144 ÷ (row × in-row)|Plants/m² = 1550 ÷ (row(cm) × in-row(cm))"></div>
         </div>
       </div>
     </fieldset>
@@ -143,8 +163,8 @@ import Layout from "../../layouts/Layout.astro";
         <div>
           <label for="targetPer">Target plants</label>
           <select id="targetPer">
-            <option value="acre">per acre</option>
-            <option value="ft2">per ft²</option>
+            <option value="acre" data-unit-text="per acre|per hectare">per acre</option>
+            <option value="ft2"  data-unit-text="per ft²|per m²">per ft²</option>
           </select>
         </div>
         <div>
@@ -153,13 +173,13 @@ import Layout from "../../layouts/Layout.astro";
         </div>
         <div>
           <label>&nbsp;</label>
-          <div class="note">If you know plants/acre or plants/ft²</div>
+          <div class="note">If you know plants/area directly.</div>
         </div>
       </div>
     </fieldset>
 
     <fieldset>
-      <legend>Seed quality & size</legend>
+      <legend>Seed quality &amp; size</legend>
       <div class="row">
         <div>
           <label for="germ">Germination (%)</label>
@@ -176,12 +196,12 @@ import Layout from "../../layouts/Layout.astro";
       </div>
       <div class="row">
         <div>
-          <label for="seedsPerLb">Seeds per pound (optional)</label>
-          <input id="seedsPerLb" type="number" step="1" placeholder="e.g. 2900 (soy) / 16000 (wheat)" />
+          <label for="seedsPerLb" data-unit-label="Seeds per pound (optional)|Seeds per kilogram (optional)">Seeds per pound (optional)</label>
+          <input id="seedsPerLb" type="number" step="1" placeholder="e.g. 2900 (soy) / 16000 (wheat)" data-unit="seedslb>seedskg" data-unit-ph="e.g. 2900|e.g. 6400" />
         </div>
         <div>
           <label>&nbsp;</label>
-          <div class="note">We'll convert seeds → pounds if provided</div>
+          <div class="note">We'll convert seeds → <span data-unit-text="pounds|kilograms"></span> if provided.</div>
         </div>
         <div></div>
       </div>
@@ -190,15 +210,26 @@ import Layout from "../../layouts/Layout.astro";
     <section class="result">
       <div class="note">Results</div>
       <div style="display:grid;gap:.5rem;margin-top:.4rem">
-        <div><strong>Target stand (per acre):</strong> <span id="plantsAcre">—</span></div>
-        <div><strong>Seeds required (per acre):</strong> <span id="seedsAcre">—</span></div>
-        <div><strong>Seed rate:</strong> <span id="lbsAcre">—</span> lb/acre</div>
+        <div><strong>Target stand (<span data-unit-text="per acre|per hectare"></span>):</strong> <span id="plantsAcre">—</span></div>
+        <div><strong>Seeds required (<span data-unit-text="per acre|per hectare"></span>):</strong> <span id="seedsAcre">—</span></div>
+        <div><strong>Seed rate:</strong> <span id="lbsAcre">—</span> <span data-unit-text="lb/acre|kg/ha"></span></div>
         <div><strong>Seeds for your area:</strong> <span id="seedsArea">—</span></div>
-        <div><strong>Pounds for your area:</strong> <span id="lbsArea">—</span> lb</div>
-        <div id="rowExtras"><strong>Plants per 1000 ft of row:</strong> <span id="plantsPerK">—</span></div>
+        <div><strong><span data-unit-text="Pounds|Kilograms"></span> for your area:</strong> <span id="lbsArea">—</span></div>
+        <div id="rowExtras"><strong>Plants per 1000 <span data-unit-text="ft|m"></span> of row:</strong> <span id="plantsPerK">—</span></div>
       </div>
       <p class="note" style="margin-top:.6rem">Estimates only. Calibrate your planter/drill for exact delivery.</p>
     </section>
+
+    <!-- Ad #2 -->
+    <div class="ads">
+      <ins class="adsbygoogle adwrap"
+           style="display:block"
+           data-ad-client="ca-pub-4050846968323757"
+           data-ad-slot="0000000202"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script is:inline>(window.adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    </div>
 
     <section class="content" id="explain">
       <h2>How we got these numbers</h2>
@@ -206,157 +237,230 @@ import Layout from "../../layouts/Layout.astro";
 
       <h3>Formulas</h3>
       <ul>
-        <li><strong>Plants/ft²</strong> (row mode) = <code>144 ÷ (row(in) × in-row(in))</code></li>
-        <li><strong>Plants/acre</strong> = plants/ft² × 43,560</li>
+        <li><strong>Plants/ft²</strong> (row mode) = <code>144 ÷ (row(in) × in-row(in))</code> <em>• Metric: Plants/m² ≈ 1550 ÷ (row(cm) × in-row(cm))</em></li>
+        <li><strong>Plants/acre</strong> = plants/ft² × 43,560 <em>• per hectare = × 2.47105</em></li>
         <li><strong>Effective seed fraction</strong> = (germ% × purity%) ÷ 10000</li>
         <li><strong>Required seeds</strong> = target plants ÷ effective × (1 + reserve%)</li>
-        <li><strong>Pounds/acre</strong> = seeds/acre ÷ seeds-per-pound</li>
-        <li><strong>Plants per 1000 ft row</strong> = 1000 ÷ (in-row spacing (ft))</li>
+        <li><strong>Pounds/acre</strong> = seeds/acre ÷ seeds-per-pound <em>• kg/ha = lb/ac × 1.12085</em></li>
+        <li><strong>Plants per 1000 ft row</strong> = 1000 ÷ (in-row spacing (ft)) <em>• per 1000 m = 1000 ÷ spacing(m)</em></li>
       </ul>
 
-      <h3>Example</h3>
-      <p>30 in row, 6 in in-row; germ 90%, purity 98%, reserve 5%:</p>
-      <ol>
-        <li>Plants/ft² = 144 ÷ (30×6) = <strong>0.80</strong></li>
-        <li>Plants/acre = 0.80 × 43,560 ≈ <strong>34,848</strong></li>
-        <li>Effective = 0.90×0.98 = <strong>0.882</strong></li>
-        <li>Required seeds/acre ≈ 34,848 ÷ 0.882 × 1.05 ≈ <strong>41,498</strong></li>
-      </ol>
-
-      <h3>Notes</h3>
-      <ul>
-        <li>Seeds-per-pound varies by crop & seed size—use a tag or local reference.</li>
-        <li>Reserve % lets you overplant slightly for field losses or uneven depth.</li>
-        <li>Always confirm with a catch-test / calibration run.</li>
-      </ul>
-
-      <p class="disclaimer">Estimates only. Verify before purchasing materials or operating equipment.</p>
+      <p class="disclaimer">Prepared by AgCalculator · Estimates only. Verify before purchasing materials or operating equipment.</p>
     </section>
+  </main>
 
-    <script is:inline>
-      // Helpers
-      const $ = (id) => document.getElementById(id);
-      const num = (id) => parseFloat(($(id)?.value ?? "").trim());
-      const fmt0 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
-      const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
-
-      // Wire up UI
-      ["mode","areaMode","targetPer"].forEach(id => $(id).addEventListener("change", onMode));
-      const inputs = ["areaVal","rowIn","inRowIn","targetVal","germ","purity","reserve","seedsPerLb"];
-      inputs.forEach(id => $(id).addEventListener("input", compute));
-      onMode(); compute();
-
-      function areaFt2(){
-        const mode = $("areaMode").value;
-        const v = num("areaVal");
-        if (!(v>0)) return NaN;
-        return mode==="ac" ? v*43560 : v;
-      }
-
-      function effectiveFraction(){
-        const g = Math.max(0, Math.min(100, num("germ") || 0))/100;
-        const p = Math.max(0, Math.min(100, num("purity") || 0))/100;
-        return g*p; // 0..1
-      }
-
-      function seedsNeeded(targetPlants){
-        const eff = effectiveFraction();
-        const reserve = Math.max(0, num("reserve") || 0)/100;
-        if (!(targetPlants>0) || !(eff>0)) return NaN;
-        return targetPlants/eff * (1+reserve);
-      }
-
-      function onMode(){
-        const m = $("mode").value;
-        $("rowBox").style.display  = m==="row" ? "" : "none";
-        $("areaBox").style.display = m==="area" ? "" : "none";
-        $("rowExtras").style.display = m==="row" ? "" : "none";
-        compute();
-      }
-
-      function compute(){
-        const Aft2 = areaFt2();
-        const m = $("mode").value;
-
-        if (!(Aft2>0)){
-          show(); $("steps").innerHTML = `<span class="note">Enter area to see the step-by-step.</span>`; return;
+  <!-- ===== Units helper (same as Grain Bin, extended for this tool) ===== -->
+  <script is:inline>
+    (function(){
+      const KEY='agc_units';
+      const $$=(s)=>document.querySelectorAll(s);
+      const conv={
+        'ft>m':x=>x*0.3048,'m>ft':x=>x/0.3048,
+        'in>cm':x=>x*2.54,'cm>in':x=>x/2.54,
+        'ft2>m2':x=>x*0.09290304,'m2>ft2':x=>x/0.09290304,
+        'lb>kg':x=>x*0.45359237,'kg>lb':x=>x/0.45359237,
+        // seeds per mass: seeds/kg = seeds/lb * 2.20462...
+        'seedslb>seedskg':x=>x*2.20462262185,'seedskg>seedslb':x=>x/2.20462262185
+      };
+      window.AGCUnits={
+        mode:()=>localStorage.getItem(KEY)||'us',
+        setMode(m){localStorage.setItem(KEY,m);paint(m);},
+        get(el){
+          const raw=parseFloat(el.value);
+          if(!isFinite(raw))return NaN;
+          const map=(el.dataset.unit||'').trim();
+          if(!map)return raw;
+          if(this.mode()==='us')return raw;
+          const [us,met]=map.split('>');
+          const fn=conv[`${met}>${us}`];
+          return fn?fn(raw):raw;
+        },
+        out(usNumber,map){
+          if(!isFinite(usNumber))return NaN;
+          if(this.mode()==='us'||!map)return usNumber;
+          const fn=conv[map];
+          return fn?fn(usNumber):usNumber;
         }
-
-        let plantsPerFt2 = NaN, plantsPerAcre = NaN, plantsArea = NaN, seedsAcre = NaN, lbsAcre = NaN, seedsArea = NaN, lbsArea = NaN, plantsPerK = NaN;
-
-        if (m==="row"){
-          const rowIn = num("rowIn"), inRowIn = num("inRowIn");
-          if (!(rowIn>0) || !(inRowIn>0)){ show(); $("steps").innerHTML = `<span class="note">Enter both spacings.</span>`; return; }
-
-          plantsPerFt2 = 144 / (rowIn * inRowIn);
-          plantsPerAcre = plantsPerFt2 * 43560;
-          plantsArea = plantsPerFt2 * Aft2;
-
-          const seedsPerAcre = seedsNeeded(plantsPerAcre);
-          const seedsForArea = seedsNeeded(plantsArea);
-
-          const sPerLb = num("seedsPerLb");
-
-          seedsAcre = seedsPerAcre;
-          seedsArea = seedsForArea;
-          lbsAcre = (sPerLb>0 && seedsPerAcre>0) ? (seedsPerAcre / sPerLb) : NaN;
-          lbsArea = (sPerLb>0 && seedsForArea>0) ? (seedsForArea / sPerLb) : NaN;
-
-          // Plants per 1000 ft of row:
-          const inRowFt = inRowIn/12;
-          plantsPerK = (inRowFt>0) ? (1000 / inRowFt) : NaN;
-
-          // Steps
-          const eff = effectiveFraction();
-          const reserve = Math.max(0, num("reserve") || 0)/100;
-          const lines = [];
-          lines.push(`<div>Plants/ft² = 144 ÷ (${rowIn} × ${inRowIn}) = <strong>${fmt1(plantsPerFt2)}</strong></div>`);
-          lines.push(`<div>Plants/acre = ${fmt1(plantsPerFt2)} × 43,560 = <strong>${fmt0(plantsPerAcre)}</strong></div>`);
-          lines.push(`<div>Effective fraction = germ × purity = <strong>${eff.toFixed(3)}</strong></div>`);
-          lines.push(`<div>Seeds/acre = plants ÷ eff × (1+reserve) = ${fmt0(plantsPerAcre)} ÷ ${eff.toFixed(3)} × ${(1+reserve).toFixed(2)} = <strong>${fmt0(seedsPerAcre)}</strong></div>`);
-          $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
-
-        } else {
-          const per = $("targetPer").value;
-          const t = num("targetVal");
-          if (!(t>0)){ show(); $("steps").innerHTML = `<span class="note">Enter a target population.</span>`; return; }
-
-          plantsPerAcre = (per==="acre") ? t : (t * 43560);
-          plantsPerFt2  = plantsPerAcre / 43560;
-          plantsArea    = plantsPerFt2 * Aft2;
-
-          const seedsPerAcre = seedsNeeded(plantsPerAcre);
-          const seedsForArea = seedsNeeded(plantsArea);
-
-          const sPerLb = num("seedsPerLb");
-          seedsAcre = seedsPerAcre;
-          seedsArea = seedsForArea;
-          lbsAcre = (sPerLb>0 && seedsPerAcre>0) ? (seedsPerAcre / sPerLb) : NaN;
-          lbsArea = (sPerLb>0 && seedsForArea>0) ? (seedsForArea / sPerLb) : NaN;
-
-          const eff = effectiveFraction();
-          const reserve = Math.max(0, num("reserve") || 0)/100;
-          const lines = [];
-          lines.push(`<div>Plants/acre = <strong>${fmt0(plantsPerAcre)}</strong> (${fmt1(plantsPerFt2)} per ft²)</div>`);
-          lines.push(`<div>Area plants = ${fmt1(plantsPerFt2)} × ${Aft2.toLocaleString()} = <strong>${fmt0(plantsArea)}</strong></div>`);
-          lines.push(`<div>Seeds/acre = ${fmt0(plantsPerAcre)} ÷ ${eff.toFixed(3)} × ${(1+reserve).toFixed(2)} = <strong>${fmt0(seedsPerAcre)}</strong></div>`);
-          $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
-        }
-
-        show({
-          plantsPerAcre, seedsAcre, lbsAcre,
-          seedsArea, lbsArea, plantsPerK
+      };
+      function paint(mode){
+        document.querySelectorAll('.unit-toggle .u-btn').forEach(btn=>{
+          const on=btn.dataset.units===mode;
+          btn.classList.toggle('active',on);
+          btn.setAttribute('aria-pressed',String(on));
+        });
+        $$('[data-unit-text]').forEach(el=>{
+          const [us,met]=el.dataset.unitText.split('|');
+          el.textContent=(mode==='metric'?met:us);
+        });
+        $$('[data-unit-label]').forEach(el=>{
+          const [us,met]=el.dataset.unitLabel.split('|');
+          el.textContent=(mode==='metric'?met:us);
+        });
+        $$('input[data-unit-ph]').forEach(el=>{
+          const [us,met]=el.dataset.unitPh.split('|');
+          el.placeholder=(mode==='metric'?met:us);
+        });
+        // trigger recompute
+        document.querySelectorAll('input,select').forEach(el=>{
+          el.dispatchEvent(new Event('input',{bubbles:true}));
+          el.dispatchEvent(new Event('change',{bubbles:true}));
         });
       }
+      document.addEventListener('click',(e)=>{
+        const btn=e.target.closest('.u-btn'); if(!btn) return;
+        window.AGCUnits.setMode(btn.dataset.units);
+      });
+      // init
+      const init=window.AGCUnits.mode();
+      paint(init);
+      document.querySelector(`.u-btn[data-units="${init}"]`)?.classList.add('active');
+    })();
+  </script>
 
-      function show(o={}){
-        $("plantsAcre").textContent = fmt0(o.plantsPerAcre);
-        $("seedsAcre").textContent  = fmt0(o.seedsAcre);
-        $("lbsAcre").textContent    = Number.isFinite(o.lbsAcre) ? o.lbsAcre.toLocaleString(undefined,{maximumFractionDigits:2}) : "—";
-        $("seedsArea").textContent  = fmt0(o.seedsArea);
-        $("lbsArea").textContent    = Number.isFinite(o.lbsArea) ? o.lbsArea.toLocaleString(undefined,{maximumFractionDigits:2}) : "—";
-        $("plantsPerK").textContent = fmt0(o.plantsPerK);
+  <!-- ===== Page logic ===== -->
+  <script is:inline>
+    const $=(id)=>document.getElementById(id);
+    const num=(id)=>parseFloat((($(id)?.value??"")+"").trim());
+    const fmt0=(n)=>Number.isFinite(n)?n.toLocaleString(undefined,{maximumFractionDigits:0}):"—";
+    const fmt1=(n)=>Number.isFinite(n)?n.toLocaleString(undefined,{maximumFractionDigits:1}):"—";
+
+    // UI wiring
+    ["mode","areaMode","targetPer"].forEach(id=>$(id).addEventListener("change",onMode));
+    ["areaVal","rowIn","inRowIn","targetVal","germ","purity","reserve","seedsPerLb"].forEach(id=>$(id).addEventListener("input",compute));
+    onMode(); compute();
+
+    function onMode(){
+      const m=$("mode").value;
+      $("rowBox").style.display = m==="row" ? "" : "none";
+      $("areaBox").style.display= m==="area"? "" : "none";
+      $("rowExtras").style.display = m==="row" ? "" : "none";
+      compute();
+    }
+
+    // area (normalize to ft²)
+    function areaFt2(){
+      const v=num("areaVal"); if(!(v>0)) return NaN;
+      const mode = window.AGCUnits.mode();
+      const sel = $("areaMode").value; // 'ac' or 'ft2'
+      if(mode==='us'){
+        return sel==='ac' ? v*43560 : v;  // acres → ft²; ft² passthrough
+      } else {
+        // metric: 'ac' shows as hectares; 'ft2' shows as m²
+        if (sel==='ac') return v * 107639.104167; // ha → ft²
+        return window.AGCUnits.out(v,'m2>ft2');   // m² → ft²
       }
-    </script>
-  </main>
+    }
+
+    // effective fraction & seeds per mass
+    const effectiveFraction=()=>{
+      const g=Math.max(0,Math.min(100,num("germ")||0))/100;
+      const p=Math.max(0,Math.min(100,num("purity")||0))/100;
+      return g*p;
+    };
+    const seedsPerPound = ()=> window.AGCUnits.get($("seedsPerLb")); // returns seeds/lb (US normalized) or NaN
+
+    function seedsNeeded(targetPlants){
+      const eff=effectiveFraction();
+      const reserve=Math.max(0,num("reserve")||0)/100;
+      if(!(targetPlants>0) || !(eff>0)) return NaN;
+      return targetPlants/eff * (1+reserve);
+    }
+
+    function compute(){
+      const Aft2=areaFt2();
+      const m=$("mode").value;
+      if(!(Aft2>0)){ show(); $("steps").innerHTML='<span class="note">Enter area to see the step-by-step.</span>'; return; }
+
+      let plantsPerFt2=NaN, plantsPerAcre=NaN, plantsArea=NaN, seedsAcre=NaN, lbsAcre=NaN, seedsArea=NaN, lbsArea=NaN, plantsPerK=NaN;
+
+      if(m==="row"){
+        const rowInUS = window.AGCUnits.get($("rowIn"));    // inches
+        const inRowUS = window.AGCUnits.get($("inRowIn"));  // inches
+        if(!(rowInUS>0 && inRowUS>0)){ show(); $("steps").innerHTML='<span class="note">Enter both spacings.</span>'; return; }
+
+        plantsPerFt2 = 144 / (rowInUS * inRowUS);
+        plantsPerAcre= plantsPerFt2 * 43560;
+        plantsArea   = plantsPerFt2 * Aft2;
+
+        const sAcre  = seedsNeeded(plantsPerAcre);
+        const sArea  = seedsNeeded(plantsArea);
+        const sPerLb = seedsPerPound();
+
+        seedsAcre = sAcre;
+        seedsArea = sArea;
+        lbsAcre   = (sPerLb>0 && sAcre>0) ? (sAcre / sPerLb) : NaN;
+        lbsArea   = (sPerLb>0 && sArea>0) ? (sArea / sPerLb) : NaN;
+
+        // plants per 1000 ft or 1000 m
+        if(window.AGCUnits.mode()==='us'){
+          const inRowFt = inRowUS/12;
+          plantsPerK = (inRowFt>0) ? (1000 / inRowFt) : NaN;
+        } else {
+          const inRowM = inRowUS*0.0254;
+          plantsPerK = (inRowM>0) ? (1000 / inRowM) : NaN;
+        }
+
+        // steps
+        const eff=effectiveFraction();
+        const reserve=Math.max(0,num("reserve")||0)/100;
+        const lines=[];
+        lines.push(`<div>Plants/ft² = 144 ÷ (${rowInUS} × ${inRowUS}) = <strong>${fmt1(plantsPerFt2)}</strong></div>`);
+        lines.push(`<div>Plants/acre = ${fmt1(plantsPerFt2)} × 43,560 = <strong>${fmt0(plantsPerAcre)}</strong></div>`);
+        lines.push(`<div>Effective fraction = germ × purity = <strong>${eff.toFixed(3)}</strong></div>`);
+        lines.push(`<div>Seeds/acre = ${fmt0(plantsPerAcre)} ÷ ${eff.toFixed(3)} × ${(1+reserve).toFixed(2)} = <strong>${fmt0(seedsAcre)}</strong></div>`);
+        $("steps").innerHTML=`<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
+
+      } else {
+        const per=$("targetPer").value; // 'acre' or 'ft2' (metric labels handled in UI)
+        const t=num("targetVal");
+        if(!(t>0)){ show(); $("steps").innerHTML='<span class="note">Enter a target population.</span>'; return; }
+
+        // normalize target to per acre for core math
+        const perAcre = (per==="acre")
+          ? t
+          : (t * 43560); // per ft² → per acre
+        plantsPerAcre= perAcre;
+        plantsPerFt2 = perAcre/43560;
+        plantsArea   = plantsPerFt2 * Aft2;
+
+        const sAcre  = seedsNeeded(plantsPerAcre);
+        const sArea  = seedsNeeded(plantsArea);
+        const sPerLb = seedsPerPound();
+
+        seedsAcre = sAcre;
+        seedsArea = sArea;
+        lbsAcre   = (sPerLb>0 && sAcre>0) ? (sAcre / sPerLb) : NaN;
+        lbsArea   = (sPerLb>0 && sArea>0) ? (sArea / sPerLb) : NaN;
+
+        const eff=effectiveFraction();
+        const reserve=Math.max(0,num("reserve")||0)/100;
+        const lines=[];
+        lines.push(`<div>Plants/acre = <strong>${fmt0(plantsPerAcre)}</strong> (${fmt1(plantsPerFt2)} per ft²)</div>`);
+        lines.push(`<div>Area plants = ${fmt1(plantsPerFt2)} × ${Aft2.toLocaleString()} = <strong>${fmt0(plantsArea)}</strong></div>`);
+        lines.push(`<div>Seeds/acre = ${fmt0(plantsPerAcre)} ÷ ${eff.toFixed(3)} × ${(1+reserve).toFixed(2)} = <strong>${fmt0(seedsAcre)}</strong></div>`);
+        $("steps").innerHTML=`<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
+      }
+
+      // display with unit-mode conversions
+      const metric = (window.AGCUnits.mode()==='metric');
+      const toHa   = (x)=> x*2.47105381;      // per acre → per hectare
+      const lbAc_to_kgHa = (x)=> x*1.120849;  // lb/ac → kg/ha
+
+      $("plantsAcre").textContent = fmt0(metric ? toHa(plantsPerAcre) : plantsPerAcre);
+      $("seedsAcre").textContent  = fmt0(metric ? toHa(seedsAcre)     : seedsAcre);
+      $("lbsAcre").textContent    = Number.isFinite(lbsAcre) ? (metric ? lbAc_to_kgHa(lbsAcre).toLocaleString(undefined,{maximumFractionDigits:2}) : lbsAcre.toLocaleString(undefined,{maximumFractionDigits:2})) : "—";
+      $("seedsArea").textContent  = fmt0(seedsArea);
+      $("lbsArea").textContent    = Number.isFinite(lbsArea) ? (metric ? (lbsArea*0.45359237).toLocaleString(undefined,{maximumFractionDigits:2}) : lbsArea.toLocaleString(undefined,{maximumFractionDigits:2})) : "—";
+      $("plantsPerK").textContent = fmt0(plantsPerK);
+    }
+
+    function show(){
+      $("plantsAcre").textContent="—";
+      $("seedsAcre").textContent="—";
+      $("lbsAcre").textContent="—";
+      $("seedsArea").textContent="—";
+      $("lbsArea").textContent="—";
+      $("plantsPerK").textContent="—";
+    }
+  </script>
 </Layout>
