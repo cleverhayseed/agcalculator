@@ -4,13 +4,13 @@ import Layout from "../../layouts/Layout.astro";
 
 <Layout>
   <Fragment slot="head">
-    <title>Stocking Rate & Animal Unit Months (AUM) | AgCalculator</title>
+    <title>Stocking Rate &amp; Animal Unit Months (AUM) | AgCalculator</title>
     <meta name="description" content="Estimate pasture AUM capacity from forage production, utilization, and acres — or solve for head supported or months for your herd." />
     <link rel="canonical" href="https://agcalculator.com/calculators/stocking-rate-aum/" />
 
-    <!-- Open Graph -->
+    <!-- Social -->
     <meta property="og:site_name" content="AgCalculator" />
-    <meta property="og:title" content="Stocking Rate & Animal Unit Months (AUM)" />
+    <meta property="og:title" content="Stocking Rate &amp; Animal Unit Months (AUM)" />
     <meta property="og:description" content="Compute AUM capacity, head supported, or months supported using simple range management rules of thumb." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://agcalculator.com/calculators/stocking-rate-aum/" />
@@ -47,45 +47,45 @@ import Layout from "../../layouts/Layout.astro";
       "@context":"https://schema.org",
       "@type":"FAQPage",
       "mainEntity":[
-        {
-          "@type":"Question",
-          "name":"What is an AUM?",
-          "acceptedAnswer":{"@type":"Answer","text":"One Animal Unit Month (AUM) is the amount of forage dry matter needed by one 1,000-lb cow with calf for one month. This tool uses 780 lb of dry matter per AUM (≈26 lb/day × 30 days)."}
-        },
-        {
-          "@type":"Question",
-          "name":"What utilization should I use?",
-          "acceptedAnswer":{"@type":"Answer","text":"Typical planning values range 25–50% depending on pasture condition and rotation. Utilization accounts for trampling, wildlife, and residue left for plant health."}
-        },
-        {
-          "@type":"Question",
-          "name":"What if my herd isn’t all cow/calf pairs?",
-          "acceptedAnswer":{"@type":"Answer","text":"Use Animal Unit Equivalents (AUE). For example: yearling ~0.6–0.75 AU, bull ~1.3 AU, sheep ~0.2 AU, goat ~0.17 AU, horse ~1.25 AU. This tool multiplies head × AUE to convert to AU."}
-        }
+        {"@type":"Question","name":"What is an AUM?","acceptedAnswer":{"@type":"Answer","text":"One Animal Unit Month (AUM) is the amount of forage dry matter needed by one 1,000-lb cow with calf for one month. This tool uses 780 lb of dry matter per AUM (~26 lb/day × 30 days)."}},
+        {"@type":"Question","name":"What utilization should I use?","acceptedAnswer":{"@type":"Answer","text":"Typical planning values range 25–50% depending on pasture condition and rotation. Utilization accounts for trampling, wildlife, and residue left for plant health."}},
+        {"@type":"Question","name":"What if my herd isn’t all cow/calf pairs?","acceptedAnswer":{"@type":"Answer","text":"Use Animal Unit Equivalents (AUE). For example: yearling ~0.6–0.75 AU, bull ~1.3 AU, sheep ~0.2 AU, goat ~0.17 AU, horse ~1.25 AU. This tool multiplies head × AUE to convert to AU."}}
       ]
     }
     </script>
 
+    <!-- AdSense (publisher) -->
+    <meta name="google-adsense-account" content="ca-pub-4050846968323757" />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4050846968323757" crossorigin="anonymous"></script>
+
     <style>
       :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
       *{box-sizing:border-box}
-      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:white}
-      .wrap{max-width:960px;margin:0 auto;padding:1rem}
       a{color:var(--green);text-decoration:none}
-      fieldset{background:white;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
+      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:#fff}
+      .wrap{max-width:960px;margin:0 auto;padding:1rem}
+      fieldset{background:#fff;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
       legend{padding:0 .4rem;color:var(--muted)}
       label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
       input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
       .row{display:grid;gap:.8rem}
       @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
-      .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+      .result{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
       .note{color:var(--muted);font-size:.9rem}
-      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
       .content h2{margin:.2rem 0 .6rem}
       .content h3{margin:.8rem 0 .3rem}
       .content ul,.content ol{margin:.2rem 0 .2rem 1rem}
       .content .disclaimer{color:#64748b;margin-top:.6rem}
       code{background:#f1f5f9;padding:0 .25rem;border-radius:4px}
+
+      /* Units toggle (site standard) */
+      .unit-toggle{display:flex;align-items:center;gap:.4rem;margin:.5rem 0 1rem;padding:.5rem 1rem;background:#fff;border:1px solid #e2e8f0;border-radius:12px}
+      .u-btn{padding:.35rem .7rem;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer}
+      .u-btn.active{background:var(--green);border-color:var(--green);color:#fff}
+
+      .ads{margin:.75rem 0}
+      .adwrap{display:block;min-height:90px}
     </style>
   </Fragment>
 
@@ -94,23 +94,42 @@ import Layout from "../../layouts/Layout.astro";
   <main class="wrap">
     <h1 style="margin:.5rem 0 1rem">Stocking Rate &amp; AUM</h1>
 
+    <!-- Units toggle -->
+    <div class="unit-toggle" role="group" aria-label="Units">
+      <strong style="margin-right:.25rem">Units:</strong>
+      <button type="button" class="u-btn" data-units="us" aria-pressed="false">US</button>
+      <button type="button" class="u-btn" data-units="metric" aria-pressed="false">Metric</button>
+      <small class="note" style="margin-left:.5rem">Saved on this device</small>
+    </div>
+
+    <!-- Ad slot #1 -->
+    <div class="ads">
+      <ins class="adsbygoogle adwrap"
+           style="display:block"
+           data-ad-client="ca-pub-4050846968323757"
+           data-ad-slot="0000000301"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script is:inline>(window.adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    </div>
+
     <fieldset>
-      <legend>Forage & area</legend>
+      <legend>Forage &amp; area</legend>
       <div class="row">
         <div>
           <label for="mode">Forage input</label>
           <select id="mode">
-            <option value="monthly">lb DM/acre/month</option>
-            <option value="seasonal">lb DM/acre for the season</option>
+            <option value="monthly"  data-unit-text="lb/ac/month|kg/ha/month">lb/ac/month</option>
+            <option value="seasonal" data-unit-text="lb/ac/season|kg/ha/season">lb/ac/season</option>
           </select>
         </div>
         <div id="rowMonthly">
-          <label for="dmPerAcreMo">Forage (lb/ac/mo)</label>
-          <input id="dmPerAcreMo" type="number" step="1" placeholder="e.g. 200" />
+          <label for="dmPerAcreMo">Forage (<span data-unit-text="lb/ac/mo|kg/ha/mo"></span>)</label>
+          <input id="dmPerAcreMo" type="number" step="1" placeholder="e.g. 200" data-unit="lbac>kgha" data-unit-ph="e.g. 200|e.g. 225" />
         </div>
         <div id="rowSeason" style="display:none">
-          <label for="dmPerAcreSeason">Forage (lb/ac/season)</label>
-          <input id="dmPerAcreSeason" type="number" step="1" placeholder="e.g. 800" />
+          <label for="dmPerAcreSeason">Forage (<span data-unit-text="lb/ac/season|kg/ha/season"></span>)</label>
+          <input id="dmPerAcreSeason" type="number" step="1" placeholder="e.g. 800" data-unit="lbac>kgha" data-unit-ph="e.g. 800|e.g. 897" />
         </div>
       </div>
 
@@ -125,8 +144,8 @@ import Layout from "../../layouts/Layout.astro";
           <div class="note">25–50% typical</div>
         </div>
         <div>
-          <label for="acres">Pasture acres</label>
-          <input id="acres" type="number" step="0.01" placeholder="e.g. 40" />
+          <label for="acres"><span data-unit-text="Pasture acres|Pasture hectares"></span></label>
+          <input id="acres" type="number" step="0.01" placeholder="e.g. 40" data-unit="ac>ha" data-unit-ph="e.g. 40|e.g. 16.2" />
         </div>
       </div>
     </fieldset>
@@ -154,7 +173,7 @@ import Layout from "../../layouts/Layout.astro";
             <option value="0.17">Goat (0.17 AU)</option>
           </select>
         </div>
-        <div id="rowHead">
+        <div id="rowHead" style="display:none">
           <label for="head">Head count</label>
           <input id="head" type="number" step="1" placeholder="e.g. 20" />
         </div>
@@ -164,7 +183,7 @@ import Layout from "../../layouts/Layout.astro";
     <section class="result">
       <div class="note">Results</div>
       <div style="display:grid;gap:.5rem;margin-top:.4rem">
-        <div><strong>Available forage (DM):</strong> <span id="availDM">—</span> lb</div>
+        <div><strong>Available forage (DM):</strong> <span id="availDM">—</span> <span data-unit-text="lb|kg"></span></div>
         <div><strong>AUM capacity:</strong> <span id="aum">—</span> AUM</div>
         <div id="outHead"><strong>Head supported (given months):</strong> <span id="headsSupp">—</span> head</div>
         <div id="outMonths" style="display:none"><strong>Months supported (given head):</strong> <span id="monthsSupp">—</span> mo</div>
@@ -172,23 +191,31 @@ import Layout from "../../layouts/Layout.astro";
       <p class="note" style="margin-top:.6rem">Planning estimates using 780 lb DM per AUM.</p>
     </section>
 
+    <!-- Ad slot #2 -->
+    <div class="ads">
+      <ins class="adsbygoogle adwrap"
+           style="display:block"
+           data-ad-client="ca-pub-4050846968323757"
+           data-ad-slot="0000000302"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script is:inline>(window.adsbygoogle=window.adsbygoogle||[]).push({});</script>
+    </div>
+
     <section class="content" id="explain">
       <h2>How we got these numbers</h2>
-      <div id="steps" class="note">Enter forage, utilization, acres, and season length to see step-by-step.</div>
+      <div id="steps" class="note">Enter forage, utilization, area, and months (if monthly) to see step-by-step.</div>
 
       <h3>Formulas</h3>
       <ul>
-        <li><strong>Available DM (lb)</strong> =
+        <li><strong>Available DM</strong> =
           <code>acres × (lb/ac/mo × months)</code> or
           <code>acres × (lb/ac/season)</code>, then × <code>utilization%</code>
+          <em>• Metric UI converts to kg/ha</em>
         </li>
         <li><strong>AUM</strong> = <code>Available DM ÷ 780</code></li>
-        <li><strong>Head supported</strong> (for given months) =
-          <code>AUM ÷ (AUE × months)</code>
-        </li>
-        <li><strong>Months supported</strong> (for given head) =
-          <code>AUM ÷ (AUE × head)</code>
-        </li>
+        <li><strong>Head supported</strong> = <code>AUM ÷ (AUE × months)</code></li>
+        <li><strong>Months supported</strong> = <code>AUM ÷ (AUE × head)</code></li>
       </ul>
 
       <h3>Example</h3>
@@ -200,120 +227,173 @@ import Layout from "../../layouts/Layout.astro";
         <li>Head supported (cow-calf) for 4 mo = 14.4 ÷ (1.0 × 4) ≈ <strong>3.6 head</strong></li>
       </ol>
 
-      <h3>Notes</h3>
-      <ul>
-        <li>780 lb DM/AUM is a common planning value (~26 lb/day × 30 days). Some references use ~760–915; adjust if needed.</li>
-        <li>Utilization accounts for trampling, wildlife, and residue for plant recovery; keep conservative for dry years.</li>
-        <li>Rotate and rest pastures to maintain stand vigor and long-term carrying capacity.</li>
-      </ul>
-
       <p class="disclaimer">Estimates only. Verify with local range guidelines and adjust for species, weather, and soil.</p>
     </section>
-
-    <script is:inline>
-      // Helpers
-      const $ = (id) => document.getElementById(id);
-      const val = (id) => parseFloat(($(id)?.value ?? "").trim());
-      const fmt0 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
-      const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
-
-      // Wire up UI
-      ["mode","solve"].forEach(id => $(id).addEventListener("change", onMode));
-      const fields = ["dmPerAcreMo","dmPerAcreSeason","months","util","acres","animal","head"];
-      fields.forEach(id => $(id).addEventListener("input", compute));
-      onMode(); compute();
-
-      function onMode(){
-        const mode = $("mode").value;
-        $("rowMonthly").style.display = mode==="monthly" ? "" : "none";
-        $("rowSeason").style.display  = mode==="seasonal" ? "" : "none";
-
-        const solve = $("solve").value;
-        $("outHead").style.display   = solve==="head" ? "" : "none";
-        $("outMonths").style.display = solve==="months" ? "" : "none";
-        $("rowHead").style.display   = solve==="months" ? "" : ""; // still show head input for months, optional for head?
-        compute();
-      }
-
-      function availableDM(){
-        const acres = val("acres");
-        const util  = Math.max(0, Math.min(100, val("util") || 0))/100;
-        if (!(acres>0) || !(util>0)) return NaN;
-
-        const mode = $("mode").value;
-        let raw = NaN;
-        if (mode==="monthly"){
-          const dm = val("dmPerAcreMo");
-          const m  = val("months");
-          if (!(dm>0) || !(m>0)) return NaN;
-          raw = dm * m * acres;
-        } else {
-          const dmS = val("dmPerAcreSeason");
-          if (!(dmS>0)) return NaN;
-          raw = dmS * acres;
-        }
-        return raw * util;
-      }
-
-      function compute(){
-        const DM = availableDM();
-        if (!(DM>0)){
-          show();
-          $("steps").innerHTML = `<span class="note">Enter forage, utilization, acres, and months (if monthly) to see step-by-step.</span>`;
-          return;
-        }
-
-        const AUM = DM / 780;
-        const AUE = parseFloat($("animal").value);
-        const months = Math.max(0, val("months") || 0);
-        const head   = Math.max(0, val("head") || 0);
-        const solve  = $("solve").value;
-
-        let headsSupp = NaN, monthsSupp = NaN;
-
-        if (solve === "head"){
-          // Need months to compute head supported for that period
-          if (months>0 && AUE>0){
-            headsSupp = AUM / (AUE * months);
-          }
-        } else if (solve === "months"){
-          if (head>0 && AUE>0){
-            monthsSupp = AUM / (AUE * head);
-          }
-        }
-
-        // Steps text
-        const mode = $("mode").value;
-        let lines = [];
-        if (mode==="monthly"){
-          const dm = val("dmPerAcreMo"), m = val("months"), ac = val("acres"), u = (Math.max(0, Math.min(100, val("util")||0))/100);
-          const raw = dm>0 && m>0 && ac>0 ? dm*m*ac : NaN;
-          lines.push(`<div>Raw DM = ${fmt0(dm)} × ${fmt1(m)} × ${fmt1(ac)} = <strong>${fmt0(raw)}</strong> lb</div>`);
-          lines.push(`<div>Available DM = raw × utilization = ${fmt0(raw)} × ${u.toFixed(2)} = <strong>${fmt0(DM)}</strong> lb</div>`);
-        } else {
-          const dmS = val("dmPerAcreSeason"), ac = val("acres"), u = (Math.max(0, Math.min(100, val("util")||0))/100);
-          const raw = dmS>0 && ac>0 ? dmS*ac : NaN;
-          lines.push(`<div>Raw DM = ${fmt0(dmS)} × ${fmt1(ac)} = <strong>${fmt0(raw)}</strong> lb</div>`);
-          lines.push(`<div>Available DM = raw × utilization = ${fmt0(raw)} × ${u.toFixed(2)} = <strong>${fmt0(DM)}</strong> lb</div>`);
-        }
-        lines.push(`<div>AUM = Available DM ÷ 780 = ${fmt0(DM)} ÷ 780 = <strong>${fmt1(AUM)}</strong> AUM</div>`);
-        if (solve==="head" && Number.isFinite(headsSupp)){
-          lines.push(`<div>Head supported = AUM ÷ (AUE × months) = ${fmt1(AUM)} ÷ (${AUE.toFixed(2)} × ${fmt1(months)}) = <strong>${fmt1(headsSupp)}</strong></div>`);
-        }
-        if (solve==="months" && Number.isFinite(monthsSupp)){
-          lines.push(`<div>Months supported = AUM ÷ (AUE × head) = ${fmt1(AUM)} ÷ (${AUE.toFixed(2)} × ${fmt1(head)}) = <strong>${fmt1(monthsSupp)}</strong></div>`);
-        }
-        $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
-
-        show({DM, AUM, headsSupp, monthsSupp});
-      }
-
-      function show(o={}){
-        $("availDM").textContent  = fmt0(o.DM);
-        $("aum").textContent      = fmt1(o.AUM);
-        $("headsSupp").textContent= fmt1(o.headsSupp);
-        $("monthsSupp").textContent= fmt1(o.monthsSupp);
-      }
-    </script>
   </main>
+
+  <!-- ===== Units helper (shared) ===== -->
+  <script is:inline>
+    (function () {
+      const KEY='agc_units';
+      const $$=(s)=>document.querySelectorAll(s);
+      const conv={
+        'lb>kg':x=>x*0.45359237,'kg>lb':x=>x/0.45359237,
+        'ac>ha':x=>x*0.40468564224,'ha>ac':x=>x/0.40468564224,
+        // mass/area: lb/ac ↔ kg/ha
+        'lbac>kgha':x=>x*1.120849,'kgha>lbac':x=>x/1.120849
+      };
+      window.AGCUnits={
+        mode:()=>localStorage.getItem(KEY)||'us',
+        setMode(m){localStorage.setItem(KEY,m);paint(m);},
+        get(el){
+          const raw=parseFloat(el.value);
+          if(!isFinite(raw))return NaN;
+          const map=(el.dataset.unit||'').trim();
+          if(!map||this.mode()==='us')return raw;
+          const [us,met]=map.split('>');
+          const fn=conv[`${met}>${us}`];
+          return fn?fn(raw):raw;
+        },
+        out(usNumber,map){
+          if(!isFinite(usNumber))return NaN;
+          if(this.mode()==='us'||!map)return usNumber;
+          const fn=conv[map];
+          return fn?fn(usNumber):usNumber;
+        }
+      };
+      function paint(mode){
+        document.querySelectorAll('.unit-toggle .u-btn').forEach(btn=>{
+          const on=btn.dataset.units===mode;
+          btn.classList.toggle('active',on);
+          btn.setAttribute('aria-pressed',String(on));
+        });
+        $$('[data-unit-text]').forEach(el=>{
+          const [us,met]=el.dataset.unitText.split('|');
+          el.textContent=(mode==='metric'?met:us);
+        });
+        $$('[data-unit-label]').forEach(el=>{
+          const [us,met]=el.dataset.unitLabel.split('|');
+          el.textContent=(mode==='metric'?met:us);
+        });
+        $$('input[data-unit-ph]').forEach(el=>{
+          const [us,met]=el.dataset.unitPh.split('|');
+          el.placeholder=(mode==='metric'?met:us);
+        });
+        // poke inputs to recompute
+        document.querySelectorAll('input,select').forEach(el=>{
+          el.dispatchEvent(new Event('input',{bubbles:true}));
+          el.dispatchEvent(new Event('change',{bubbles:true}));
+        });
+      }
+      document.addEventListener('click',(e)=>{
+        const btn=e.target.closest('.u-btn'); if(!btn) return;
+        window.AGCUnits.setMode(btn.dataset.units);
+      });
+      // init
+      const init=window.AGCUnits.mode();
+      paint(init);
+      document.querySelector(`.u-btn[data-units="${init}"]`)?.classList.add('active');
+    })();
+  </script>
+
+  <!-- ===== Page logic (math normalized to US units) ===== -->
+  <script is:inline>
+    const $ = (id) => document.getElementById(id);
+    const val = (id) => parseFloat((($(id)?.value ?? "") + "").trim());
+    const fmt0 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:0}) : "—";
+    const fmt1 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:1}) : "—";
+
+    ["mode","solve"].forEach(id => $(id).addEventListener("change", onMode));
+    ["dmPerAcreMo","dmPerAcreSeason","months","util","acres","animal","head"]
+      .forEach(id => $(id).addEventListener("input", compute));
+    onMode(); compute();
+
+    function onMode(){
+      const mode = $("mode").value;
+      $("rowMonthly").style.display = mode==="monthly" ? "" : "none";
+      $("rowSeason").style.display  = mode==="seasonal" ? "" : "none";
+
+      const solve = $("solve").value;
+      $("outHead").style.display   = solve==="head"   ? ""   : "none";
+      $("outMonths").style.display = solve==="months" ? ""   : "none";
+      $("rowHead").style.display   = solve==="months" ? ""   : "none";
+      compute();
+    }
+
+    function availableDM_lb(){
+      const acresUS = window.AGCUnits.get($("acres"));            // acres
+      const util  = Math.max(0, Math.min(100, val("util")||0))/100;
+      if(!(acresUS>0) || !(util>0)) return NaN;
+
+      const mode = $("mode").value;
+      let raw_lb = NaN;
+      if(mode==="monthly"){
+        const dmLbac = window.AGCUnits.get($("dmPerAcreMo"));     // lb/ac/mo (US)
+        const m = val("months");
+        if(!(dmLbac>0) || !(m>0)) return NaN;
+        raw_lb = dmLbac * m * acresUS;
+      } else {
+        const dmLbacSeason = window.AGCUnits.get($("dmPerAcreSeason")); // lb/ac/season (US)
+        if(!(dmLbacSeason>0)) return NaN;
+        raw_lb = dmLbacSeason * acresUS;
+      }
+      return raw_lb * util;
+    }
+
+    function compute(){
+      const DM_lb = availableDM_lb();
+      if(!(DM_lb>0)){
+        show();
+        $("steps").innerHTML = '<span class="note">Enter forage, utilization, area, and months (if monthly) to see step-by-step.</span>';
+        return;
+      }
+
+      const AUM = DM_lb / 780;
+      const AUE = parseFloat($("animal").value);
+      const months = Math.max(0, val("months") || 0);
+      const head   = Math.max(0, val("head")   || 0);
+      const solve  = $("solve").value;
+
+      let headsSupp = NaN, monthsSupp = NaN;
+      if (solve === "head"   && months>0 && AUE>0) headsSupp = AUM / (AUE * months);
+      if (solve === "months" && head>0   && AUE>0) monthsSupp = AUM / (AUE * head);
+
+      // Steps
+      const mode = $("mode").value;
+      const acresUS = window.AGCUnits.get($("acres"));
+      const u = Math.max(0, Math.min(100, val("util")||0))/100;
+      const lines=[];
+      if(mode==="monthly"){
+        const dm = window.AGCUnits.get($("dmPerAcreMo"));
+        const m  = val("months");
+        const raw = dm>0 && m>0 && acresUS>0 ? dm*m*acresUS : NaN;
+        lines.push(`<div>Raw DM = ${fmt0(dm)} × ${fmt1(m)} × ${fmt1(acresUS)} = <strong>${fmt0(raw)}</strong> lb</div>`);
+        lines.push(`<div>Available DM = raw × utilization = ${fmt0(raw)} × ${u.toFixed(2)} = <strong>${fmt0(DM_lb)}</strong> lb</div>`);
+      } else {
+        const dmS = window.AGCUnits.get($("dmPerAcreSeason"));
+        const raw = dmS>0 && acresUS>0 ? dmS*acresUS : NaN;
+        lines.push(`<div>Raw DM = ${fmt0(dmS)} × ${fmt1(acresUS)} = <strong>${fmt0(raw)}</strong> lb</div>`);
+        lines.push(`<div>Available DM = raw × utilization = ${fmt0(raw)} × ${u.toFixed(2)} = <strong>${fmt0(DM_lb)}</strong> lb</div>`);
+      }
+      lines.push(`<div>AUM = Available DM ÷ 780 = ${fmt0(DM_lb)} ÷ 780 = <strong>${fmt1(AUM)}</strong> AUM</div>`);
+      if(Number.isFinite(headsSupp))  lines.push(`<div>Head supported = ${fmt1(AUM)} ÷ (${AUE.toFixed(2)} × ${fmt1(months)}) = <strong>${fmt1(headsSupp)}</strong></div>`);
+      if(Number.isFinite(monthsSupp)) lines.push(`<div>Months supported = ${fmt1(AUM)} ÷ (${AUE.toFixed(2)} × ${fmt1(head)}) = <strong>${fmt1(monthsSupp)}</strong></div>`);
+      $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
+
+      // Display (respect mode)
+      const metric = (window.AGCUnits.mode()==='metric');
+      const DM_disp = metric ? window.AGCUnits.out(DM_lb, 'lb>kg') : DM_lb;
+      $("availDM").textContent   = metric ? fmt0(DM_disp) : fmt0(DM_disp);
+      $("aum").textContent       = fmt1(AUM);
+      $("headsSupp").textContent = fmt1(headsSupp);
+      $("monthsSupp").textContent= fmt1(monthsSupp);
+    }
+
+    function show(){
+      $("availDM").textContent="—";
+      $("aum").textContent="—";
+      $("headsSupp").textContent="—";
+      $("monthsSupp").textContent="—";
+    }
+  </script>
 </Layout>
