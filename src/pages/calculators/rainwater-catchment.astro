@@ -259,4 +259,157 @@ import Layout from "../../layouts/Layout.astro";
       const FT2_PER_M2 = 10.7639;
       const IN_PER_MM = 1/25.4;
       const GAL_PER_L  = 0.264172;
-      const L_PER_GAL
+      const L_PER_GAL  = 3.78541;
+      const GAL_PER_IN_FT2 = 0.623;
+
+      // Unit state (persist like other tools)
+      const UNIT_KEY = "ac.units.rainwater"; // "imp" | "met"
+      let sys = (localStorage.getItem(UNIT_KEY) || "imp");
+
+      // Wire controls
+      ["areaMode","coeff"].forEach(id => $(id).addEventListener("change", onMode));
+      ["area","len","wid","rain","flush","demand","days","tank"].forEach(id => $(id).addEventListener("input", compute));
+      $("#uUS").addEventListener("click", () => setUnits("imp"));
+      $("#uMET").addEventListener("click", () => setUnits("met"));
+
+      // Init UI
+      setUnits(sys);
+      onMode(); compute();
+
+      function setUnits(next){
+        sys = next;
+        localStorage.setItem(UNIT_KEY, sys);
+        // toggle appearance
+        $("#uUS").classList.toggle("on", sys==="imp");
+        $("#uMET").classList.toggle("on", sys==="met");
+        $("#uUS").setAttribute("aria-selected", sys==="imp");
+        $("#uMET").setAttribute("aria-selected", sys==="met");
+
+        // relabel fields
+        $("#labelArea").textContent   = sys==="imp" ? "Roof area (ft²)" : "Roof area (m²)";
+        $("#labelLen").textContent    = sys==="imp" ? "Roof length (ft)" : "Roof length (m)";
+        $("#labelWid").textContent    = sys==="imp" ? "Roof width (ft)"  : "Roof width (m)";
+        $("#labelRain").textContent   = sys==="imp" ? "Rainfall for period (in)" : "Rainfall for period (mm)";
+        $("#labelDemand").textContent = sys==="imp" ? "Daily demand (gal/day)" : "Daily demand (L/day)";
+        $("#labelTank").textContent   = sys==="imp" ? "Existing tank (gal, optional)" : "Existing tank (L, optional)";
+        $("#labelFlush").textContent  = sys==="imp" ? "First-flush loss (optional, gal)" : "First-flush loss (optional, L)";
+        $("#noteFlush").textContent   = sys==="imp" ? "Subtracts once from harvest (gal)" : "Subtracts once from harvest (L)";
+
+        compute();
+      }
+
+      function onMode(){
+        const m = $("#areaMode").value;
+        $("#rowAreaTotal").style.display = m==="total" ? "" : "none";
+        $("#rowAreaRect").style.display  = m==="rect"  ? "" : "none";
+        compute();
+      }
+
+      // -- conversions to base (ft², inches, gallons) -------------------------
+      function areaFt2(){
+        const m = $("#areaMode").value;
+        if (m==="total"){
+          const v = num("area");
+          if (!(v>0)) return NaN;
+          return (sys==="imp") ? v : v * FT2_PER_M2;
+        } else {
+          let L = num("len"), W = num("wid");
+          if (!(L>0 && W>0)) return NaN;
+          if (sys==="imp") return L*W;
+          // m → ft then multiply
+          return (L * Math.sqrt(FT2_PER_M2)) * (W * Math.sqrt(FT2_PER_M2));
+        }
+      }
+      const rainIn = () => {
+        const r = num("rain"); if (!(r>=0)) return NaN;
+        return (sys==="imp") ? r : r * IN_PER_MM;
+      };
+      const demandGPD = () => {
+        const d = num("demand"); if (!(d>0)) return NaN;
+        return (sys==="imp") ? d : d * GAL_PER_L;
+      };
+      const tankGal = () => {
+        const t = num("tank"); if (!(t>0)) return 0;
+        return (sys==="imp") ? t : t * GAL_PER_L;
+      };
+      const flushGal = () => {
+        const f = num("flush"); if (!(f>0)) return 0;
+        return (sys==="imp") ? f : f * GAL_PER_L;
+      };
+
+      // -- main compute -------------------------------------------------------
+      function compute(){
+        const Aft2 = areaFt2();
+        const Rin  = rainIn();
+        const k    = parseFloat($("#coeff").value);
+        const dGPD = demandGPD();
+        const days = num("days");
+        const tankG = tankGal();
+        const flushG = flushGal();
+
+        if (!(Aft2>0) || !(Rin>=0) || !(k>0)){
+          show(); $("#steps").innerHTML = `<span class="note">Enter roof, rainfall, and demand to see the step-by-step.</span>`;
+          return;
+        }
+
+        const grossGal = Aft2 * Rin * GAL_PER_IN_FT2;
+        const harvGal  = Math.max(0, grossGal * k - flushG);
+
+        const tankSuggestGal = (dGPD>0 && days>0) ? (dGPD * days) : NaN;
+        const daysFromHarv   = (dGPD>0) ? (harvGal / dGPD) : NaN;
+        const daysFromTank   = (dGPD>0 && tankG>0) ? (tankG / dGPD) : NaN;
+
+        // Show in chosen units
+        if (sys==="imp"){
+          $("#harv").textContent        = fmt0(harvGal) + " gal";
+          $("#tankSuggest").textContent = Number.isFinite(tankSuggestGal) ? fmt0(tankSuggestGal) + " gal" : "—";
+        } else {
+          $("#harv").textContent        = fmt0(harvGal * L_PER_GAL) + " L";
+          $("#tankSuggest").textContent = Number.isFinite(tankSuggestGal) ? fmt0(tankSuggestGal * L_PER_GAL) + " L" : "—";
+        }
+        $("#daysFromHarv").textContent = Number.isFinite(daysFromHarv) ? fmt1(daysFromHarv) + " days" : "—";
+        $("#daysFromTank").textContent = Number.isFinite(daysFromTank) ? fmt1(daysFromTank) + " days" : "—";
+
+        // Steps
+        const Ashow  = sys==="imp" ? Aft2 : (Aft2/FT2_PER_M2);
+        const Rshow  = sys==="imp" ? Rin : (Rin/IN_PER_MM);
+        const grossS = sys==="imp" ? grossGal : grossGal*L_PER_GAL;
+        const flushS = sys==="imp" ? flushG   : flushG*L_PER_GAL;
+        const harvS  = sys==="imp" ? harvGal  : harvGal*L_PER_GAL;
+        const uA = sys==="imp" ? "ft²" : "m²";
+        const uR = sys==="imp" ? "in"  : "mm";
+        const uV = sys==="imp" ? "gal" : "L";
+
+        const lines = [];
+        if (sys==="imp"){
+          lines.push(`<div>Gross = area × rain × 0.623 = ${fmt0(Ashow)} ${uA} × ${fmt1(Rshow)} ${uR} × 0.623 = <strong>${fmt0(grossS)}</strong> ${uV}</div>`);
+        } else {
+          lines.push(`<div>Gross = area × rain (metric shortcut) = ${fmt0(Ashow)} ${uA} × ${fmt1(Rshow)} ${uR} = <strong>${fmt0(grossS)}</strong> ${uV}</div>`);
+        }
+        lines.push(`<div>Harvestable = gross × coeff − first-flush = ${fmt0(grossS)} × ${k} − ${fmt0(flushS)} = <strong>${fmt0(harvS)}</strong> ${uV}</div>`);
+        if (Number.isFinite(tankSuggestGal)){
+          const tsShow = sys==="imp" ? tankSuggestGal : tankSuggestGal*L_PER_GAL;
+          const dShow  = sys==="imp" ? dGPD : dGPD*L_PER_GAL;
+          lines.push(`<div>Tank suggestion = daily × days = ${fmt0(dShow)} ${uV}/day × ${fmt0(days)} = <strong>${fmt0(tsShow)}</strong> ${uV}</div>`);
+        }
+        if (Number.isFinite(daysFromHarv)){
+          const dShow  = sys==="imp" ? dGPD : dGPD*L_PER_GAL;
+          lines.push(`<div>Days from harvest = ${fmt0(harvS)} ÷ ${fmt0(dShow)} = <strong>${fmt1(daysFromHarv)}</strong> days</div>`);
+        }
+        if (Number.isFinite(daysFromTank)){
+          const tShow = sys==="imp" ? tankG : tankG*L_PER_GAL;
+          const dShow = sys==="imp" ? dGPD : dGPD*L_PER_GAL;
+          lines.push(`<div>Days from existing tank = ${fmt0(tShow)} ÷ ${fmt0(dShow)} = <strong>${fmt1(daysFromTank)}</strong> days</div>`);
+        }
+        $("#steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
+      }
+
+      function show(){
+        $("#harv").textContent = "—";
+        $("#tankSuggest").textContent = "—";
+        $("#daysFromHarv").textContent = "—";
+        $("#daysFromTank").textContent = "—";
+      }
+    </script>
+  </main>
+</Layout>
