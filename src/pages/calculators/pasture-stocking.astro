@@ -1,14 +1,13 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 ---
-
 <Layout>
   <Fragment slot="head">
     <title>Pasture Stocking Rate & Grazing Days Calculator | AgCalculator</title>
-    <meta name="description" content="Estimate grazing days or head capacity from area, forage production, utilization, and animal intake. Includes AUM conversion and metric toggle." />
+    <meta name="description" content="Estimate grazing days or head capacity from area, forage production, utilization, and animal intake. Includes AUM conversion and a US↔Metric toggle." />
     <link rel="canonical" href="https://agcalculator.com/calculators/pasture-stocking/" />
 
-    <!-- Open Graph -->
+    <!-- Social -->
     <meta property="og:site_name" content="AgCalculator" />
     <meta property="og:title" content="Pasture Stocking Rate & Grazing Days Calculator" />
     <meta property="og:description" content="Estimate stocking rate, grazing days, and AUMs quickly." />
@@ -20,72 +19,78 @@ import Layout from "../../layouts/Layout.astro";
 
     <!-- Structured data -->
     <script type="application/ld+json">
-    {
-      "@context":"https://schema.org",
-      "@type":"WebApplication",
-      "name":"Pasture Stocking Rate & Grazing Days Calculator",
-      "applicationCategory":"Calculator",
-      "operatingSystem":"Web",
-      "url":"https://agcalculator.com/calculators/pasture-stocking/",
-      "description":"Estimate grazing days or head capacity from acres/hectares, forage production, utilization, and animal intake. Includes AUM conversion.",
-      "publisher":{"@type":"Organization","name":"AgCalculator","url":"https://agcalculator.com"},
-      "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
-    }
+      {
+        "@context":"https://schema.org",
+        "@type":"WebApplication",
+        "name":"Pasture Stocking Rate & Grazing Days Calculator",
+        "applicationCategory":"Calculator",
+        "operatingSystem":"Web",
+        "url":"https://agcalculator.com/calculators/pasture-stocking/",
+        "description":"Estimate grazing days or head capacity from acres/hectares, forage production, utilization, and animal intake. Includes AUM conversion.",
+        "publisher":{"@type":"Organization","name":"AgCalculator","url":"https://agcalculator.com"},
+        "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
+      }
     </script>
     <script type="application/ld+json">
-    {
-      "@context":"https://schema.org",
-      "@type":"BreadcrumbList",
-      "itemListElement":[
-        {"@type":"ListItem","position":1,"name":"Home","item":"https://agcalculator.com/"},
-        {"@type":"ListItem","position":2,"name":"Pasture Stocking Rate","item":"https://agcalculator.com/calculators/pasture-stocking/"}
-      ]
-    }
+      {
+        "@context":"https://schema.org",
+        "@type":"BreadcrumbList",
+        "itemListElement":[
+          {"@type":"ListItem","position":1,"name":"Home","item":"https://agcalculator.com/"},
+          {"@type":"ListItem","position":2,"name":"Pasture Stocking Rate","item":"https://agcalculator.com/calculators/pasture-stocking/"}
+        ]
+      }
     </script>
+    <!-- FAQ schema (matches on-page FAQ) -->
     <script type="application/ld+json">
-    {
-      "@context":"https://schema.org",
-      "@type":"FAQPage",
-      "mainEntity":[
-        {
-          "@type":"Question",
-          "name":"What intake rate should I use?",
-          "acceptedAnswer":{"@type":"Answer","text":"A common planning value is 2.5% of body weight per day for beef cattle on pasture (0.025). Sheep/goats often range 3–4%. Use your own numbers if you have them."}
-        },
-        {
-          "@type":"Question",
-          "name":"What utilization percent should I use?",
-          "acceptedAnswer":{"@type":"Answer","text":"Utilization depends on pasture, season, and management. For continuous grazing, 25–35% is common. For good rotational grazing, 40–60% can be reasonable. Use a conservative number unless you have records."}
-        },
-        {
-          "@type":"Question",
-          "name":"How are AUMs calculated?",
-          "acceptedAnswer":{"@type":"Answer","text":"One Animal Unit Month (AUM) is about 780 lb of dry matter (26 lb/day × 30 days). This tool converts your total available dry matter to AUMs using 780 lb/AUM."}
-        }
-      ]
-    }
+      {
+        "@context":"https://schema.org",
+        "@type":"FAQPage",
+        "mainEntity":[
+          {
+            "@type":"Question",
+            "name":"What intake rate should I use?",
+            "acceptedAnswer":{"@type":"Answer","text":"A common planning value is 2.5% of body weight per day for beef cattle on pasture (0.025). Sheep/goats often range 3–4%. Use your own numbers if you have them."}
+          },
+          {
+            "@type":"Question",
+            "name":"What utilization percent should I use?",
+            "acceptedAnswer":{"@type":"Answer","text":"Utilization depends on pasture, season, and management. For continuous grazing, 25–35% is common. For good rotational grazing, 40–60% can be reasonable. Use a conservative number unless you have records."}
+          },
+          {
+            "@type":"Question",
+            "name":"How are AUMs calculated?",
+            "acceptedAnswer":{"@type":"Answer","text":"One Animal Unit Month (AUM) is about 780 lb of dry matter (26 lb/day × 30 days). This tool converts your total available dry matter to AUMs using 780 lb/AUM."}
+          },
+          {
+            "@type":"Question",
+            "name":"Can I switch to metric units?",
+            "acceptedAnswer":{"@type":"Answer","text":"Yes. Use the US↔Metric toggle at the top. The UI converts acres/hectares, lb/kg, and lb/ac ↔ kg/ha in place."}
+          }
+        ]
+      }
     </script>
 
-    <!-- AdSense (client = your publisher ID) -->
+    <!-- AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4050846968323757" crossorigin="anonymous"></script>
-    <!-- Ensure /ads.txt includes:
+    <!-- Ensure /ads.txt contains:
          google.com, pub-4050846968323757, DIRECT, f08c47fec0942fa0 -->
 
     <style>
       :root{--green:#2F855A;--slate:#334155;--muted:#64748b;--bg:#F8FAFC}
       *{box-sizing:border-box}
-      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:white}
-      .wrap{max-width:960px;margin:0 auto;padding:1rem}
       a{color:var(--green);text-decoration:none}
-      fieldset{background:white;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
+      header{padding:1rem;border-bottom:1px solid #e5e7eb;background:#fff}
+      .wrap{max-width:960px;margin:0 auto;padding:1rem}
+      fieldset{background:#fff;border:1px solid #e5e7eb;border-radius:12px;margin:0 0 1rem;padding:1rem}
       legend{padding:0 .4rem;color:var(--muted)}
       label{display:block;margin:.4rem 0 .2rem;font-size:.92rem}
       input,select{width:100%;padding:.6rem;border:1px solid #cbd5e1;border-radius:10px}
       .row{display:grid;gap:.8rem}
       @media(min-width:800px){.row{grid-template-columns:repeat(3,1fr)}}
-      .result{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
+      .result{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem}
       .note{color:var(--muted);font-size:.9rem}
-      .content{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
+      .content{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin-top:1rem}
       .content h2{margin:.2rem 0 .6rem}
       .content h3{margin:.8rem 0 .3rem}
       .content ul,.content ol{margin:.2rem 0 .2rem .9rem}
@@ -93,6 +98,11 @@ import Layout from "../../layouts/Layout.astro";
       .ads{margin:.75rem 0}
       .adwrap{display:block;min-height:90px}
       .unit{font-variant-numeric:tabular-nums}
+
+      /* Units toggle (matches your example) */
+      .unit-toggle{display:flex;align-items:center;gap:.4rem;margin:0 0 1rem;padding:.5rem 1rem;background:#fff;border:1px solid #e2e8f0;border-radius:12px}
+      .u-btn{padding:.35rem .7rem;border:1px solid #cbd5e1;border-radius:999px;background:#fff;cursor:pointer}
+      .u-btn.active{background:var(--green);border-color:var(--green);color:#fff}
     </style>
   </Fragment>
 
@@ -100,6 +110,14 @@ import Layout from "../../layouts/Layout.astro";
 
   <main class="wrap">
     <h1 style="margin:.5rem 0 1rem">Pasture Stocking Rate &amp; Grazing Days</h1>
+
+    <!-- Units toggle (saved to localStorage) -->
+    <div class="unit-toggle" role="group" aria-label="Units">
+      <strong style="margin-right:.25rem">Units:</strong>
+      <button type="button" class="u-btn" data-units="us" aria-pressed="false">US</button>
+      <button type="button" class="u-btn" data-units="metric" aria-pressed="false">Metric</button>
+      <small class="note" style="margin-left:.5rem">Saved on this device</small>
+    </div>
 
     <!-- Ad slot #1 (top, responsive) -->
     <div class="ads">
@@ -123,48 +141,45 @@ import Layout from "../../layouts/Layout.astro";
             <option value="head">Head capacity (given days)</option>
           </select>
         </div>
+
         <div>
-          <label for="unitSel">Units</label>
-          <select id="unitSel">
-            <option value="imp" selected>Imperial (acres, lb)</option>
-            <option value="met">Metric (hectares, kg)</option>
-          </select>
+          <label data-unit-label="Pasture size (acres)|Pasture size (hectares)" for="acres">Pasture size (acres)</label>
+          <input id="acres" class="unit" type="number" step="0.01" placeholder="e.g. 40" data-unit="ac>ha" data-unit-ph="e.g. 40|e.g. 16.2" />
         </div>
+
         <div>
-          <label for="acres" id="labArea">Pasture size (acres)</label>
-          <input id="acres" class="unit" type="number" step="0.01" placeholder="e.g. 40" />
+          <label data-unit-label="Forage production (lb DM/acre)|Forage production (kg DM/ha)" for="forage">Forage production (lb DM/acre)</label>
+          <input id="forage" class="unit" type="number" step="1" placeholder="e.g. 2500" data-unit="lbpac>kgha" data-unit-ph="e.g. 2500|e.g. 28000" />
         </div>
       </div>
 
       <div class="row">
-        <div>
-          <label for="forage" id="labForage">Forage production (lb DM/acre)</label>
-          <input id="forage" class="unit" type="number" step="1" placeholder="e.g. 2500" />
-        </div>
         <div>
           <label for="util">Utilization (%)</label>
           <input id="util" type="number" step="1" value="40" />
         </div>
         <div>
-          <label for="wt" id="labWt">Avg animal weight (lb)</label>
-          <input id="wt" class="unit" type="number" step="1" value="1200" />
+          <label data-unit-label="Avg animal weight (lb)|Avg animal weight (kg)" for="wt">Avg animal weight (lb)</label>
+          <input id="wt" class="unit" type="number" step="1" value="1200" data-unit="lb>kg" data-unit-ph="e.g. 1200|e.g. 545" />
         </div>
-      </div>
-
-      <div class="row">
         <div>
           <label for="intake">Daily intake (% of body weight)</label>
           <input id="intake" type="number" step="0.1" value="2.5" />
         </div>
+      </div>
 
+      <div class="row">
         <div id="rowDays">
           <label for="head">Head count</label>
           <input id="head" type="number" step="1" placeholder="e.g. 35" />
         </div>
-
         <div id="rowHead" style="display:none">
           <label for="days">Grazing days</label>
           <input id="days" type="number" step="1" placeholder="e.g. 45" />
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <div class="note">Use conservative utilization unless you have good records.</div>
         </div>
       </div>
     </fieldset>
@@ -172,8 +187,8 @@ import Layout from "../../layouts/Layout.astro";
     <section class="result">
       <div class="note">Results</div>
       <div style="display:grid;gap:.5rem;margin-top:.4rem">
-        <div><strong>Total available forage (DM):</strong> <span id="avail">—</span> lb (<span id="availKg">—</span> kg)</div>
-        <div><strong>Intake per head per day:</strong> <span id="intakeLb">—</span> lb (<span id="intakeKg">—</span> kg)</div>
+        <div><strong>Available forage:</strong> <span id="avail">—</span> <span data-unit-text="lb|kg"></span></div>
+        <div><strong>Intake per head per day:</strong> <span id="intakeOut">—</span> <span data-unit-text="lb|kg"></span>/day</div>
         <div id="outDays"><strong>Grazing days (est):</strong> <span id="resDays">—</span> days</div>
         <div id="outHead" style="display:none"><strong>Head capacity (est):</strong> <span id="resHead">—</span> head</div>
         <div><strong>AUMs from available forage:</strong> <span id="aums">—</span> AUM</div>
@@ -193,39 +208,126 @@ import Layout from "../../layouts/Layout.astro";
       <script is:inline>(window.adsbygoogle=window.adsbygoogle||[]).push({});</script>
     </div>
 
+    <!-- Explainer / publisher content -->
     <section class="content" id="explain">
-      <h2>How we got these numbers</h2>
-      <div id="steps" class="note">Enter pasture, forage, and animal details to see the step-by-step.</div>
+      <h2>How this calculator works</h2>
+      <p>This tool estimates <em>available dry matter</em> (DM) from pasture area, forage production, and a utilization percentage, then divides by herd intake to compute grazing days or head capacity. It also converts total DM to AUMs (Animal Unit Months).</p>
 
       <h3>Formulas</h3>
       <ul>
-        <li><strong>Available forage (lb)</strong> = acres × forage(lb/ac) × utilization%</li>
+        <li><strong>Available forage (lb)</strong> = acres × forage (lb/ac) × utilization%</li>
         <li><strong>Daily intake/head (lb)</strong> = body weight × intake%</li>
         <li><strong>Grazing days</strong> = available forage ÷ (head × intake/head/day)</li>
         <li><strong>Head capacity</strong> = available forage ÷ (days × intake/head/day)</li>
-        <li><strong>AUM</strong> = available forage ÷ 780 (lb DM per AUM)</li>
-        <li><strong>AUM per acre</strong> = AUM ÷ acres; <strong>AUM per hectare</strong> = AUM ÷ hectares</li>
+        <li><strong>AUMs</strong> = available forage ÷ 780 (lb DM per AUM)</li>
       </ul>
 
-      <h3>Example</h3>
-      <p>40 ac, 2,500 lb/ac forage, 40% utilization, 1200 lb cattle @ 2.5% intake, 35 head:</p>
+      <h3>Assumptions & notes</h3>
+      <ul>
+        <li>Use <em>dry matter</em> forage values for consistency across seasons and species.</li>
+        <li>Utilization reflects trampling, fouling, regrowth needs, and residuals left behind.</li>
+        <li>Typical intake for beef cattle on pasture is ~2.5% BW/day; growing animals may be higher.</li>
+        <li>Be conservative if you lack records; overshooting utilization can harm stand vigor.</li>
+      </ul>
+
+      <h3>Worked example</h3>
+      <p>40 ac, 2,500 lb/ac forage, 40% utilization, 1,200 lb cattle @ 2.5% intake, 35 head:</p>
       <ol>
         <li>Available forage = 40 × 2,500 × 0.40 = <strong>40,000 lb</strong></li>
-        <li>Intake/head/day = 1200 × 0.025 = <strong>30 lb</strong></li>
+        <li>Intake/head/day = 1,200 × 0.025 = <strong>30 lb</strong></li>
         <li>Grazing days = 40,000 ÷ (35 × 30) ≈ <strong>38 days</strong></li>
         <li>AUMs = 40,000 ÷ 780 ≈ <strong>51.3 AUM</strong></li>
       </ol>
 
-      <h3>Notes</h3>
-      <ul>
-        <li>Use <em>dry matter</em> forage values for consistency.</li>
-        <li>Utilization reflects trampling, fouling, regrowth needs, and residuals left behind.</li>
-        <li>Adjust intake% for species/class (e.g., growing animals often eat a higher %BW).</li>
-      </ul>
+      <h3>FAQ</h3>
+      <p><strong>What intake rate should I use?</strong> 2.5% BW/day is a common planning value for beef cattle; sheep/goats often 3–4%.</p>
+      <p><strong>What utilization percent should I use?</strong> 25–35% continuous; 40–60% rotational (varies by season/species—use your records).</p>
+      <p><strong>How are AUMs calculated?</strong> 1 AUM ≈ 780 lb DM (26 lb/day × 30 days).</p>
+      <p><strong>Can I switch to metric?</strong> Yes—use the toggle above. Inputs/labels convert between acres/hectares, lb/kg, and lb/ac ↔ kg/ha.</p>
 
-      <p class="disclaimer">Estimates only. Verify with your extension service or grazing plan.</p>
+      <p class="disclaimer">Prepared by AgCalculator · Last updated November 3, 2025</p>
+    </section>
+
+    <section class="content">
+      <h3>Also try…</h3>
+      <ul>
+        <li><a href="/calculators/livestock-water/">Livestock Water Needs (Daily & Tank Sizing)</a></li>
+        <li><a href="/calculators/field-capacity/">Field Capacity (Ac/hr, Fuel & Time)</a></li>
+      </ul>
     </section>
   </main>
+
+  <!-- Units engine (page-local, same pattern as your grain-bin page) -->
+  <script is:inline>
+    (function(){
+      const KEY = 'agc_units';
+      const $$ = (s) => document.querySelectorAll(s);
+      const conv = {
+        'ac>ha': x => x * 0.404685642, 'ha>ac': x => x / 0.404685642,
+        'lb>kg': x => x * 0.45359237,  'kg>lb': x => x / 0.45359237,
+        // forage density: lb/ac <-> kg/ha
+        'lbpac>kgha': x => x * (0.45359237/0.404685642),
+        'kgha>lbpac': x => x / (0.45359237/0.404685642)
+      };
+
+      window.AGCUnits = {
+        mode(){ return localStorage.getItem(KEY) || 'us'; },
+        setMode(m){ localStorage.setItem(KEY, m); paint(m); },
+        get(el){
+          const raw = parseFloat(el.value);
+          if (!isFinite(raw)) return NaN;
+          const map = (el.dataset.unit || '').trim();
+          if (!map) return raw; // already US
+          if (this.mode()==='us') return raw;
+          const [us, met] = map.split('>');
+          const fn = conv[`${met}>${us}`];
+          return fn ? fn(raw) : raw;
+        },
+        out(usNumber, map){
+          if (!isFinite(usNumber)) return NaN;
+          if (this.mode()==='us' || !map) return usNumber;
+          const fn = conv[map];
+          return fn ? fn(usNumber) : usNumber;
+        }
+      };
+
+      function paint(mode){
+        // toggle buttons
+        document.querySelectorAll('.unit-toggle .u-btn').forEach(btn => {
+          const on = btn.dataset.units === mode;
+          btn.classList.toggle('active', on);
+          btn.setAttribute('aria-pressed', String(on));
+        });
+        // labels / placeholders / inline unit texts
+        $$('[data-unit-label]').forEach(el => {
+          const [us, met] = el.dataset.unitLabel.split('|');
+          el.textContent = (mode === 'metric' ? met : us);
+        });
+        $$('input[data-unit-ph]').forEach(el => {
+          const [us, met] = el.dataset.unitPh.split('|');
+          el.placeholder = (mode === 'metric' ? met : us);
+        });
+        $$('[data-unit-text]').forEach(el => {
+          const [us, met] = el.dataset.unitText.split('|');
+          el.textContent = (mode === 'metric' ? met : us);
+        });
+        // re-evaluate
+        document.querySelectorAll('input,select').forEach(el => {
+          el.dispatchEvent(new Event('input', {bubbles:true}));
+          el.dispatchEvent(new Event('change', {bubbles:true}));
+        });
+      }
+
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.u-btn');
+        if (!btn) return;
+        window.AGCUnits.setMode(btn.dataset.units);
+      });
+
+      // init
+      paint(window.AGCUnits.mode());
+    })();
+  </script>
 
   <script is:inline>
     // ===== Helpers & constants =====
@@ -236,22 +338,12 @@ import Layout from "../../layouts/Layout.astro";
     const fmt2 = (n) => Number.isFinite(n) ? n.toLocaleString(undefined,{maximumFractionDigits:2}) : "—";
 
     const LB_TO_KG = 0.45359237;
-    const KG_TO_LB = 1 / LB_TO_KG;
     const AC_TO_HA = 0.404685642;
-    const HA_TO_AC = 1 / AC_TO_HA;
-    const LBPAC_TO_KGHA = LB_TO_KG / AC_TO_HA;   // ~1.120849
-    const KGHA_TO_LBPAC = 1 / LBPAC_TO_KGHA;
     const AUM_LB = 780;
 
-    // ===== Wire UI =====
-    const fields = ["mode","unitSel","acres","forage","util","wt","intake","head","days"];
-    fields.forEach(id => $(id).addEventListener("input", compute));
+    // Wire UI
+    ["mode","acres","forage","util","wt","intake","head","days"].forEach(id => $(id).addEventListener("input", compute));
     $("mode").addEventListener("change", onMode);
-    $("unitSel").addEventListener("change", onUnitToggle);
-
-    // init
-    onMode();
-    compute();
 
     function onMode(){
       const m = $("mode").value;
@@ -259,119 +351,97 @@ import Layout from "../../layouts/Layout.astro";
       $("rowHead").style.display = m==="head" ? "" : "none";
       $("outDays").style.display = m==="days" ? "" : "none";
       $("outHead").style.display = m==="head" ? "" : "none";
-    }
-
-    function onUnitToggle(){
-      const metric = $("unitSel").value === "met";
-
-      // Relabel
-      $("labArea").textContent   = metric ? "Pasture size (hectares)" : "Pasture size (acres)";
-      $("labForage").textContent = metric ? "Forage production (kg DM/ha)" : "Forage production (lb DM/acre)";
-      $("labWt").textContent     = metric ? "Avg animal weight (kg)" : "Avg animal weight (lb)";
-
-      // Convert existing values so meaning is preserved
-      let ac = num("acres"); if (ac>0) $("acres").value = (metric ? ac*AC_TO_HA : ac*HA_TO_AC).toString();
-      let f  = num("forage"); if (f>0) $("forage").value = (metric ? f*LBPAC_TO_KGHA : f*KGHA_TO_LBPAC).toString();
-      let w  = num("wt");     if (w>0) $("wt").value     = (metric ? w*LB_TO_KG : w*KG_TO_LB).toString();
-
       compute();
     }
 
-    // ===== Core compute (internal math in Imperial) =====
-    function getInputsImperial(){
-      const metric = $("unitSel").value === "met";
-
-      let acres = num("acres");
-      let forage = num("forage");
-      let wt = num("wt");
-
-      if (metric){
-        acres  = acres>0  ? acres*HA_TO_AC       : NaN;  // ha -> ac
-        forage = forage>0 ? forage*KGHA_TO_LBPAC : NaN;  // kg/ha -> lb/ac
-        wt     = wt>0     ? wt*KG_TO_LB          : NaN;  // kg -> lb
-      }
-
+    // Normalize inputs to US units for math
+    function getUS(){
+      const acresUS   = window.AGCUnits.get($("acres"));
+      const forageUS  = window.AGCUnits.get($("forage")); // lb/ac
+      const wtUS      = window.AGCUnits.get($("wt"));     // lb
       return {
-        acres,
-        forage_lbpac: forage,
+        acres: acresUS,
+        forage_lbpac: forageUS,
         util_pct: num("util"),
-        wt_lb: wt,
+        wt_lb: wtUS,
         intake_pct: num("intake"),
-        mode: $("mode").value,
         head: num("head"),
-        days: num("days")
+        days: num("days"),
+        mode: $("mode").value
       };
     }
 
     function compute(){
-      const I = getInputsImperial();
+      const I = getUS();
 
       if(!(I.acres>0) || !(I.forage_lbpac>0) || !(I.util_pct>=0) || !(I.wt_lb>0) || !(I.intake_pct>0)){
-        show(); $("steps").innerHTML = `<span class="note">Enter pasture, forage, and animal details to see the step-by-step.</span>`; return;
+        // clear
+        $("avail").textContent = "—";
+        $("intakeOut").textContent = "—";
+        $("resDays").textContent = "—";
+        $("resHead").textContent = "—";
+        $("aums").textContent = "—";
+        $("aumPerAc").textContent = "—";
+        $("aumPerHa").textContent = "—";
+        document.getElementById("steps").innerHTML = `<span class="note">Enter pasture, forage, and animal details to see the step-by-step.</span>`;
+        return;
       }
 
       const avail_lb   = I.acres * I.forage_lbpac * (I.util_pct/100);
       const intake_lb  = I.wt_lb * (I.intake_pct/100);
-      const aums       = avail_lb / AUM_LB;
-      const aumPerAc   = I.acres>0 ? (aums / I.acres) : NaN;
-      const aumPerHa   = (I.acres*AC_TO_HA)>0 ? (aums / (I.acres*AC_TO_HA)) : NaN;
 
       let resDays = NaN, resHead = NaN;
-      const lines = [];
-
-      lines.push(`<div>Available forage = ${fmt0(I.acres)} ac × ${fmt0(I.forage_lbpac)} lb/ac × ${fmt1(I.util_pct)}% = <strong>${fmt0(avail_lb)}</strong> lb</div>`);
-      lines.push(`<div>Intake/head/day = ${fmt0(I.wt_lb)} lb × ${(I.intake_pct/100).toFixed(2)} = <strong>${fmt0(intake_lb)}</strong> lb/day</div>`);
-
       if (intake_lb>0){
-        if (I.mode === "days"){
-          const head = I.head;
-          if (head>0){
-            resDays = avail_lb / (head * intake_lb);
-            lines.push(`<div>Grazing days = ${fmt0(avail_lb)} ÷ (${fmt0(head)} × ${fmt0(intake_lb)}) = <strong>${fmt1(resDays)}</strong> days</div>`);
-          } else {
-            lines.push(`<div>Enter head count to compute days.</div>`);
-          }
-        } else {
-          const days = I.days;
-          if (days>0){
-            resHead = avail_lb / (days * intake_lb);
-            lines.push(`<div>Head capacity = ${fmt0(avail_lb)} ÷ (${fmt1(days)} × ${fmt0(intake_lb)}) = <strong>${fmt1(resHead)}</strong> head</div>`);
-          } else {
-            lines.push(`<div>Enter grazing days to compute head capacity.</div>`);
-          }
+        if (I.mode === "days" && I.head>0){
+          resDays = avail_lb / (I.head * intake_lb);
+        } else if (I.mode === "head" && I.days>0){
+          resHead = avail_lb / (I.days * intake_lb);
         }
       }
 
-      lines.push(`<div>AUMs = ${fmt0(avail_lb)} ÷ 780 = <strong>${fmt1(aums)}</strong> AUM</div>`);
-      lines.push(`<div>Stocking rate = <strong>${fmt2(aumPerAc)}</strong> AUM/ac (<strong>${fmt2(aumPerHa)}</strong> AUM/ha)</div>`);
-      $("steps").innerHTML = `<div style="display:grid;gap:.35rem">${lines.join("")}</div>`;
+      const aums = avail_lb / AUM_LB;
+      const aumPerAc = I.acres>0 ? (aums / I.acres) : NaN;
+      const aumPerHa = (I.acres*AC_TO_HA)>0 ? (aums / (I.acres*AC_TO_HA)) : NaN;
 
-      show({
-        avail_lb,
-        availKg: avail_lb * LB_TO_KG,
-        intake_lb,
-        intakeKg: intake_lb * LB_TO_KG,
-        resDays,
-        resHead,
-        aums,
-        aumPerAc,
-        aumPerHa
-      });
+      // Display according to unit mode
+      const metric = (window.AGCUnits.mode()==='metric');
+      const availDisp  = metric ? avail_lb * LB_TO_KG : avail_lb;
+      const intakeDisp = metric ? intake_lb * LB_TO_KG : intake_lb;
 
-      // Optional simple analytics (safe no-op)
+      $("avail").textContent    = fmt0(availDisp);
+      $("intakeOut").textContent= fmt0(intakeDisp);
+      $("resDays").textContent  = fmt1(resDays);
+      $("resHead").textContent  = fmt1(resHead);
+      $("aums").textContent     = fmt1(aums);
+      $("aumPerAc").textContent = fmt2(aumPerAc);
+      $("aumPerHa").textContent = fmt2(aumPerHa);
+
+      // Step-by-step (in displayed units)
+      const steps = [];
+      const acresShow  = metric ? window.AGCUnits.out(I.acres, "ac>ha") : I.acres;
+      const forageShow = metric ? window.AGCUnits.out(I.forage_lbpac, "lbpac>kgha") : I.forage_lbpac;
+      const wtShow     = metric ? window.AGCUnits.out(I.wt_lb, "lb>kg") : I.wt_lb;
+
+      const areaLbl = metric ? "ha" : "ac";
+      const forageLbl = metric ? "kg/ha" : "lb/ac";
+      const massLbl = metric ? "kg" : "lb";
+
+      steps.push(`<div>Available forage = ${fmt0(acresShow)} ${areaLbl} × ${fmt0(forageShow)} ${forageLbl} × ${fmt1(I.util_pct)}% = <strong>${fmt0(availDisp)}</strong> ${massLbl}</div>`);
+      steps.push(`<div>Intake/head/day = ${fmt0(wtShow)} ${metric ? "kg" : "lb"} × ${(I.intake_pct/100).toFixed(2)} = <strong>${fmt0(intakeDisp)}</strong> ${massLbl}/day</div>`);
+      if (I.mode === "days" && Number.isFinite(resDays)) {
+        steps.push(`<div>Grazing days = ${fmt0(availDisp)} ÷ (${fmt0(I.head)} × ${fmt0(intakeDisp)}) = <strong>${fmt1(resDays)}</strong> days</div>`);
+      }
+      if (I.mode === "head" && Number.isFinite(resHead)) {
+        steps.push(`<div>Head capacity = ${fmt0(availDisp)} ÷ (${fmt1(I.days)} × ${fmt0(intakeDisp)}) = <strong>${fmt1(resHead)}</strong> head</div>`);
+      }
+      steps.push(`<div>AUMs = ${fmt0(metric ? availDisp/LB_TO_KG : availDisp)} ÷ 780 = <strong>${fmt1(aums)}</strong> AUM</div>`);
+      document.getElementById("steps").innerHTML = `<div style="display:grid;gap:.35rem">${steps.join("")}</div>`;
+
       try { window.plausible && window.plausible("Used Pasture Stocking"); } catch {}
     }
 
-    function show(o={}){
-      $("avail").textContent    = fmt0(o.avail_lb);
-      $("availKg").textContent  = fmt0(o.availKg);
-      $("intakeLb").textContent = fmt0(o.intake_lb);
-      $("intakeKg").textContent = fmt0(o.intakeKg);
-      $("resDays").textContent  = fmt1(o.resDays);
-      $("resHead").textContent  = fmt1(o.resHead);
-      $("aums").textContent     = fmt1(o.aums);
-      $("aumPerAc").textContent = fmt2(o.aumPerAc);
-      $("aumPerHa").textContent = fmt2(o.aumPerHa);
-    }
+    // initial render
+    onMode();
+    compute();
   </script>
 </Layout>
