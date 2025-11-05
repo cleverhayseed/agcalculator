@@ -29,8 +29,35 @@
     <meta name="apple-mobile-web-app-title" content="AgCalculator" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
+<!-- Funding Choices (Google CMP) — place BEFORE your custom consent script -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-4050846968323757?ers=1"></script>
+<script>
+  (function () {
+    // Required tiny iframe so Google CMP can run
+    function signalGooglefcPresent() {
+      if (!window.frames['googlefcPresent']) {
+        if (document.body) {
+          const f = document.createElement('iframe');
+          f.style = 'width:0;height:0;border:0;display:none';
+          f.name = 'googlefcPresent';
+          document.body.appendChild(f);
+        } else {
+          setTimeout(signalGooglefcPresent, 0);
+        }
+      }
+    }
+    signalGooglefcPresent();
+
+    // Tell your custom banner not to show when Google CMP is present
+    window.__useLocalConsentBanner = false;
+  })();
+</script>
+
+
     <!-- Consent + AdSense loader (loads AdSense ONLY after user grants ads consent) -->
     <script is:inline>
+      if (window.__useLocalConsentBanner === false) return;
+
       (function () {
         const KEY = 'agc_ads_consent'; // 'granted' | 'denied'
         const $ = (sel) => document.querySelector(sel);
