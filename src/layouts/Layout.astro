@@ -183,19 +183,101 @@
   <body>
     <slot />
 
-    <!-- Site-wide footer -->
-    <footer style="padding:2rem 0;color:var(--muted)">
-      <div class="wrap">
-        <small>
-          © {new Date().getFullYear()} AgCalculator ·
-          <a href="/about/">About</a> ·
-          <a href="/privacy/">Privacy</a> ·
-          <a href="/terms/">Terms</a> ·
-          <a href="mailto:info@cleverhayseed.com">Contact</a> ·
-          <a id="privacy-choices-inline" href="#">Privacy choices</a>
-        </small>
-      </div>
-    </footer>
+  <!-- Site-wide footer -->
+<footer style="padding:2rem 0;color:var(--muted)">
+  <div class="wrap">
+    <small>
+      © {new Date().getFullYear()} AgCalculator ·
+      <a href="/about/">About</a> ·
+      <a href="/privacy/">Privacy</a> ·
+      <a href="/terms/">Terms</a> ·
+      <a href="mailto:info@cleverhayseed.com">Contact</a> ·
+      <button id="privacy-choices" type="button" class="linklike">Privacy choices</button>
+    </small>
+  </div>
+</footer>
+
+<style is:inline>
+  .linklike{background:none;border:0;padding:0;font:inherit;color:var(--green);text-decoration:underline;cursor:pointer}
+  .linklike:focus{outline:2px solid #94a3b8;outline-offset:2px}
+  /* lightweight fallback modal if a CMP isn't available */
+  .consent-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(15,23,42,.5);z-index:9999}
+  .consent-modal.open{display:flex}
+  .consent-card{background:#fff;max-width:560px;border-radius:12px;border:1px solid #e5e7eb;padding:1rem}
+  .consent-card h3{margin:.2rem 0 .6rem}
+  .consent-card p{margin:.4rem 0}
+  .consent-card .row{display:flex;gap:.5rem;justify-content:flex-end;margin-top:.75rem}
+  .btn{padding:.5rem .9rem;border-radius:10px;border:1px solid #cbd5e1;background:#fff;cursor:pointer}
+  .btn.primary{background:var(--green);border-color:var(--green);color:#fff}
+</style>
+
+<!-- Fallback consent modal (shown only if we can't open your CMP) -->
+<div id="consent-modal" class="consent-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="consent-title">
+  <div class="consent-card">
+    <h3 id="consent-title">Privacy choices</h3>
+    <p>We’ll try to open your consent manager. If it isn’t available, you can reset this site’s stored choices and reload.</p>
+    <div class="row">
+      <button class="btn" id="consent-cancel" type="button">Close</button>
+      <button class="btn primary" id="consent-reset" type="button">Reset &amp; reload</button>
+    </div>
+    <p class="note">This clears local storage keys like “agc_*” and IAB TCF strings, then refreshes the page.</p>
+  </div>
+</div>
+
+<script is:inline>
+  (function(){
+    const btn = document.getElementById('privacy-choices');
+    const modal = document.getElementById('consent-modal');
+    const cancel = document.getElementById('consent-cancel');
+    const reset = document.getElementById('consent-reset');
+
+    function showModal(){ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); }
+    function hideModal(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
+
+    // Try to open whichever CMP you’re using; otherwise show our fallback
+    function openCMP(){
+      // IAB TCF-compatible CMPs
+      if (typeof window.__tcfapi === 'function'){
+        try { window.__tcfapi('displayConsentUi', 2, function(){}); return true; } catch(e){}
+      }
+      // Google Funding Choices (best-effort)
+      if (window.googlefc && (googlefc.showRevocationMessage || googlefc.showDialog)){
+        try {
+          if (typeof googlefc.showRevocationMessage === 'function') { googlefc.showRevocationMessage(); return true; }
+          if (typeof googlefc.showDialog === 'function') { googlefc.showDialog(); return true; }
+        } catch(e){}
+      }
+      // Your custom banner (if present)
+      if (window.agcConsent && typeof window.agcConsent.show === 'function'){
+        try { window.agcConsent.show(); return true; } catch(e){}
+      }
+      return false;
+    }
+
+    function clearLocalConsent(){
+      try {
+        Object.keys(localStorage).forEach(k=>{
+          if (/^(agc_|agc-)/i.test(k) || /^IABTCF_/.test(k) || /^fcConsent/i.test(k)) localStorage.removeItem(k);
+        });
+      }catch(e){}
+      try {
+        document.cookie.split(';').forEach(c=>{
+          const [name] = c.trim().split('=');
+          if (/^(fcConsent|euconsent-v2|usprivacy|agc_)/i.test(name)){
+            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax';
+          }
+        });
+      }catch(e){}
+      location.reload();
+    }
+
+    btn?.addEventListener('click', (e)=>{ e.preventDefault(); if (!openCMP()) showModal(); });
+    cancel?.addEventListener('click', hideModal);
+    modal?.addEventListener('click', (e)=>{ if (e.target === modal) hideModal(); });
+    reset?.addEventListener('click', clearLocalConsent);
+  })();
+</script>
+
 
     <!-- Optional: “Install app” link handler (only runs if an element with id="install-app" exists) -->
     <script is:inline>
