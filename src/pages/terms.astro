@@ -12,7 +12,7 @@ import Layout from "../layouts/Layout.astro";
   <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
 
   <main class="wrap" style="max-width:760px">
-    <h1>Terms & Disclaimers</h1>
+    <h1>Terms &amp; Disclaimers</h1>
     <p>AgCalculator provides lightweight calculators for common farm and homestead tasks. By using this site, you agree to these terms.</p>
 
     <h2>Estimates only</h2>
@@ -30,6 +30,14 @@ import Layout from "../layouts/Layout.astro";
     <h2>Accuracy</h2>
     <p>We aim to keep formulas and defaults accurate. However, errors can occur and assumptions vary. Please double-check critical calculations.</p>
 
+    <h2>Privacy &amp; choices</h2>
+    <p>You can manage advertising consent at any time:</p>
+    <p>
+      <button id="privacy-choices-inline" type="button" style="padding:.5rem .75rem;border:1px solid #cbd5e1;border-radius:8px;background:#fff;cursor:pointer">
+        Open privacy choices
+      </button>
+    </p>
+
     <h2>Contact</h2>
     <p>Questions or feedback? <a href="mailto:info@cleverhayseed.com">info@cleverhayseed.com</a></p>
 
@@ -37,8 +45,9 @@ import Layout from "../layouts/Layout.astro";
   </main>
 
   <style>
+    :root{--green:#2F855A;--slate:#334155}
     .wrap{max-width:960px;margin:0 auto;padding:1rem}
-    h1{margin:.5rem 0 1rem}
+    h1{margin:.5rem 0 1rem;color:var(--green)}
     h2{margin:1.25rem 0 .5rem}
     ul{margin:.25rem 0 0 1.2rem}
   </style>
