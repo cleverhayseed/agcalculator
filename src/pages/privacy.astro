@@ -85,4 +85,59 @@ import Layout from "../layouts/Layout.astro";
 
       <h2>Analytics (Plausible)</h2>
       <p>
-        We use Plausible Anal
+        We use Plausible Analytics (EU-based, cookie-less) to measure aggregate usage only.
+        It does not set cookies or track individuals. Details:
+        <a href="https://plausible.io/data-policy" target="_blank" rel="noopener">plausible.io/data-policy</a>.
+      </p>
+
+      <h2>EEA/UK/CH consent &amp; US privacy</h2>
+      <p>
+        In the EEA/UK/Switzerland, we ask for consent for advertising cookies. In certain US states,
+        you may have the right to opt out of the “sale” or “sharing” of personal information for targeted advertising.
+      </p>
+
+      <h3>Your choices</h3>
+      <ul class="choices-list">
+        <li>
+          <button id="privacy-choices" type="button" class="btn-inline">Open privacy choices</button>
+        </li>
+        <li>
+          Google Ad Settings:
+          <a href="https://adssettings.google.com" target="_blank" rel="noopener">adssettings.google.com</a>
+        </li>
+      </ul>
+
+      <h2>Contact</h2>
+      <p>Email: <a href="mailto:info@cleverhayseed.com">info@cleverhayseed.com</a></p>
+
+      <script is:inline>
+        // Re-open consent banner / CMP from this page
+        (function(){
+          const btn = document.getElementById('privacy-choices');
+          btn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Try CMPs, then fall back to the Layout's modal via event
+            let opened = false;
+            try {
+              if (typeof window.__tcfapi === 'function') {
+                window.__tcfapi('displayConsentUi', 2, function(){});
+                opened = true;
+              }
+            } catch {}
+            try {
+              if (window.googlefc) {
+                if (typeof googlefc.showRevocationMessage === 'function') { googlefc.showRevocationMessage(); opened = true; }
+                else if (typeof googlefc.showDialog === 'function') { googlefc.showDialog(); opened = true; }
+              }
+            } catch {}
+            if (!opened) window.dispatchEvent(new CustomEvent('open-consent'));
+          });
+        })();
+      </script>
+
+      <p class="note" style="color:#64748b;margin-top:1rem">
+        Prepared by AgCalculator.
+      </p>
+    </article>
+  </main>
+</Layout>
