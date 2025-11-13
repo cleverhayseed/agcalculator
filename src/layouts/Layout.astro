@@ -226,32 +226,53 @@
 
 <script is:inline>
   (function(){
-    const btn = document.getElementById('privacy-choices');
-    const modal = document.getElementById('consent-modal');
+    const btns = [
+      document.getElementById('privacy-choices'),
+      document.getElementById('privacy-choices-inline')
+    ].filter(Boolean);
+
+    const modal  = document.getElementById('consent-modal');
     const cancel = document.getElementById('consent-cancel');
-    const reset = document.getElementById('consent-reset');
+    const reset  = document.getElementById('consent-reset');
 
     function showModal(){ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); }
     function hideModal(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
 
-    // Try to open whichever CMP you’re using; otherwise show our fallback
-    function openCMP(){
-      // IAB TCF-compatible CMPs
-      if (typeof window.__tcfapi === 'function'){
-        try { window.__tcfapi('displayConsentUi', 2, function(){}); return true; } catch(e){}
-      }
-      // Google Funding Choices (best-effort)
-      if (window.googlefc && (googlefc.showRevocationMessage || googlefc.showDialog)){
-        try {
-          if (typeof googlefc.showRevocationMessage === 'function') { googlefc.showRevocationMessage(); return true; }
-          if (typeof googlefc.showDialog === 'function') { googlefc.showDialog(); return true; }
-        } catch(e){}
-      }
-      // Your custom banner (if present)
-      if (window.agcConsent && typeof window.agcConsent.show === 'function'){
-        try { window.agcConsent.show(); return true; } catch(e){}
-      }
-      return false;
+    // Heuristic: check if a CMP UI appears in the DOM
+    function cmpOverlayVisible(){
+      return Boolean(
+        document.querySelector('iframe[src*="fundingchoicesmessages.google.com"]')
+        || document.querySelector('[id*="sp_message_container"], .sp-message-container') // some TCF UIs
+        || document.querySelector('[data-fc-container], [id^="fc-"], .fc-consent-root')
+      );
+    }
+
+    // Try to open a CMP; if nothing shows quickly, fall back to our modal
+    function openCMPWithFallback(){
+      // Attempt IAB TCF display
+      try {
+        if (typeof window.__tcfapi === 'function') {
+          window.__tcfapi('displayConsentUi', 2, function(ok){ /* ok may be undefined; fallback timer handles UI check */ });
+        }
+      } catch (e) {}
+
+      // Attempt Google Funding Choices
+      try {
+        if (window.googlefc) {
+          if (typeof googlefc.showRevocationMessage === 'function') googlefc.showRevocationMessage();
+          else if (typeof googlefc.showDialog === 'function')      googlefc.showDialog();
+        }
+      } catch (e) {}
+
+      // Attempt your custom banner, if present
+      try {
+        if (window.agcConsent && typeof window.agcConsent.show === 'function') window.agcConsent.show();
+      } catch (e) {}
+
+      // If nothing visible after a short wait, show our fallback
+      setTimeout(() => {
+        if (!cmpOverlayVisible() && !modal.classList.contains('open')) showModal();
+      }, 900);
     }
 
     function clearLocalConsent(){
@@ -259,7 +280,7 @@
         Object.keys(localStorage).forEach(k=>{
           if (/^(agc_|agc-)/i.test(k) || /^IABTCF_/.test(k) || /^fcConsent/i.test(k)) localStorage.removeItem(k);
         });
-      }catch(e){}
+      } catch(e) {}
       try {
         document.cookie.split(';').forEach(c=>{
           const [name] = c.trim().split('=');
@@ -267,11 +288,17 @@
             document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax';
           }
         });
-      }catch(e){}
+      } catch(e) {}
       location.reload();
     }
 
-    btn?.addEventListener('click', (e)=>{ e.preventDefault(); if (!openCMP()) showModal(); });
+    btns.forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        openCMPWithFallback();
+      });
+    });
+
     cancel?.addEventListener('click', hideModal);
     modal?.addEventListener('click', (e)=>{ if (e.target === modal) hideModal(); });
     reset?.addEventListener('click', clearLocalConsent);
