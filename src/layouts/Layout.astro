@@ -29,121 +29,143 @@
     <meta name="apple-mobile-web-app-title" content="AgCalculator" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
-<!-- Funding Choices (Google CMP) — place BEFORE your custom consent script -->
-<script async src="https://fundingchoicesmessages.google.com/i/pub-4050846968323757?ers=1"></script>
-<script>
-  (function () {
-    // Required tiny iframe so Google CMP can run
-    function signalGooglefcPresent() {
-      if (!window.frames['googlefcPresent']) {
-        if (document.body) {
-          const f = document.createElement('iframe');
-          f.style = 'width:0;height:0;border:0;display:none';
-          f.name = 'googlefcPresent';
-          document.body.appendChild(f);
-        } else {
-          setTimeout(signalGooglefcPresent, 0);
+    <!-- Funding Choices (Google CMP) -->
+    <script async src="https://fundingchoicesmessages.google.com/i/pub-4050846968323757?ers=1"></script>
+    <script>
+      (function () {
+        // Tiny iframe so FC can signal presence
+        function signalGooglefcPresent() {
+          if (!window.frames['googlefcPresent']) {
+            if (document.body) {
+              const f = document.createElement('iframe');
+              f.style = 'width:0;height:0;border:0;display:none';
+              f.name = 'googlefcPresent';
+              document.body.appendChild(f);
+            } else {
+              setTimeout(signalGooglefcPresent, 0);
+            }
+          }
         }
-      }
-    }
-    signalGooglefcPresent();
+        signalGooglefcPresent();
 
-    // Tell your custom banner not to show when Google CMP is present
-    window.__useLocalConsentBanner = false;
-  })();
-</script>
+        // Decide provider (FC vs local) and broadcast
+        function decide() {
+          const hasFC = !!(window.googlefc && (googlefc.showRevocationMessage || googlefc.showDialog));
+          window.__useLocalConsentBanner = !hasFC; // false => FC active
+          window.dispatchEvent(new CustomEvent('agc-consent-provider', {
+            detail: { provider: hasFC ? 'fundingchoices' : 'local' }
+          }));
+        }
+        // Poll briefly for googlefc then decide
+        const t0 = Date.now();
+        const iv = setInterval(() => {
+          if (window.googlefc || Date.now() - t0 > 1500) { clearInterval(iv); decide(); }
+        }, 100);
+      })();
+    </script>
 
+    <!-- Local Consent + AdSense loader (runs only if FC isn't active) -->
+    <script>
+      (function () {
+        function initLocalConsent() {
+          if (window.__useLocalConsentBanner === false) return; // FC is active → skip local banner
 
-   <!-- Consent + AdSense loader (loads AdSense ONLY after user grants ads consent) -->
-<script is:inline>
-  (function () {
-    // If Google Funding Choices is present, skip our local banner.
-    if (window.__useLocalConsentBanner === false) return;
+          const KEY = 'agc_ads_consent'; // 'granted' | 'denied'
+          const $ = (sel) => document.querySelector(sel);
 
-    const KEY = 'agc_ads_consent'; // 'granted' | 'denied'
-    const $ = (sel) => document.querySelector(sel);
+          function hasChoice() {
+            const v = localStorage.getItem(KEY);
+            return v === 'granted' || v === 'denied';
+          }
+          function grant() {
+            localStorage.setItem(KEY, 'granted');
+            loadAdsense();
+            hideBanner();
+          }
+          function deny() {
+            localStorage.setItem(KEY, 'denied');
+            hideBanner();
+          }
 
-    function hasChoice() {
-      const v = localStorage.getItem(KEY);
-      return v === 'granted' || v === 'denied';
-    }
-    function grant() {
-      localStorage.setItem(KEY, 'granted');
-      loadAdsense();
-      hideBanner();
-    }
-    function deny() {
-      localStorage.setItem(KEY, 'denied');
-      hideBanner();
-    }
+          function loadAdsense() {
+            if (document.getElementById('adsbygooglejs')) return;
+            const s = document.createElement('script');
+            s.id = 'adsbygooglejs';
+            s.async = true;
+            s.crossOrigin = 'anonymous';
+            // IMPORTANT: your publisher ID
+            s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4050846968323757';
+            document.head.appendChild(s);
+          }
 
-    function loadAdsense() {
-      if (document.getElementById('adsbygooglejs')) return;
-      const s = document.createElement('script');
-      s.id = 'adsbygooglejs';
-      s.async = true;
-      s.crossOrigin = 'anonymous';
-      s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4050846968323757';
-      document.head.appendChild(s);
-    }
+          function createBanner() {
+            if (document.getElementById('consent-banner')) return;
+            const el = document.createElement('div');
+            el.id = 'consent-banner';
+            el.role = 'dialog';
+            el.ariaLabel = 'Privacy choices for advertising';
+            el.style.cssText =
+              'position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:9999;background:#fff;border:1px solid #cbd5e1;border-radius:12px;max-width:720px;margin:0 auto;padding:1rem;box-shadow:0 8px 24px rgba(0,0,0,.08);';
+            el.innerHTML = `
+              <div style="display:flex;gap:.9rem;align-items:flex-start">
+                <div style="flex:1;min-width:0">
+                  <strong style="display:block;font-size:1rem">Privacy choices</strong>
+                  <div style="color:#64748b;margin-top:.25rem;font-size:.95rem;line-height:1.45">
+                    We use Google AdSense for advertising and only load it after you allow ads. Our analytics (Plausible) is cookie-free.
+                    You can change this anytime via “Privacy choices” in the footer.
+                  </div>
+                </div>
+                <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+                  <button id="consent-allow" style="padding:.55rem .8rem;border:none;border-radius:10px;background:#2F855A;color:#fff;cursor:pointer">Allow ads</button>
+                  <button id="consent-deny"  style="padding:.55rem .8rem;border:1px solid #cbd5e1;border-radius:10px;background:#fff;cursor:pointer">No ads</button>
+                </div>
+              </div>`;
+            document.body.appendChild(el);
+            document.getElementById('consent-allow').onclick = grant;
+            document.getElementById('consent-deny').onclick = deny;
+          }
+          function hideBanner() { document.getElementById('consent-banner')?.remove(); }
 
-    function createBanner() {
-      if (document.getElementById('consent-banner')) return;
-      const el = document.createElement('div');
-      el.id = 'consent-banner';
-      el.role = 'dialog';
-      el.ariaLabel = 'Privacy choices for advertising';
-      el.style.cssText =
-        'position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:9999;background:#fff;border:1px solid #cbd5e1;border-radius:12px;max-width:720px;margin:0 auto;padding:1rem;box-shadow:0 8px 24px rgba(0,0,0,.08);';
-      el.innerHTML = `
-        <div style="display:flex;gap:.9rem;align-items:flex-start">
-          <div style="flex:1;min-width:0">
-            <strong style="display:block;font-size:1rem">Privacy choices</strong>
-            <div style="color:#64748b;margin-top:.25rem;font-size:.95rem;line-height:1.45">
-              We use Google AdSense for advertising and only load it after you allow ads. Our analytics (Plausible) is cookie-free.
-              You can change this anytime via “Privacy choices” in the footer.
-            </div>
-          </div>
-          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-            <button id="consent-allow" style="padding:.55rem .8rem;border:none;border-radius:10px;background:#2F855A;color:#fff;cursor:pointer">Allow ads</button>
-            <button id="consent-deny"  style="padding:.55rem .8rem;border:1px solid #cbd5e1;border-radius:10px;background:#fff;cursor:pointer">No ads</button>
-          </div>
-        </div>`;
-      document.body.appendChild(el);
-      document.getElementById('consent-allow').onclick = grant;
-      document.getElementById('consent-deny').onclick = deny;
-    }
-    function hideBanner() { document.getElementById('consent-banner')?.remove(); }
+          // Footer link can open FC (if it later appears) or our banner
+          window.addEventListener('load', () => {
+            const link = document.getElementById('privacy-choices') || document.getElementById('privacy-choices-inline');
+            if (link) {
+              link.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Prefer a CMP if it’s present
+                try { if (typeof window.__tcfapi === 'function') { window.__tcfapi('displayConsentUi', 2, function(){}); return; } } catch(e){}
+                try {
+                  if (window.googlefc) {
+                    if (typeof googlefc.showRevocationMessage === 'function') { googlefc.showRevocationMessage(); return; }
+                    if (typeof googlefc.showDialog === 'function') { googlefc.showDialog(); return; }
+                  }
+                } catch(e){}
+                // Else show our banner
+                createBanner();
+              });
+            }
+          });
 
-    // API for pages/links to reopen the banner
-    window.addEventListener('open-consent', () => {
-      localStorage.removeItem(KEY);
-      createBanner();
-    });
+          // First-load behavior
+          if (hasChoice()) {
+            if (localStorage.getItem(KEY) === 'granted') loadAdsense();
+          } else {
+            if (document.readyState === 'complete') createBanner();
+            else window.addEventListener('load', createBanner);
+          }
+        }
 
-    // Footer inline link handler (if present)
-    window.addEventListener('load', () => {
-      const link = document.getElementById('privacy-choices-inline');
-      if (link) {
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          window.dispatchEvent(new CustomEvent('open-consent'));
-        });
-      }
-    });
-
-    // First-load behavior
-    if (hasChoice()) {
-      if (localStorage.getItem(KEY) === 'granted') loadAdsense();
-    } else {
-      if (document.readyState === 'complete') createBanner(); else window.addEventListener('load', createBanner);
-    }
-  })();
-</script>
-
+        // Wait for provider decision
+        if (typeof window.__useLocalConsentBanner === 'undefined') {
+          window.addEventListener('agc-consent-provider', initLocalConsent, { once: true });
+        } else {
+          initLocalConsent();
+        }
+      })();
+    </script>
 
     <!-- Plausible (cookie-free) -->
-    <script is:inline>
+    <script>
       window.plausible = window.plausible || function(){ (window.plausible.q = window.plausible.q || []).push(arguments); };
     </script>
     <script defer data-domain="agcalculator.com" src="https://plausible.io/js/script.js"></script>
@@ -185,167 +207,139 @@
   <body>
     <slot />
 
-  <!-- Site-wide footer -->
-<footer style="padding:2rem 0;color:var(--muted)">
-  <div class="wrap">
-    <small>
-      © {new Date().getFullYear()} AgCalculator ·
-      <a href="/about/">About</a> ·
-      <a href="/privacy/">Privacy</a> ·
-      <a href="/terms/">Terms</a> ·
-      <a href="mailto:info@cleverhayseed.com">Contact</a> ·
-      <button id="privacy-choices" type="button" class="linklike">Privacy choices</button>
-    </small>
-  </div>
-</footer>
+    <!-- Site-wide footer -->
+    <footer style="padding:2rem 0;color:var(--muted)">
+      <div class="wrap">
+        <small>
+          © {new Date().getFullYear()} AgCalculator ·
+          <a href="/about/">About</a> ·
+          <a href="/privacy/">Privacy</a> ·
+          <a href="/terms/">Terms</a> ·
+          <a href="mailto:info@cleverhayseed.com">Contact</a> ·
+          <button id="privacy-choices" type="button" class="linklike">Privacy choices</button>
+        </small>
+      </div>
+    </footer>
 
-<style is:inline>
-  .linklike{background:none;border:0;padding:0;font:inherit;color:var(--green);text-decoration:underline;cursor:pointer}
-  .linklike:focus{outline:2px solid #94a3b8;outline-offset:2px}
-  /* lightweight fallback modal if a CMP isn't available */
-  .consent-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(15,23,42,.5);z-index:9999}
-  .consent-modal.open{display:flex}
-  .consent-card{background:#fff;max-width:560px;border-radius:12px;border:1px solid #e5e7eb;padding:1rem}
-  .consent-card h3{margin:.2rem 0 .6rem}
-  .consent-card p{margin:.4rem 0}
-  .consent-card .row{display:flex;gap:.5rem;justify-content:flex-end;margin-top:.75rem}
-  .btn{padding:.5rem .9rem;border-radius:10px;border:1px solid #cbd5e1;background:#fff;cursor:pointer}
-  .btn.primary{background:var(--green);border-color:var(--green);color:#fff}
-</style>
+    <style>
+      .linklike{background:none;border:0;padding:0;font:inherit;color:var(--green);text-decoration:underline;cursor:pointer}
+      .linklike:focus{outline:2px solid #94a3b8;outline-offset:2px}
+      /* Fallback modal */
+      .consent-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(15,23,42,.5);z-index:9999}
+      .consent-modal.open{display:flex}
+      .consent-card{background:#fff;max-width:560px;border-radius:12px;border:1px solid #e5e7eb;padding:1rem}
+      .consent-card h3{margin:.2rem 0 .6rem}
+      .consent-card p{margin:.4rem 0}
+      .consent-card .row{display:flex;gap:.5rem;justify-content:flex-end;margin-top:.75rem}
+      .btn{padding:.5rem .9rem;border-radius:10px;border:1px solid #cbd5e1;background:#fff;cursor:pointer}
+      .btn.primary{background:var(--green);border-color:var(--green);color:#fff}
+    </style>
 
-<!-- Fallback consent modal (shown only if we can't open your CMP) -->
-<div id="consent-modal" class="consent-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="consent-title">
-  <div class="consent-card">
-    <h3 id="consent-title">Privacy choices</h3>
-    <p>We’ll try to open your consent manager. If it isn’t available, you can reset this site’s stored choices and reload.</p>
-    <div class="row">
-      <button class="btn" id="consent-cancel" type="button">Close</button>
-      <button class="btn primary" id="consent-reset" type="button">Reset &amp; reload</button>
+    <!-- Fallback consent modal (used only if no CMP UI appears) -->
+    <div id="consent-modal" class="consent-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="consent-title">
+      <div class="consent-card">
+        <h3 id="consent-title">Privacy choices</h3>
+        <p>We’ll try to open your consent manager. If it isn’t available, you can reset this site’s stored choices and reload.</p>
+        <div class="row">
+          <button class="btn" id="consent-cancel" type="button">Close</button>
+          <button class="btn primary" id="consent-reset" type="button">Reset &amp; reload</button>
+        </div>
+        <p class="note">This clears local storage keys like “agc_*” and IAB TCF strings, then refreshes the page.</p>
+      </div>
     </div>
-    <p class="note">This clears local storage keys like “agc_*” and IAB TCF strings, then refreshes the page.</p>
-  </div>
-</div>
 
-<script is:inline>
-  (function(){
-    const btns = [
-      document.getElementById('privacy-choices'),
-      document.getElementById('privacy-choices-inline')
-    ].filter(Boolean);
+    <script>
+      (function(){
+        const btns = [
+          document.getElementById('privacy-choices'),
+          document.getElementById('privacy-choices-inline')
+        ].filter(Boolean);
 
-    const modal  = document.getElementById('consent-modal');
-    const cancel = document.getElementById('consent-cancel');
-    const reset  = document.getElementById('consent-reset');
+        const modal  = document.getElementById('consent-modal');
+        const cancel = document.getElementById('consent-cancel');
+        const reset  = document.getElementById('consent-reset');
 
-    function showModal(){ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); }
-    function hideModal(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
+        function showModal(){ modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); }
+        function hideModal(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
 
-    // Heuristic: check if a CMP UI appears in the DOM
-    function cmpOverlayVisible(){
-      return Boolean(
-        document.querySelector('iframe[src*="fundingchoicesmessages.google.com"]')
-        || document.querySelector('[id*="sp_message_container"], .sp-message-container') // some TCF UIs
-        || document.querySelector('[data-fc-container], [id^="fc-"], .fc-consent-root')
-      );
-    }
-
-    // Try to open a CMP; if nothing shows quickly, fall back to our modal
-    function openCMPWithFallback(){
-      // Attempt IAB TCF display
-      try {
-        if (typeof window.__tcfapi === 'function') {
-          window.__tcfapi('displayConsentUi', 2, function(ok){ /* ok may be undefined; fallback timer handles UI check */ });
+        function cmpOverlayVisible(){
+          return Boolean(
+            document.querySelector('iframe[src*="fundingchoicesmessages.google.com"]')
+            || document.querySelector('[id*="sp_message_container"], .sp-message-container')
+            || document.querySelector('[data-fc-container], [id^="fc-"], .fc-consent-root')
+          );
         }
-      } catch (e) {}
 
-      // Attempt Google Funding Choices
-      try {
-        if (window.googlefc) {
-          if (typeof googlefc.showRevocationMessage === 'function') googlefc.showRevocationMessage();
-          else if (typeof googlefc.showDialog === 'function')      googlefc.showDialog();
+        function openCMPWithFallback(){
+          // IAB TCF
+          try { if (typeof window.__tcfapi === 'function') { window.__tcfapi('displayConsentUi', 2, function(){}); } } catch(e){}
+          // Google Funding Choices
+          try {
+            if (window.googlefc) {
+              if (typeof googlefc.showRevocationMessage === 'function') googlefc.showRevocationMessage();
+              else if (typeof googlefc.showDialog === 'function') googlefc.showDialog();
+            }
+          } catch(e){}
+          // Your custom banner, if present
+          try { if (window.agcConsent && typeof window.agcConsent.show === 'function') window.agcConsent.show(); } catch(e){}
+
+          setTimeout(() => {
+            if (!cmpOverlayVisible() && !modal.classList.contains('open')) showModal();
+          }, 900);
         }
-      } catch (e) {}
 
-      // Attempt your custom banner, if present
-      try {
-        if (window.agcConsent && typeof window.agcConsent.show === 'function') window.agcConsent.show();
-      } catch (e) {}
+        function clearLocalConsent(){
+          try {
+            Object.keys(localStorage).forEach(k=>{
+              if (/^(agc_|agc-)/i.test(k) || /^IABTCF_/.test(k) || /^fcConsent/i.test(k)) localStorage.removeItem(k);
+            });
+          } catch(e) {}
+          try {
+            document.cookie.split(';').forEach(c=>{
+              const [name] = c.trim().split('=');
+              if (/^(fcConsent|euconsent-v2|usprivacy|agc_)/i.test(name)){
+                document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax';
+              }
+            });
+          } catch(e) {}
+          location.reload();
+        }
 
-      // If nothing visible after a short wait, show our fallback
-      setTimeout(() => {
-        if (!cmpOverlayVisible() && !modal.classList.contains('open')) showModal();
-      }, 900);
-    }
-
-    function clearLocalConsent(){
-      try {
-        Object.keys(localStorage).forEach(k=>{
-          if (/^(agc_|agc-)/i.test(k) || /^IABTCF_/.test(k) || /^fcConsent/i.test(k)) localStorage.removeItem(k);
+        btns.forEach(btn=>{
+          btn.addEventListener('click', (e)=>{ e.preventDefault(); openCMPWithFallback(); });
         });
-      } catch(e) {}
-      try {
-        document.cookie.split(';').forEach(c=>{
-          const [name] = c.trim().split('=');
-          if (/^(fcConsent|euconsent-v2|usprivacy|agc_)/i.test(name)){
-            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax';
-          }
-        });
-      } catch(e) {}
-      location.reload();
-    }
+        cancel?.addEventListener('click', hideModal);
+        modal?.addEventListener('click', (e)=>{ if (e.target === modal) hideModal(); });
+        reset?.addEventListener('click', clearLocalConsent);
+      })();
+    </script>
 
-    btns.forEach(btn=>{
-      btn.addEventListener('click', (e)=>{
-        e.preventDefault();
-        openCMPWithFallback();
-      });
-    });
-
-    cancel?.addEventListener('click', hideModal);
-    modal?.addEventListener('click', (e)=>{ if (e.target === modal) hideModal(); });
-    reset?.addEventListener('click', clearLocalConsent);
-  })();
-</script>
-
-
-    <!-- Optional: “Install app” link handler (only runs if an element with id="install-app" exists) -->
-    <script is:inline>
+    <!-- Optional: “Install app” link handler -->
+    <script>
       (function () {
         const installLink = document.getElementById('install-app');
         if (!installLink) return;
         let deferredPrompt = null;
-
         const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent);
 
-        window.addEventListener('beforeinstallprompt', (e) => {
-          e.preventDefault();
-          deferredPrompt = e;
-        });
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
 
         installLink.addEventListener('click', async (evt) => {
           evt.preventDefault();
-
           if (deferredPrompt) {
             deferredPrompt.prompt();
-            try {
-              const { outcome } = await deferredPrompt.userChoice;
-              if (outcome) { try { window.plausible && window.plausible('A2HS installed'); } catch {} }
-            } catch {}
+            try { const { outcome } = await deferredPrompt.userChoice; if (outcome) { try { window.plausible && window.plausible('A2HS installed'); } catch {} } } catch {}
             deferredPrompt = null;
             return;
           }
-
-          if (isIOS()) {
-            alert('On iPhone/iPad: tap the Share button → “Add to Home Screen”.');
-          } else {
-            alert('Use your browser menu → “Install app” or “Add to Home screen”.');
-          }
+          if (isIOS()) alert('On iPhone/iPad: tap the Share button → “Add to Home Screen”.');
+          else alert('Use your browser menu → “Install app” or “Add to Home screen”.');
         });
       })();
     </script>
 
     <!-- Service worker -->
-    <script is:inline>
+    <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js').catch(() => {});
