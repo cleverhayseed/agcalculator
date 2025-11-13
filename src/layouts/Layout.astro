@@ -54,91 +54,93 @@
 </script>
 
 
-    <!-- Consent + AdSense loader (loads AdSense ONLY after user grants ads consent) -->
-    <script is:inline>
-      if (window.__useLocalConsentBanner === false) return;
+   <!-- Consent + AdSense loader (loads AdSense ONLY after user grants ads consent) -->
+<script is:inline>
+  (function () {
+    // If Google Funding Choices is present, skip our local banner.
+    if (window.__useLocalConsentBanner === false) return;
 
-      (function () {
-        const KEY = 'agc_ads_consent'; // 'granted' | 'denied'
-        const $ = (sel) => document.querySelector(sel);
+    const KEY = 'agc_ads_consent'; // 'granted' | 'denied'
+    const $ = (sel) => document.querySelector(sel);
 
-        function hasChoice() {
-          const v = localStorage.getItem(KEY);
-          return v === 'granted' || v === 'denied';
-        }
-        function grant() {
-          localStorage.setItem(KEY, 'granted');
-          loadAdsense();
-          hideBanner();
-        }
-        function deny() {
-          localStorage.setItem(KEY, 'denied');
-          hideBanner();
-        }
+    function hasChoice() {
+      const v = localStorage.getItem(KEY);
+      return v === 'granted' || v === 'denied';
+    }
+    function grant() {
+      localStorage.setItem(KEY, 'granted');
+      loadAdsense();
+      hideBanner();
+    }
+    function deny() {
+      localStorage.setItem(KEY, 'denied');
+      hideBanner();
+    }
 
-        function loadAdsense() {
-          if (document.getElementById('adsbygooglejs')) return;
-          const s = document.createElement('script');
-          s.id = 'adsbygooglejs';
-          s.async = true;
-          s.crossOrigin = 'anonymous';
-          s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4050846968323757';
-          document.head.appendChild(s);
-        }
+    function loadAdsense() {
+      if (document.getElementById('adsbygooglejs')) return;
+      const s = document.createElement('script');
+      s.id = 'adsbygooglejs';
+      s.async = true;
+      s.crossOrigin = 'anonymous';
+      s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4050846968323757';
+      document.head.appendChild(s);
+    }
 
-        function createBanner() {
-          if (document.getElementById('consent-banner')) return;
-          const el = document.createElement('div');
-          el.id = 'consent-banner';
-          el.role = 'dialog';
-          el.ariaLabel = 'Privacy choices for advertising';
-          el.style.cssText =
-            'position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:9999;background:#fff;border:1px solid #cbd5e1;border-radius:12px;max-width:720px;margin:0 auto;padding:1rem;box-shadow:0 8px 24px rgba(0,0,0,.08);';
-          el.innerHTML = `
-            <div style="display:flex;gap:.9rem;align-items:flex-start">
-              <div style="flex:1;min-width:0">
-                <strong style="display:block;font-size:1rem">Privacy choices</strong>
-                <div style="color:#64748b;margin-top:.25rem;font-size:.95rem;line-height:1.45">
-                  We use Google AdSense for advertising and only load it after you allow ads. Our analytics (Plausible) is cookie-free.
-                  You can change this anytime via “Privacy choices” in the footer.
-                </div>
-              </div>
-              <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-                <button id="consent-allow" style="padding:.55rem .8rem;border:none;border-radius:10px;background:#2F855A;color:#fff;cursor:pointer">Allow ads</button>
-                <button id="consent-deny"  style="padding:.55rem .8rem;border:1px solid #cbd5e1;border-radius:10px;background:#fff;cursor:pointer">No ads</button>
-              </div>
-            </div>`;
-          document.body.appendChild(el);
-          document.getElementById('consent-allow').onclick = grant;
-          document.getElementById('consent-deny').onclick = deny;
-        }
-        function hideBanner() { document.getElementById('consent-banner')?.remove(); }
+    function createBanner() {
+      if (document.getElementById('consent-banner')) return;
+      const el = document.createElement('div');
+      el.id = 'consent-banner';
+      el.role = 'dialog';
+      el.ariaLabel = 'Privacy choices for advertising';
+      el.style.cssText =
+        'position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:9999;background:#fff;border:1px solid #cbd5e1;border-radius:12px;max-width:720px;margin:0 auto;padding:1rem;box-shadow:0 8px 24px rgba(0,0,0,.08);';
+      el.innerHTML = `
+        <div style="display:flex;gap:.9rem;align-items:flex-start">
+          <div style="flex:1;min-width:0">
+            <strong style="display:block;font-size:1rem">Privacy choices</strong>
+            <div style="color:#64748b;margin-top:.25rem;font-size:.95rem;line-height:1.45">
+              We use Google AdSense for advertising and only load it after you allow ads. Our analytics (Plausible) is cookie-free.
+              You can change this anytime via “Privacy choices” in the footer.
+            </div>
+          </div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+            <button id="consent-allow" style="padding:.55rem .8rem;border:none;border-radius:10px;background:#2F855A;color:#fff;cursor:pointer">Allow ads</button>
+            <button id="consent-deny"  style="padding:.55rem .8rem;border:1px solid #cbd5e1;border-radius:10px;background:#fff;cursor:pointer">No ads</button>
+          </div>
+        </div>`;
+      document.body.appendChild(el);
+      document.getElementById('consent-allow').onclick = grant;
+      document.getElementById('consent-deny').onclick = deny;
+    }
+    function hideBanner() { document.getElementById('consent-banner')?.remove(); }
 
-        // API for pages/links to reopen the banner
-        window.addEventListener('open-consent', () => {
-          localStorage.removeItem(KEY);
-          createBanner();
+    // API for pages/links to reopen the banner
+    window.addEventListener('open-consent', () => {
+      localStorage.removeItem(KEY);
+      createBanner();
+    });
+
+    // Footer inline link handler (if present)
+    window.addEventListener('load', () => {
+      const link = document.getElementById('privacy-choices-inline');
+      if (link) {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.dispatchEvent(new CustomEvent('open-consent'));
         });
+      }
+    });
 
-        // Footer inline link handler (added in markup below)
-        window.addEventListener('load', () => {
-          const link = document.getElementById('privacy-choices-inline');
-          if (link) {
-            link.addEventListener('click', (e) => {
-              e.preventDefault();
-              window.dispatchEvent(new CustomEvent('open-consent'));
-            });
-          }
-        });
+    // First-load behavior
+    if (hasChoice()) {
+      if (localStorage.getItem(KEY) === 'granted') loadAdsense();
+    } else {
+      if (document.readyState === 'complete') createBanner(); else window.addEventListener('load', createBanner);
+    }
+  })();
+</script>
 
-        // First-load behavior
-        if (hasChoice()) {
-          if (localStorage.getItem(KEY) === 'granted') loadAdsense();
-        } else {
-          if (document.readyState === 'complete') createBanner(); else window.addEventListener('load', createBanner);
-        }
-      })();
-    </script>
 
     <!-- Plausible (cookie-free) -->
     <script is:inline>
