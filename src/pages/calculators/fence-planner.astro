@@ -223,6 +223,70 @@ const WIRE_TYPES = [
       <p class="note" style="margin-top:.6rem">Estimates only. Verify before purchasing materials or operating equipment.</p>
     </section>
 
+<!--/
+  Email capture: printable PDF worksheet.
+  Wired to Kit form "Fence Planner Worksheet Signup" (form id 9726432).
+  Post-signup redirect is configured in Kit to: https://agcalculator.com/get/fence-planner-worksheet/
+  which delivers the PDF (src/pages/get/fence-planner-worksheet.astro).
+/-->
+<section class="pdf-capture" aria-label="Get a printable worksheet">
+  <h2>Want this on paper?</h2>
+  <p class="pdf-capture-subtitle">
+    Get a free printable Fence Planner worksheet — the formulas, a worked example, and blank
+    fields to fill in by hand (works with no signal in the field). We'll also send occasional
+    AgCalculator updates; unsubscribe anytime.
+  </p>
+  <form
+    action="https://app.kit.com/forms/9726432/subscriptions"
+    method="post"
+    class="pdf-capture-form"
+    onsubmit="window.plausible && window.plausible('PDF Signup', { props: { calculator: 'fence-planner' } })"
+  >
+    <label for="pdfEmail" class="sr-only">Email address</label>
+    <input id="pdfEmail" type="email" name="email_address" placeholder="you@email.com" required />
+    <button type="submit">Email me the PDF</button>
+  </form>
+</section>
+
+<style>
+  .pdf-capture{ border:1px solid #e5e7eb; border-radius:12px; padding:16px; margin-top:16px; background:#f4f7f5; }
+  .pdf-capture h2{ margin:0 0 6px; font-size:1.1rem; color:var(--green); }
+  .pdf-capture-subtitle{ margin:0 0 12px; opacity:.85; font-size:.92rem; }
+  .pdf-capture-form{ display:flex; gap:.5rem; flex-wrap:wrap; }
+  .pdf-capture-form input[type="email"]{ flex:1; min-width:200px; padding:.6rem; border:1px solid #cbd5e1; border-radius:10px; }
+  .pdf-capture-form button{ padding:.6rem 1rem; border:none; border-radius:10px; background:var(--green); color:#fff; cursor:pointer; font-weight:600; }
+  .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+</style>
+
+<!--/
+  Paid upsell: Field Reference Pack bundle (5 worksheets, $12).
+  Checkout hosted on Kit Commerce: https://agcalculator.kit.com/products/ag-calculator-field-reference-pack
+/-->
+<section class="bundle-upsell" aria-label="Get the full worksheet bundle">
+  <h2>Want the whole set?</h2>
+  <p class="bundle-upsell-subtitle">
+    The <strong>AgCalculator Field Reference Pack</strong> bundles five printable worksheets —
+    Fence Planner, Grain Bin Capacity, Pasture Stocking, Bale Yield Planner, and Fence Energizer
+    Sizing — into one $12 PDF. Formulas, worked examples, and blank fields for the field.
+  </p>
+  <a
+    href="https://agcalculator.kit.com/products/ag-calculator-field-reference-pack"
+    target="_blank"
+    rel="noopener"
+    class="bundle-upsell-btn"
+    onclick="window.plausible && window.plausible('Bundle Click', { props: { calculator: 'fence-planner' } })"
+  >
+    Get the Field Reference Pack — $12
+  </a>
+</section>
+
+<style>
+  .bundle-upsell{ border:1px solid #e5e7eb; border-radius:12px; padding:16px; margin-top:16px; background:#fff; }
+  .bundle-upsell h2{ margin:0 0 6px; font-size:1.1rem; color:var(--green); }
+  .bundle-upsell-subtitle{ margin:0 0 12px; opacity:.85; font-size:.92rem; }
+  .bundle-upsell-btn{ display:inline-block; padding:.65rem 1.1rem; border-radius:10px; background:var(--green); color:#fff; font-weight:700; }
+</style>
+
 <!--/ Recommended tools (affiliate-ready) /-->
 <section class="affiliate-card" aria-label="Recommended tools">
   <h2>Recommended tools (optional)</h2>

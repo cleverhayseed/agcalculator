@@ -179,6 +179,35 @@ import Layout from "../../layouts/Layout.astro";
       <p class="note" style="margin-top:.6rem">Conservative planning values. Always verify with your supplier for local conditions.</p>
     </section>
 
+<!--/
+  Paid upsell: Field Reference Pack bundle (5 worksheets, $12).
+  Checkout hosted on Kit Commerce: https://agcalculator.kit.com/products/ag-calculator-field-reference-pack
+/-->
+<section class="bundle-upsell" aria-label="Get the full worksheet bundle">
+  <h2>Want the whole set?</h2>
+  <p class="bundle-upsell-subtitle">
+    The <strong>AgCalculator Field Reference Pack</strong> bundles five printable worksheets —
+    Fence Planner, Grain Bin Capacity, Pasture Stocking, Bale Yield Planner, and Fence Energizer
+    Sizing — into one $12 PDF. Formulas, worked examples, and blank fields for the field.
+  </p>
+  <a
+    href="https://agcalculator.kit.com/products/ag-calculator-field-reference-pack"
+    target="_blank"
+    rel="noopener"
+    class="bundle-upsell-btn"
+    onclick="window.plausible && window.plausible('Bundle Click', { props: { calculator: 'fence-energizer-sizing' } })"
+  >
+    Get the Field Reference Pack — $12
+  </a>
+</section>
+
+<style>
+  .bundle-upsell{ border:1px solid #e5e7eb; border-radius:12px; padding:16px; margin-top:16px; background:#fff; }
+  .bundle-upsell h2{ margin:0 0 6px; font-size:1.1rem; color:var(--green); }
+  .bundle-upsell-subtitle{ margin:0 0 12px; opacity:.85; font-size:.92rem; }
+  .bundle-upsell-btn{ display:inline-block; padding:.65rem 1.1rem; border-radius:10px; background:var(--green); color:#fff; font-weight:700; }
+</style>
+
 <!--  Recommended tools (affiliate-ready) -->
 <section class="affiliate-card" aria-label="Recommended tools">
   <h2>Electric fence essentials (optional)</h2>

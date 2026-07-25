@@ -1,0 +1,72 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+<Layout>
+  <Fragment slot="head">
+    <title>Your Fence Planner Worksheet | AgCalculator</title>
+    <meta name="description" content="Download your free printable Fence Planner worksheet from AgCalculator." />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="canonical" href="https://agcalculator.com/get/fence-planner-worksheet/" />
+  </Fragment>
+
+  <header style="padding:1rem;border-bottom:1px solid #e5e7eb;background:#fff">
+    <div class="wrap"><a href="/">← AgCalculator</a></div>
+  </header>
+
+  <main class="wrap" style="max-width:640px;padding:2.5rem 1rem;text-align:center">
+    <h1 style="margin:0 0 .5rem">Your worksheet is ready 🎉</h1>
+    <p style="color:var(--muted);margin:0 0 1.5rem">
+      Thanks for signing up. Here's your free, printable Fence Planner worksheet —
+      formulas, a worked example, and blank fields you can fill in by hand, no signal required.
+    </p>
+
+    <a
+      href="/downloads/fence-planner-worksheet.pdf"
+      target="_blank"
+      rel="noopener"
+      class="download-btn"
+      onclick="window.plausible && window.plausible('PDF Delivered', { props: { calculator: 'fence-planner' } })"
+    >
+      ⬇ Download the PDF
+    </a>
+
+    <p style="color:var(--muted);font-size:.9rem;margin-top:1.5rem">
+      Keep an eye on your inbox — that's also where we'll let you know about new calculators.
+      You can unsubscribe any time from the link in that email.
+    </p>
+
+    <section style="border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-top:2rem;background:#f4f7f5;text-align:left">
+      <h2 style="margin:0 0 6px;font-size:1.1rem;color:var(--green)">Want four more of these?</h2>
+      <p style="margin:0 0 12px;opacity:.85;font-size:.92rem">
+        The <strong>AgCalculator Field Reference Pack</strong> bundles this worksheet with four
+        others — Grain Bin Capacity, Pasture Stocking, Bale Yield Planner, and Fence Energizer
+        Sizing — into one $12 PDF.
+      </p>
+      <a
+        href="https://agcalculator.kit.com/products/ag-calculator-field-reference-pack"
+        target="_blank"
+        rel="noopener"
+        style="display:inline-block;padding:.65rem 1.1rem;border-radius:10px;background:var(--green);color:#fff;font-weight:700"
+        onclick="window.plausible && window.plausible('Bundle Click', { props: { calculator: 'fence-planner-thankyou' } })"
+      >
+        Get the Field Reference Pack — $12
+      </a>
+    </section>
+
+    <p style="margin-top:2rem">
+      <a href="/calculators/fence-planner/">← Back to the Fence Planner calculator</a>
+    </p>
+  </main>
+
+  <style>
+    .download-btn{
+      display:inline-block;
+      padding:.85rem 1.5rem;
+      background:var(--green);
+      color:#fff;
+      border-radius:12px;
+      font-weight:700;
+      font-size:1.05rem;
+    }
+  </style>
+</Layout>
