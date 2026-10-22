@@ -11,6 +11,20 @@ const GRAINS = [
   { key: "canola", name: "Canola",                tw: 50 },
   { key: "other",  name: "Other (set test weight)", tw: 56 },
 ];
+
+// Capacity chart: generated from the same formula the calculator uses
+// (cylinder only: bushels = π × (D/2)² × H ÷ 1.2445), so the two can't disagree.
+const FT3_PER_BU = 1.2445;
+const CHART_DIAMETERS = [15, 18, 21, 24, 27, 30, 33, 36, 42, 48];
+const CHART_HEIGHTS = [16, 20, 24, 28, 32];
+const buPerFoot = (d) => (Math.PI * (d / 2) ** 2) / FT3_PER_BU;
+const fmtBu = (n) => Math.round(n).toLocaleString("en-US");
+const fmtBu10 = (n) => (Math.round(n / 10) * 10).toLocaleString("en-US");
+const CHART_ROWS = CHART_DIAMETERS.map((d) => ({
+  d,
+  perFt: fmtBu(buPerFoot(d)),
+  cells: CHART_HEIGHTS.map((h) => fmtBu10(buPerFoot(d) * h)),
+}));
 ---
 
 <Layout>
@@ -212,6 +226,71 @@ const GRAINS = [
       <p class="note" style="margin-top:.6rem">Estimates only. Verify before purchasing materials or operating equipment.</p>
     </section>
 
+<!-- Capacity chart (generated at build time from the calculator formula) -->
+<section class="content capacity-chart" id="capacity-chart" aria-labelledby="capacity-chart-title">
+  <h2 id="capacity-chart-title">Grain Bin Capacity Chart (Bushels by Diameter &amp; Eave Height)</h2>
+  <p>Approximate capacity of round grain bins in U.S. bushels, filled level to the eave. Find your bin's diameter, then read across to its eave (sidewall) height.</p>
+
+  <div class="chart-scroll" role="region" aria-label="Grain bin capacity chart, scrollable" tabindex="0">
+    <table class="chart">
+      <caption class="sr-only">Grain bin capacity in bushels by diameter and eave height</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="col-d">Diameter</th>
+          <th scope="col">Bu per ft<br />of height</th>
+          {CHART_HEIGHTS.map((h) => <th scope="col">{h} ft<br />eave</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {CHART_ROWS.map((r) => (
+          <tr>
+            <th scope="row" class="col-d">{r.d} ft</th>
+            <td class="per-ft">{r.perFt}</td>
+            {r.cells.map((c) => <td>{c}</td>)}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <p class="chart-hint">Scroll sideways to see all heights.</p>
+
+  <h3>How to read this chart</h3>
+  <ul>
+    <li>Values are level fill to the eave: no peaked grain under the roof, no hopper, no shrink. Capacities are rounded to the nearest 10 bushels.</li>
+    <li>Have a peaked fill or a hopper bottom? Use the calculator above and enter your roof or hopper height for a closer number.</li>
+    <li>For an eave height not shown, multiply <em>bu per ft of height</em> by your eave height.</li>
+    <li>To estimate weight, multiply bushels by test weight (for example, corn at 56 lb/bu).</li>
+    <li>Manufacturer ratings often differ from pure geometry because they include the peak, a compaction factor, or a different fill level.</li>
+  </ul>
+</section>
+
+<style>
+  .capacity-chart .chart-scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid #e5e7eb; border-radius:10px; margin:.6rem 0 .3rem; }
+  .capacity-chart .chart-scroll:focus-visible{ outline:2px solid var(--green); outline-offset:2px; }
+  .capacity-chart .chart{ width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; font-size:.95rem; min-width:520px; }
+  .capacity-chart .chart th, .capacity-chart .chart td{ padding:.5rem .65rem; text-align:right; border-bottom:1px solid #eef2f7; white-space:nowrap; }
+  .capacity-chart .chart thead th{ background:#f1f5f9; font-weight:600; font-size:.85rem; color:#334155; }
+  .capacity-chart .chart tbody tr:nth-child(even) td, .capacity-chart .chart tbody tr:nth-child(even) th{ background:#f8fafc; }
+  .capacity-chart .chart tbody tr:last-child th, .capacity-chart .chart tbody tr:last-child td{ border-bottom:none; }
+  .capacity-chart .chart .col-d{ text-align:left; position:sticky; left:0; background:#fff; z-index:1; box-shadow:1px 0 0 #e5e7eb; }
+  .capacity-chart .chart thead .col-d{ background:#f1f5f9; }
+  .capacity-chart .chart tbody tr:nth-child(even) .col-d{ background:#f8fafc; }
+  .capacity-chart .chart thead th{ white-space:normal; line-height:1.25; vertical-align:bottom; }
+  .capacity-chart .per-ft{ color:var(--green); font-weight:600; }
+  .capacity-chart .chart-hint{ display:none; font-size:.85rem; color:#64748b; margin:.2rem 0 .6rem; }
+  .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+  @media (max-width:640px){
+    .capacity-chart .chart{ font-size:.85rem; }
+    .capacity-chart .chart th, .capacity-chart .chart td{ padding:.45rem .5rem; }
+    .capacity-chart .chart-hint{ display:block; }
+  }
+  @media print{
+    .capacity-chart .chart-scroll{ overflow:visible; border:none; }
+    .capacity-chart .chart{ min-width:0; }
+    .capacity-chart .chart-hint{ display:none; }
+  }
+</style>
+
 <!--/
   Paid upsell: Field Reference Pack bundle (5 worksheets, $12).
   Checkout hosted on Kit Commerce: https://agcalculator.kit.com/products/ag-calculator-field-reference-pack
@@ -284,7 +363,7 @@ const GRAINS = [
       <p><strong>Why don’t my numbers match label capacity?</strong> Manufacturer ratings may use different fill levels or safety factors; we use pure geometry.</p>
       <p><strong>Where do test weight defaults come from?</strong> Common industry values for typical dry grain; adjust to your measured test weight.</p>
 
-      <p class="disclaimer">Prepared by AgCalculator · Last updated October 27, 2025</p>
+      <p class="disclaimer">Prepared by AgCalculator · Last updated October 22, 2026</p>
     </section>
 
     <section class="content">
