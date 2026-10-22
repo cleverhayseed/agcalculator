@@ -25,7 +25,7 @@ import Layout from "../../layouts/Layout.astro";
       target="_blank"
       rel="noopener"
       class="download-btn"
-      onclick="window.plausible && window.plausible('PDF Delivered', { props: { calculator: 'fence-planner' } })"
+      onclick="window.track && window.track('PDF Delivered', { props: { calculator: 'fence-planner' } })"
     >
       ⬇ Download the PDF
     </a>
@@ -47,7 +47,7 @@ import Layout from "../../layouts/Layout.astro";
         target="_blank"
         rel="noopener"
         style="display:inline-block;padding:.65rem 1.1rem;border-radius:10px;background:var(--green);color:#fff;font-weight:700"
-        onclick="window.plausible && window.plausible('Bundle Click', { props: { calculator: 'fence-planner-thankyou' } })"
+        onclick="window.track && window.track('Bundle Click', { props: { calculator: 'fence-planner-thankyou' } })"
       >
         Get the Field Reference Pack — $12
       </a>

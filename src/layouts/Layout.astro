@@ -11,9 +11,9 @@
     <meta name="referrer" content="strict-origin-when-cross-origin" />
 
     <!-- Performance hints -->
-    <link rel="preconnect" href="https://plausible.io" />
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
     <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin />
-    <link rel="dns-prefetch" href="https://plausible.io" />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
 
     <!-- Favicon / Icons -->
@@ -66,14 +66,24 @@
 
 <script>(function(w, d, t, u, o) {w[u] = w[u] || [], o.ts = (new Date).getTime();var n = d.createElement(t);n.src = "https://bat.bing.net/bat.js?ti=" + o.ti + ("uetq" != u ? "&q=" + u : ""),n.async = 1, n.onload = n.onreadystatechange = function() {var s = this.readyState;s && "loaded" !== s && "complete" !== s ||(o.q = w[u], w[u] = new UET(o), w[u].push("pageLoad"),n.onload = n.onreadystatechange = null)};var i = d.getElementsByTagName(t)[0];i.parentNode.insertBefore(n, i);})(window, document, "script", "uetq", {ti: "97239271",enableAutoSpaTracking: true});</script><!-- You can set default Consent Mode right after the UET tag --><script>window.uetq = window.uetq || [];window.uetq.push('consent', 'default', {'ad_storage': 'denied'});</script><!-- Implement a cookie banner or another method to collect user consent. When a user grants consent (e.g., selects 'Accept' on your banner), update the consent settings using the command below. --><script>window.uetq = window.uetq || [];window.uetq.push('consent', 'update', {'ad_storage': 'granted'});</script>
    
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-17494645069"></script>
-<script>
+<!-- Google tag (gtag.js): Google Analytics 4 + Google Ads -->
+<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-K6R0ZS2KRM"></script>
+<script is:inline>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+  window.gtag = function(){ window.dataLayer.push(arguments); };
   gtag('js', new Date());
+  gtag('config', 'G-K6R0ZS2KRM');           // Google Analytics 4
+  gtag('config', 'AW-17494645069');  // Google Ads conversion tag
 
-  gtag('config', 'AW-17494645069');
+  // Site-wide event helper. Usage: window.track('Affiliate Click', { props: { item: 'x' } })
+  // Sends a GA4 event named in snake_case (e.g. affiliate_click) with props as parameters.
+  window.track = function (name, opts) {
+    try {
+      var params = (opts && opts.props) ? opts.props : {};
+      var ev = String(name).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+      window.gtag('event', ev, params);
+    } catch (e) {}
+  };
 </script>
 
     <!-- Local Consent + AdSense loader (runs only if FC isn't active) 
@@ -123,7 +133,7 @@
                 <div style="flex:1;min-width:0">
                   <strong style="display:block;font-size:1rem">Privacy choices</strong>
                   <div style="color:#64748b;margin-top:.25rem;font-size:.95rem;line-height:1.45">
-                    We use Google AdSense for advertising and only load it after you allow ads. Our analytics (Plausible) is cookie-free.
+                    We use Google AdSense for advertising and only load it after you allow ads. We use Google Analytics to measure site usage.
                     You can change this anytime via “Privacy choices” in the footer.
                   </div>
                 </div>
@@ -175,12 +185,6 @@
         }
       })();
     </script>-->
-
-    <!-- Plausible (cookie-free) -->
-    <script>
-      window.plausible = window.plausible || function(){ (window.plausible.q = window.plausible.q || []).push(arguments); };
-    </script>
-    <script defer data-domain="agcalculator.com" src="https://plausible.io/js/script.js"></script>
 
     <!-- Organization schema -->
     <script type="application/ld+json">
@@ -340,7 +344,7 @@
           evt.preventDefault();
           if (deferredPrompt) {
             deferredPrompt.prompt();
-            try { const { outcome } = await deferredPrompt.userChoice; if (outcome) { try { window.plausible && window.plausible('A2HS installed'); } catch {} } } catch {}
+            try { const { outcome } = await deferredPrompt.userChoice; if (outcome) { try { window.track && window.track('A2HS installed'); } catch {} } } catch {}
             deferredPrompt = null;
             return;
           }

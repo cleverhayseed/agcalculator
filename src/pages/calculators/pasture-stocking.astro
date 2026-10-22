@@ -224,7 +224,7 @@ import Layout from "../../layouts/Layout.astro";
     target="_blank"
     rel="noopener"
     class="bundle-upsell-btn"
-    onclick="window.plausible && window.plausible('Bundle Click', { props: { calculator: 'pasture-stocking' } })"
+    onclick="window.track && window.track('Bundle Click', { props: { calculator: 'pasture-stocking' } })"
   >
     Get the Field Reference Pack — $12
   </a>
@@ -250,7 +250,7 @@ import Layout from "../../layouts/Layout.astro";
       href="https://amzn.to/3O5W3fp"
       target="_blank"
       rel="nofollow sponsored noopener"
-      onclick="window.plausible && window.plausible('Affiliate Click')"
+      onclick="window.track && window.track('Affiliate Click')"
     >Pasture plate meter</a>
     <span class="note">— estimate forage more consistently</span>
   </li>
@@ -260,7 +260,7 @@ import Layout from "../../layouts/Layout.astro";
       href="https://amzn.to/4t4H3h0"
       target="_blank"
       rel="nofollow sponsored noopener"
-      onclick="window.plausible && window.plausible('Affiliate Click')"
+      onclick="window.track && window.track('Affiliate Click')"
     >Hay / forage test kit</a>
     <span class="note">— optional, for quality checks</span>
   </li>
@@ -270,7 +270,7 @@ import Layout from "../../layouts/Layout.astro";
       href="https://amzn.to/4ecDFvP"
       target="_blank"
       rel="nofollow sponsored noopener"
-      onclick="window.plausible && window.plausible('Affiliate Click')"
+      onclick="window.track && window.track('Affiliate Click')"
     >Polywire reel</a>
     <span class="note">— temporary fence moves</span>
   </li>
@@ -280,7 +280,7 @@ import Layout from "../../layouts/Layout.astro";
       href="https://amzn.to/4cht8wW"
       target="_blank"
       rel="nofollow sponsored noopener"
-      onclick="window.plausible && window.plausible('Affiliate Click')"
+      onclick="window.track && window.track('Affiliate Click')"
     >Step-in fence posts</a>
     <span class="note">— quick paddock setup</span>
   </li>
@@ -290,7 +290,7 @@ import Layout from "../../layouts/Layout.astro";
       href="https://amzn.to/4mnmzxt"
       target="_blank"
       rel="nofollow sponsored noopener"
-      onclick="window.plausible && window.plausible('Affiliate Click')"
+      onclick="window.track && window.track('Affiliate Click')"
     >Electric fence energizer</a>
     <span class="note">— only if running electric fence</span>
   </li>
@@ -300,7 +300,7 @@ import Layout from "../../layouts/Layout.astro";
       href="https://amzn.to/48znSU8"
       target="_blank"
       rel="nofollow sponsored noopener"
-      onclick="window.plausible && window.plausible('Affiliate Click')"
+      onclick="window.track && window.track('Affiliate Click')"
     >Stock tank float valve</a>
     <span class="note">— keeps water levels steady</span>
   </li>
@@ -310,7 +310,7 @@ import Layout from "../../layouts/Layout.astro";
       href="https://amzn.to/4sZjCFD"
       target="_blank"
       rel="nofollow sponsored noopener"
-      onclick="window.plausible && window.plausible('Affiliate Click')"
+      onclick="window.track && window.track('Affiliate Click')"
     >Cattle mineral feeder</a>
     <span class="note">— optional, for mineral/salt</span>
   </li>
@@ -561,7 +561,7 @@ import Layout from "../../layouts/Layout.astro";
       steps.push(`<div>AUMs = ${fmt0(metric ? availDisp/LB_TO_KG : availDisp)} ÷ 780 = <strong>${fmt1(aums)}</strong> AUM</div>`);
       document.getElementById("steps").innerHTML = `<div style="display:grid;gap:.35rem">${steps.join("")}</div>`;
 
-      try { window.plausible && window.plausible("Used Pasture Stocking"); } catch {}
+      try { window.track && window.track("Used Pasture Stocking"); } catch {}
     }
 
     // initial render
