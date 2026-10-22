@@ -3,13 +3,13 @@ import Layout from "../../layouts/Layout.astro";
 ---
 <Layout>
   <Fragment slot="head">
-    <title>Bale Count from Field Yield (Round & Square) | AgCalculator</title>
-    <meta name="description" content="Estimate total bales and tonnage from acres and field yield. Supports round or square bales, density or known bale weight, and payload-based load counts." />
+    <title>Bales per Acre Calculator (Round &amp; Square): Bales &amp; Tons from Yield | AgCalculator</title>
+    <meta name="description" content="How many bales per acre? Enter acres and yield to estimate total round or square bales, tons, and truckloads. Works with bale density or a known bale weight." />
     <link rel="canonical" href="https://agcalculator.com/calculators/bale-yield-planner/" />
 
     <!-- Open Graph -->
     <meta property="og:site_name" content="AgCalculator" />
-    <meta property="og:title" content="Bale Count from Field Yield" />
+    <meta property="og:title" content="Bales per Acre Calculator (Round & Square)" />
     <meta property="og:description" content="Calculate bale count and tonnage from acres and yield. Round or square bales, density or known bale weight." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://agcalculator.com/calculators/bale-yield-planner/" />
@@ -22,7 +22,7 @@ import Layout from "../../layouts/Layout.astro";
     {
       "@context":"https://schema.org",
       "@type":"WebApplication",
-      "name":"Bale Count from Field Yield",
+      "name":"Bales per Acre Calculator",
       "applicationCategory":"Calculator",
       "operatingSystem":"Web",
       "url":"https://agcalculator.com/calculators/bale-yield-planner/",
@@ -37,7 +37,7 @@ import Layout from "../../layouts/Layout.astro";
       "@type":"BreadcrumbList",
       "itemListElement":[
         {"@type":"ListItem","position":1,"name":"Home","item":"https://agcalculator.com/"},
-        {"@type":"ListItem","position":2,"name":"Bale Count from Field Yield","item":"https://agcalculator.com/calculators/bale-yield-planner/"}
+        {"@type":"ListItem","position":2,"name":"Bales per Acre Calculator","item":"https://agcalculator.com/calculators/bale-yield-planner/"}
       ]
     }
     </script>
@@ -105,7 +105,7 @@ import Layout from "../../layouts/Layout.astro";
   <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
 
   <main class="wrap">
-    <h1 style="margin:.5rem 0 1rem">Bale Count from Field Yield</h1>
+    <h1 style="margin:.5rem 0 1rem">Bales per Acre Calculator</h1>
 
     <!-- Units toggle (page-local) -->
     <div class="unit-toggle" role="group" aria-label="Units">
@@ -241,99 +241,9 @@ import Layout from "../../layouts/Layout.astro";
   .bundle-upsell-btn{ display:inline-block; padding:.65rem 1.1rem; border-radius:10px; background:var(--green); color:#fff; font-weight:700; }
 </style>
 
-<!--  Recommended tools (affiliate-ready) -->
-<section class="affiliate-card" aria-label="Recommended tools">
-  <h2>Hay baling &amp; handling tools (optional)</h2>
-  <p class="affiliate-subtitle">
-    Common supplies and tools for estimating bale yield, handling bales, and hauling. Links open in a new tab.
-  </p>
-
-<ul class="affiliate-list">
-  <li>
-    <a
-      href="https://amzn.to/4rIyJSB"
-      target="_blank"
-      rel="nofollow sponsored noopener"
-      onclick="window.track && window.track('Affiliate Click')"
-    >Hay moisture tester</a>
-    <span class="note">— helps prevent mold/heating</span>
-  </li>
-
-  <li>
-    <a
-      href="https://amzn.to/4snXMM4"
-      target="_blank"
-      rel="nofollow sponsored noopener"
-      onclick="window.track && window.track('Affiliate Click')"
-    >Bale net wrap</a>
-    <span class="note">— for round bales (if applicable)</span>
-  </li>
-
-  <li>
-    <a
-      href="https://amzn.to/4bOCSj1"
-      target="_blank"
-      rel="nofollow sponsored noopener"
-      onclick="window.track && window.track('Affiliate Click')"
-    >Baler twine</a>
-    <span class="note">— common for small squares</span>
-  </li>
-
-  <li>
-    <a
-      href="https://amzn.to/4bOaZrp"
-      target="_blank"
-      rel="nofollow sponsored noopener"
-      onclick="window.track && window.track('Affiliate Click')"
-    >Hay bale spear</a>
-    <span class="note">— moving round bales</span>
-  </li>
-
-  <li>
-    <a
-      href="https://amzn.to/4bKKiE1"
-      target="_blank"
-      rel="nofollow sponsored noopener"
-      onclick="window.track && window.track('Affiliate Click')"
-    >Hay bale grapple</a>
-    <span class="note">— alternative bale handling</span>
-  </li>
-
-  <li>
-    <a
-      href="https://amzn.to/4lzeAwE"
-      target="_blank"
-      rel="nofollow sponsored noopener"
-      onclick="window.track && window.track('Affiliate Click')"
-    >Hay tarp</a>
-    <span class="note">— storage/covering</span>
-  </li>
-
-  <li>
-    <a
-      href="https://amzn.to/40CHpyL"
-      target="_blank"
-      rel="nofollow sponsored noopener"
-      onclick="window.track && window.track('Affiliate Click')"
-    >Trailer tie-down straps</a>
-    <span class="note">— hauling loads</span>
-  </li>
-</ul>
-
-  <p class="affiliate-disclaimer">
-    As an Amazon Associate, we earn from qualifying purchases.
-  </p>
-</section>
 
 <style>
-  .affiliate-card{ border:1px solid #e5e7eb; border-radius:12px; padding:16px; margin-top:16px; background:#fff; }
-  .affiliate-card h2{ margin:0 0 6px; font-size:1.1rem; }
-  .affiliate-subtitle{ margin:0 0 12px; opacity:.85; }
-  .affiliate-list{ margin:0; padding-left:18px; }
-  .affiliate-list li{ margin:8px 0; }
-  .affiliate-list a{ font-weight:600; }
   .note{ opacity:.8; font-weight:400; }
-  .affiliate-disclaimer{ margin:12px 0 0; font-size:.85rem; opacity:.75; }
 </style>
 
     <section class="content" id="explain">

@@ -11,13 +11,13 @@ const CROPS = [
 
 <Layout>
   <Fragment slot="head">
-    <title>Hay Bale Weight &amp; Load Planner | AgCalculator</title>
-    <meta name="description" content="Estimate hay bale weight from size and density, then see how many bales you can haul by weight. US ↔ Metric toggle." />
+    <title>Hay Bale Weight Calculator (Round &amp; Square) + Load Planner | AgCalculator</title>
+    <meta name="description" content="Free hay bale weight calculator for round and square bales. Estimate bale weight from size and density, then see how many bales your truck or trailer can haul. US ↔ Metric toggle." />
     <link rel="canonical" href="https://agcalculator.com/calculators/hay-bale-planner/" />
 
     <!-- OG -->
     <meta property="og:site_name" content="AgCalculator" />
-    <meta property="og:title" content="Hay Bale Weight & Load Planner" />
+    <meta property="og:title" content="Hay Bale Weight Calculator (Round & Square)" />
     <meta property="og:description" content="Calculate bale weight and how many you can haul by weight capacity." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://agcalculator.com/calculators/hay-bale-planner/" />
@@ -28,7 +28,7 @@ const CROPS = [
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Hay Bale Weight & Load Planner" />
+    <meta name="twitter:title" content="Hay Bale Weight Calculator (Round & Square)" />
     <meta name="twitter:description" content="Estimate bale weight & haul capacity." />
     <meta name="twitter:image" content="https://agcalculator.com/og-hay-bale.png" />
 
@@ -39,7 +39,7 @@ const CROPS = [
       "@type":"BreadcrumbList",
       "itemListElement":[
         {"@type":"ListItem","position":1,"name":"Home","item":"https://agcalculator.com/"},
-        {"@type":"ListItem","position":2,"name":"Hay Bale Planner","item":"https://agcalculator.com/calculators/hay-bale-planner/"}
+        {"@type":"ListItem","position":2,"name":"Hay Bale Weight Calculator","item":"https://agcalculator.com/calculators/hay-bale-planner/"}
       ]
     }
     </script>
@@ -89,7 +89,7 @@ const CROPS = [
 
   <header><div class="wrap"><a href="/">← AgCalculator</a></div></header>
   <main class="wrap">
-    <h1 style="margin:.5rem 0 1rem">Hay Bale Weight &amp; Load Planner</h1>
+    <h1 style="margin:.5rem 0 1rem">Hay Bale Weight Calculator &amp; Load Planner</h1>
 
     <!-- Units toggle -->
     <div class="unit-toggle" role="group" aria-label="Units">
@@ -178,99 +178,9 @@ const CROPS = [
       <p class="note" style="margin-top:.6rem">Estimates only. Verify before purchasing materials or operating equipment.</p>
     </section>
 
-<!-- Recommended tools (affiliate-ready) -->
-<section class="affiliate-card" aria-label="Recommended tools">
-  <h2>Hay bale hauling &amp; handling tools (optional)</h2>
-  <p class="affiliate-subtitle">
-    Common tools for estimating bale weight, moving bales, and securing loads. Links open in a new tab.
-  </p>
-
- <ul class="affiliate-list">
-  <li>
-    <a
-      href="https://amzn.to/3NSNvIN"
-      target="_blank"
-      rel="nofollow sponsored noopener"
-      onclick="window.track && window.track('Affiliate Click')"
-    >Hay moisture tester</a>
-    <span class="note">— helps prevent mold/heating</span>
-  </li>
-
-  <li>
-    <a
-      href="https://amzn.to/4t23e7y"
-      target="_blank"
-      rel="nofollow sponsored noopener"
-      onclick="window.track && window.track('Affiliate Click')"
-    >Hay bale scale</a>
-    <span class="note">— optional, for weighing bales</span>
-  </li>
-
-  <li>
-    <a
-      href="https://amzn.to/4slLvGO"
-      target="_blank"
-      rel="nofollow sponsored noopener"
-      onclick="window.track && window.track('Affiliate Click')"
-    >Hay bale spear</a>
-    <span class="note">— moving round bales</span>
-  </li>
-
-  <li>
-    <a
-      href="https://amzn.to/4cxMPSl"
-      target="_blank"
-      rel="nofollow sponsored noopener"
-      onclick="window.track && window.track('Affiliate Click')"
-    >Hay bale grapple</a>
-    <span class="note">— alternative bale handling</span>
-  </li>
-
-  <li>
-    <a
-      href="https://amzn.to/4vqtudt"
-      target="_blank"
-      rel="nofollow sponsored noopener"
-      onclick="window.track && window.track('Affiliate Click')"
-    >Trailer tie-down straps</a>
-    <span class="note">— secure loads</span>
-  </li>
-
-  <li>
-    <a
-      href="https://amzn.to/4c8P6lG"
-      target="_blank"
-      rel="nofollow sponsored noopener"
-      onclick="window.track && window.track('Affiliate Click')"
-    >Cargo net for trailer</a>
-    <span class="note">— optional, extra security</span>
-  </li>
-
-  <li>
-    <a
-      href="https://amzn.to/3Qrq8Xm"
-      target="_blank"
-      rel="nofollow sponsored noopener"
-      onclick="window.track && window.track('Affiliate Click')"
-    >Hay tarp</a>
-    <span class="note">— storage/covering</span>
-  </li>
-</ul>
-
-  <p class="affiliate-disclaimer">
-    As an Amazon Associate, we earn from qualifying purchases.
-  </p>
-</section>
 
 <style>
-  .affiliate-card{ border:1px solid #e5e7eb; border-radius:12px; padding:16px; margin-top:16px; background:#fff; }
-  .affiliate-card h2{ margin:0 0 6px; font-size:1.1rem; }
-  .affiliate-subtitle{ margin:0 0 12px; opacity:.85; }
-  .affiliate-list{ margin:0; padding-left:18px; }
-  .affiliate-list li{ margin:8px 0; }
-  .affiliate-list a{ font-weight:600; }
   .note{ opacity:.8; font-weight:400; }
-  .affiliate-disclaimer{ margin:12px 0 0; font-size:.85rem; opacity:.75; }
 </style>
 
     <section class="content" id="explain">
