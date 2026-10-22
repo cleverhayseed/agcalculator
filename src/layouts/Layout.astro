@@ -75,8 +75,8 @@
   gtag('config', 'G-K6R0ZS2KRM');           // Google Analytics 4
   gtag('config', 'AW-17494645069');  // Google Ads conversion tag
 
-  // Site-wide event helper. Usage: window.track('Bundle Click', { props: { calculator: 'x' } })
-  // Sends a GA4 event named in snake_case (e.g. bundle_click) with props as parameters.
+  // Site-wide event helper. Usage: window.track('PDF Signup', { props: { calculator: 'x' } })
+  // Sends a GA4 event named in snake_case (e.g. pdf_signup) with props as parameters.
   window.track = function (name, opts) {
     try {
       var params = (opts && opts.props) ? opts.props : {};

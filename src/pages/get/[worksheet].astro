@@ -1,0 +1,96 @@
+---
+// Thank-you / download page for each free worksheet.
+// Kit redirects here after signup: /get/<slug>-worksheet/
+import Layout from "../../layouts/Layout.astro";
+import { WORKSHEETS, type Worksheet } from "../../data/worksheets";
+
+export function getStaticPaths() {
+  return WORKSHEETS.map((w) => ({ params: { worksheet: `${w.slug}-worksheet` }, props: { w } }));
+}
+interface Props { w: Worksheet }
+const { w } = Astro.props;
+const others = WORKSHEETS.filter((x) => x.slug !== w.slug);
+---
+<Layout>
+  <Fragment slot="head">
+    <title>Your {w.name} Worksheet | AgCalculator</title>
+    <meta name="description" content={`Download your free printable ${w.name} worksheet from AgCalculator.`} />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="canonical" href={`https://agcalculator.com/get/${w.slug}-worksheet/`} />
+  </Fragment>
+
+  <header style="padding:1rem;border-bottom:1px solid #e5e7eb;background:#fff">
+    <div class="wrap"><a href="/">← AgCalculator</a></div>
+  </header>
+
+  <main class="wrap ty">
+    <h1>Your worksheet is ready 🎉</h1>
+    <p class="ty-lead">
+      Thanks for signing up. Here's your free, printable {w.name} worksheet: the formulas,
+      a worked example, and blank fields for {w.blurb}.
+    </p>
+
+    <a
+      href={w.pdf}
+      target="_blank"
+      rel="noopener"
+      class="download-btn"
+      data-track="PDF Delivered"
+      data-worksheet={w.slug}
+    >
+      ⬇ Download the PDF
+    </a>
+
+    <p class="ty-note">
+      Check your inbox for a quick email asking you to confirm your subscription. That's also
+      where we'll let you know about new calculators. Unsubscribe any time from any email.
+    </p>
+
+    <section class="ty-more" aria-labelledby="ty-more-title">
+      <h2 id="ty-more-title">More free worksheets</h2>
+      <p>Each one comes from its calculator page. Use the same email and you won't be signed up twice.</p>
+      <ul>
+        {others.map((o) => (
+          <li>
+            <a
+              href={`${o.calculatorUrl}#worksheet`}
+              data-track="Worksheet Link Click"
+              data-worksheet={o.slug}
+              data-from={w.slug}
+            >{o.name}</a>
+            <span>: {o.blurb}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <p class="ty-back"><a href={w.calculatorUrl}>← Back to the {w.name} calculator</a></p>
+  </main>
+
+  <script is:inline>
+    // GA4 events: pdf_delivered (download clicks), worksheet_link_click (cross-links).
+    document.querySelectorAll('a[data-track]').forEach(function (a) {
+      a.addEventListener('click', function () {
+        var props = { calculator: a.dataset.worksheet };
+        if (a.dataset.from) props.from = a.dataset.from;
+        window.track && window.track(a.dataset.track, { props: props });
+      });
+    });
+  </script>
+
+  <style>
+    .ty{ max-width:640px; padding:2.5rem 1rem; text-align:center; }
+    .ty h1{ margin:0 0 .5rem; }
+    .ty-lead{ color:var(--muted); margin:0 0 1.5rem; }
+    .download-btn{ display:inline-block; padding:.85rem 1.5rem; background:var(--green); color:#fff; border-radius:12px; font-weight:700; font-size:1.05rem; }
+    .ty-note{ color:var(--muted); font-size:.9rem; margin-top:1.5rem; }
+    .ty-more{ border:1px solid #e5e7eb; border-radius:12px; padding:16px; margin-top:2rem; background:#f4f7f5; text-align:left; }
+    .ty-more h2{ margin:0 0 6px; font-size:1.1rem; color:var(--green); }
+    .ty-more p{ margin:0 0 10px; opacity:.85; font-size:.92rem; }
+    .ty-more ul{ margin:0; padding-left:1.1rem; }
+    .ty-more li{ margin:.35rem 0; }
+    .ty-more a{ font-weight:600; }
+    .ty-more span{ color:var(--muted); font-size:.92rem; }
+    .ty-back{ margin-top:2rem; }
+  </style>
+</Layout>

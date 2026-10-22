@@ -1,0 +1,49 @@
+---
+// Free worksheet email signup. Posts to the worksheet's Kit form; Kit then
+// redirects to /get/<slug>-worksheet/ where the PDF is downloaded.
+import { getWorksheet } from "../data/worksheets";
+interface Props { slug: string }
+const w = getWorksheet(Astro.props.slug);
+const inputId = `ws-email-${w.slug}`;
+---
+<section class="ws-signup" id="worksheet" aria-labelledby={`ws-title-${w.slug}`}>
+  <h2 id={`ws-title-${w.slug}`}>Free printable {w.name} worksheet</h2>
+  <p class="ws-sub">
+    A one-page sheet with the formulas, a worked example, and blank fields for {w.blurb}.
+    Print it for your records, the shop wall, or a planning binder. We'll also send occasional
+    AgCalculator updates; unsubscribe anytime.
+  </p>
+  <form
+    action={`https://app.kit.com/forms/${w.kitFormId}/subscriptions`}
+    method="post"
+    class="ws-form"
+    data-worksheet={w.slug}
+  >
+    <label for={inputId} class="ws-sr">Email address</label>
+    <input id={inputId} type="email" name="email_address" placeholder="you@email.com" autocomplete="email" required />
+    <button type="submit">Email me the PDF</button>
+  </form>
+  <p class="ws-fine">Already got one? Use the same email. You won't be signed up twice.</p>
+</section>
+
+<script is:inline>
+  // Track signup attempts per worksheet (GA4 event: pdf_signup).
+  document.querySelectorAll('form.ws-form').forEach(function (f) {
+    if (f.dataset.tracked) return; f.dataset.tracked = '1';
+    f.addEventListener('submit', function () {
+      window.track && window.track('PDF Signup', { props: { calculator: f.dataset.worksheet } });
+    });
+  });
+</script>
+
+<style>
+  .ws-signup{ border:1px solid #e5e7eb; border-radius:12px; padding:16px; margin-top:16px; background:#f4f7f5; }
+  .ws-signup h2{ margin:0 0 6px; font-size:1.1rem; color:var(--green); }
+  .ws-sub{ margin:0 0 12px; opacity:.85; font-size:.92rem; }
+  .ws-form{ display:flex; gap:.5rem; flex-wrap:wrap; }
+  .ws-form input[type="email"]{ flex:1; min-width:200px; padding:.6rem; border:1px solid #cbd5e1; border-radius:10px; font:inherit; }
+  .ws-form button{ padding:.6rem 1rem; border:none; border-radius:10px; background:var(--green); color:#fff; cursor:pointer; font-weight:600; font:inherit; font-weight:600; }
+  .ws-fine{ margin:.6rem 0 0; font-size:.8rem; color:#64748b; }
+  .ws-sr{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+  @media (max-width:480px){ .ws-form button{ width:100%; } }
+</style>

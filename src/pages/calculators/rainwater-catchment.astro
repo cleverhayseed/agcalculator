@@ -333,7 +333,8 @@ import Layout from "../../layouts/Layout.astro";
     // wiring
     ["areaMode","coeff"].forEach(id => $(id).addEventListener("change", onMode));
     ["area","len","wid","rain","flush","demand","days","tank"].forEach(id => $(id).addEventListener("input", compute));
-    onMode(); compute();
+    // Run the first calculation after the whole script (including the helpers below) has loaded.
+    setTimeout(onMode, 0);
 
     function onMode(){
       const m = $("areaMode").value;
