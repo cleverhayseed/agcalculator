@@ -26,8 +26,8 @@ const others = WORKSHEETS.filter((x) => x.slug !== w.slug);
   <main class="wrap ty">
     <h1>Your worksheet is ready 🎉</h1>
     <p class="ty-lead">
-      Thanks for signing up. Here's your free, printable {w.name} worksheet: the formulas,
-      a worked example, and blank fields for {w.blurb}.
+      Here's your free, printable {w.name} worksheet: the formulas, a worked example,
+      and blank fields for {w.blurb}.
     </p>
 
     <a
@@ -42,8 +42,7 @@ const others = WORKSHEETS.filter((x) => x.slug !== w.slug);
     </a>
 
     <p class="ty-note">
-      Check your inbox for a quick email asking you to confirm your subscription. That's also
-      where we'll let you know about new calculators. Unsubscribe any time from any email.
+      A link to this download was sent to your inbox for you to access again anytime.
     </p>
 
     <section class="ty-more" aria-labelledby="ty-more-title">
@@ -79,7 +78,7 @@ const others = WORKSHEETS.filter((x) => x.slug !== w.slug);
   </script>
 
   <style>
-    .ty{ max-width:640px; padding:2.5rem 1rem; text-align:center; }
+    .ty{ max-width:640px; margin:0 auto; padding:2.5rem 1rem; text-align:center; }
     .ty h1{ margin:0 0 .5rem; }
     .ty-lead{ color:var(--muted); margin:0 0 1.5rem; }
     .download-btn{ display:inline-block; padding:.85rem 1.5rem; background:var(--green); color:#fff; border-radius:12px; font-weight:700; font-size:1.05rem; }
