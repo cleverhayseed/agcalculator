@@ -448,8 +448,6 @@ import WorksheetSignup from "../../components/WorksheetSignup.astro";
       }
       steps.push(`<div>AUMs = ${fmt0(metric ? availDisp/LB_TO_KG : availDisp)} ÷ 780 = <strong>${fmt1(aums)}</strong> AUM</div>`);
       document.getElementById("steps").innerHTML = `<div style="display:grid;gap:.35rem">${steps.join("")}</div>`;
-
-      try { window.track && window.track("Used Pasture Stocking"); } catch {}
     }
 
     // initial render

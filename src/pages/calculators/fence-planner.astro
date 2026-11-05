@@ -431,10 +431,6 @@ const WIRE_TYPES = [
         rolls, wireFeet, matCost
       });
 
-      if (!window.__pl_fence_used) {
-        window.__pl_fence_used = true;
-        try { window.track && window.track("Used Fence Planner"); } catch {}
-      }
     }
 
     function show(o={}){

@@ -361,10 +361,6 @@ const CROPS = [
 
       setSteps({ round, vol_ft3, dens, wt_lb, moist, payload_lb, maxBales });
 
-      if (!window.__pl_hay_used){
-        window.__pl_hay_used = true;
-        try { window.track && window.track("Used Hay Bale Planner"); } catch {}
-      }
     }
 
     function render(o={}){
