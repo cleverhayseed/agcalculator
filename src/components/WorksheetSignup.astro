@@ -27,10 +27,14 @@ const inputId = `ws-email-${w.slug}`;
 </section>
 
 <script is:inline>
-  // Track signup attempts per worksheet (GA4 event: pdf_signup).
+  // Track signup attempts per worksheet (GA4 event: pdf_signup). This fires on
+  // submit, before Kit accepts or rejects the address. A same-tab marker lets the
+  // /get/ thank-you page (only reached after Kit accepts) record the completion.
+  // Only the worksheet slug is stored or sent; never the email address.
   document.querySelectorAll('form.ws-form').forEach(function (f) {
     if (f.dataset.tracked) return; f.dataset.tracked = '1';
     f.addEventListener('submit', function () {
+      try { sessionStorage.setItem('agc_ws_pending', f.dataset.worksheet); } catch (e) {}
       window.track && window.track('PDF Signup', { props: { calculator: f.dataset.worksheet } });
     });
   });

@@ -66,6 +66,19 @@ const others = WORKSHEETS.filter((x) => x.slug !== w.slug);
     <p class="ty-back"><a href={w.calculatorUrl}>← Back to the {w.name} calculator</a></p>
   </main>
 
+  <script is:inline define:vars={{ slug: w.slug }}>
+    // GA4 event: worksheet_signup_complete. Kit only redirects here after it accepts
+    // a signup, so this is the completed-submission signal. It fires only when this
+    // tab just submitted the matching worksheet form (marker set in WorksheetSignup),
+    // so bookmarks, reloads, and shared links don't count. No email or form data sent.
+    try {
+      if (sessionStorage.getItem('agc_ws_pending') === slug) {
+        sessionStorage.removeItem('agc_ws_pending');
+        window.track && window.track('Worksheet Signup Complete', { props: { calculator: slug } });
+      }
+    } catch (e) {}
+  </script>
+
   <script is:inline>
     // GA4 events: pdf_delivered (download clicks), worksheet_link_click (cross-links).
     document.querySelectorAll('a[data-track]').forEach(function (a) {
