@@ -1,0 +1,31 @@
+---
+// Not-found page. Astro builds this to /404.html; Cloudflare Pages serves it
+// with an HTTP 404 status for any path that doesn't match a real file.
+// (Without a top-level 404.html, Pages falls back to serving the homepage with 200.)
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+  <Fragment slot="head">
+    <title>Page not found | AgCalculator</title>
+    <meta name="description" content="That page doesn't exist on AgCalculator. Head back to the full list of free farm and ranch calculators." />
+    <meta name="robots" content="noindex" />
+  </Fragment>
+
+  <header style="padding:1rem;border-bottom:1px solid #e5e7eb;background:#fff">
+    <div class="wrap"><a href="/">← AgCalculator</a></div>
+  </header>
+
+  <main class="wrap nf">
+    <h1>Page not found</h1>
+    <p>We couldn't find that page. It may have moved, or the link may have a typo.</p>
+    <p><a class="nf-btn" href="/">See all calculators</a></p>
+  </main>
+
+  <style>
+    .nf{ max-width:640px; margin:0 auto; padding:2.5rem 1rem; text-align:center; }
+    .nf h1{ margin:0 0 .5rem; color:var(--green); }
+    .nf p{ color:var(--muted); }
+    .nf-btn{ display:inline-block; margin-top:1rem; padding:.75rem 1.25rem; background:var(--green); color:#fff; border-radius:12px; font-weight:700; }
+  </style>
+</Layout>
